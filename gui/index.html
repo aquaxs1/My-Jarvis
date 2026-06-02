@@ -1,0 +1,2422 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>JARVIS v2.8</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:'Butler Stencil';src:url('fonts/Butler-Free-Bd-St.woff') format('woff');font-weight:700;font-style:normal;font-display:swap;}
+:root{
+  --jv-void:#04060A;--jv-obsidian:#0A0D14;--jv-graphite:#11151F;
+  --jv-slate:#1A2030;--jv-steel:#252C40;--jv-mist:#3A4258;
+  --jv-ink-1:#F4F6FB;--jv-ink-2:#BCC4D6;--jv-ink-3:#7A859E;--jv-ink-4:#4B5470;
+  --jv-ion:#4DE6E0;--jv-ion-soft:#7FF1ED;--jv-ion-deep:#1FA8A3;
+  --jv-ion-glow:rgba(77,230,224,0.32);
+  --jv-arc:#FFB347;--jv-arc-soft:#FFD089;--jv-arc-deep:#C77A20;
+  --jv-pulse:#FF4D7A;--jv-pulse-soft:#FF8AA8;
+  --jv-success:#4DE6A8;--jv-warning:#FFB347;--jv-danger:#FF4D7A;--jv-info:#4DE6E0;
+  --jv-line-faint:rgba(244,246,251,0.06);--jv-line:rgba(244,246,251,0.10);
+  --jv-line-strong:rgba(244,246,251,0.18);--jv-line-ion:rgba(77,230,224,0.42);
+  --jv-r-2:4px;--jv-r-3:8px;--jv-r-pill:999px;
+  --jv-ease:cubic-bezier(0.22,1,0.36,1);--jv-dur-2:220ms;
+  --fm:'JetBrains Mono',ui-monospace,monospace;
+  --fs:'Inter Tight',-apple-system,system-ui,sans-serif;
+  --fd:'Butler Stencil','Times New Roman',serif;
+  --c:var(--jv-ion);--r:var(--jv-pulse);--g:var(--jv-success);
+  --gold:var(--jv-arc);--warn:var(--jv-warning);
+  --bg:var(--jv-obsidian);--bg2:var(--jv-graphite);
+  --t:var(--jv-ink-2);--tb:var(--jv-ink-1);--td:var(--jv-ink-3);
+  --b:var(--jv-line);--bb:var(--jv-line-ion);
+  --fh:var(--fm);--fb:var(--fs);
+  --panel:rgba(10,13,20,0.92);--cg:rgba(77,230,224,0.06);
+}
+/* ═══ LIGHT MODE — mirrors design system light tokens ═══ */
+body.light{
+  --jv-void:#FFFFFF;--jv-obsidian:#FCFDFE;--jv-graphite:#F5F7FB;
+  --jv-slate:#ECEFF5;--jv-steel:#CDD4E2;--jv-mist:#95A0B3;
+  --jv-ink-1:#1A2030;--jv-ink-2:#4A5572;--jv-ink-3:#8993A8;--jv-ink-4:#BFC6D4;
+  --jv-ion:#1FA8A3;--jv-ion-soft:#4DE6E0;--jv-ion-deep:#0F6E6B;
+  --jv-ion-glow:rgba(31,168,163,0.28);
+  --jv-arc:#D77F0E;--jv-arc-soft:#FFB347;--jv-arc-deep:#8C4F0B;
+  --jv-pulse:#D62650;--jv-pulse-soft:#FF4D7A;
+  --jv-success:#1FA86E;--jv-warning:#D77F0E;--jv-danger:#D62650;--jv-info:#1FA8A3;
+  --jv-line-faint:rgba(10,13,20,0.05);--jv-line:rgba(10,13,20,0.10);
+  --jv-line-strong:rgba(10,13,20,0.18);--jv-line-ion:rgba(31,168,163,0.55);
+  --panel:rgba(252,253,254,0.95);--cg:rgba(31,168,163,0.06);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--jv-obsidian);color:var(--jv-ink-1);font-family:var(--fs);height:100vh;overflow:hidden;}
+body::after{content:'';position:fixed;inset:0;background-image:
+  linear-gradient(var(--jv-line-faint) 1px,transparent 1px),
+  linear-gradient(90deg,var(--jv-line-faint) 1px,transparent 1px);
+  background-size:32px 32px;pointer-events:none;opacity:.5;z-index:0;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--jv-line-strong);border-radius:3px;}
+
+/* ═══ BOOT ═══ */
+#boot{position:fixed;inset:0;background:var(--jv-void);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;}
+.boot-logo{font-family:var(--fm);font-size:13px;line-height:1.38;color:var(--jv-ion);white-space:pre;text-align:center;text-shadow:0 0 20px var(--jv-ion-glow);}
+.boot-sub{font-family:var(--fm);font-size:10px;letter-spacing:0.18em;color:var(--jv-ink-3);text-transform:uppercase;}
+.bpw{width:400px;}
+.bpl{display:flex;justify-content:space-between;font-family:var(--fm);font-size:10px;color:var(--jv-ink-3);margin-bottom:6px;letter-spacing:0.06em;}
+.bpb{height:2px;background:var(--jv-slate);overflow:hidden;border-radius:1px;}
+.bpf{height:100%;background:var(--jv-ion);width:0;transition:width .35s var(--jv-ease);box-shadow:0 0 12px var(--jv-ion-glow);}
+.blog{width:400px;height:72px;overflow-y:auto;font-family:var(--fm);font-size:10px;color:var(--jv-ink-3);line-height:1.8;letter-spacing:0.02em;}
+.blog-ok{color:var(--jv-success);}.blog-warn{color:var(--jv-warning);}
+
+/* ═══ MODALS ═══ */
+.modal{position:fixed;inset:0;background:rgba(4,6,10,0.85);display:none;align-items:center;justify-content:center;z-index:500;backdrop-filter:blur(20px);}
+.modal.show{display:flex;}
+.sm-panel{width:500px;max-height:90vh;overflow-y:auto;border:1px solid var(--jv-line-ion);border-top:1.5px solid var(--jv-ion);background:var(--jv-graphite);padding:28px;border-radius:var(--jv-r-2);position:relative;}
+.sm-close{position:absolute;top:12px;right:12px;background:none;border:none;color:var(--jv-ink-3);font-size:18px;cursor:pointer;transition:color var(--jv-dur-2);}
+.sm-close:hover{color:var(--jv-pulse);}
+.sm-title{font-family:var(--fm);font-size:15px;letter-spacing:0.18em;color:var(--jv-ion);margin-bottom:4px;text-align:center;text-transform:uppercase;font-weight:500;}
+.sm-sub{font-family:var(--fm);font-size:10px;letter-spacing:0.18em;color:var(--jv-ink-3);text-align:center;margin-bottom:22px;text-transform:uppercase;}
+.sm-divider{height:1px;background:var(--jv-line);margin:18px 0;}
+.sm-sect{margin-bottom:18px;}
+.sm-label{font-family:var(--fm);font-size:10px;letter-spacing:0.18em;color:var(--jv-ion);text-transform:uppercase;margin-bottom:9px;display:block;font-weight:500;}
+.sm-input{width:100%;background:var(--jv-slate);border:1px solid var(--jv-line);color:var(--jv-ink-1);font-family:var(--fs);font-size:14px;padding:10px 12px;outline:none;transition:border-color var(--jv-dur-2);margin-bottom:6px;border-radius:var(--jv-r-2);}
+.sm-input:focus{border-color:var(--jv-ion);box-shadow:0 0 0 3px rgba(77,230,224,0.12);}
+.sm-input::placeholder{color:var(--jv-ink-4);}
+.sm-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:6px;align-items:center;}
+.chip{padding:8px 15px;border:1px solid var(--jv-line);font-family:var(--fs);font-size:13px;font-weight:500;color:var(--jv-ink-2);cursor:pointer;transition:all var(--jv-dur-2) var(--jv-ease);border-radius:var(--jv-r-pill);}
+.chip:hover{border-color:var(--jv-ion);color:var(--jv-ink-1);}
+.chip.on{border-color:var(--jv-ion);color:var(--jv-ion);background:rgba(77,230,224,0.08);}
+.chip-add{padding:8px 13px;border:1px dashed var(--jv-line-ion);color:var(--jv-ion);font-size:16px;font-weight:700;cursor:pointer;transition:all var(--jv-dur-2);border-radius:var(--jv-r-pill);}
+.chip-add:hover{background:rgba(77,230,224,0.06);}
+.api-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:9px;}
+.ap{padding:11px 8px;border:1px solid var(--jv-line);cursor:pointer;transition:all var(--jv-dur-2);text-align:center;border-radius:var(--jv-r-2);position:relative;}
+.ap:hover{border-color:var(--jv-line-strong);}
+.ap.on{border-color:var(--jv-ion);background:rgba(77,230,224,0.06);}
+.ap-name{font-family:var(--fs);font-size:12px;font-weight:600;color:var(--jv-ink-2);line-height:1.3;}
+.ap.on .ap-name{color:var(--jv-ion);}
+.ap-sub{font-family:var(--fm);font-size:10px;color:var(--jv-ink-3);letter-spacing:0.12em;text-transform:uppercase;margin-top:4px;}
+.ap.on .ap-sub{color:var(--jv-ion);}
+.af{display:none;}.af.show{display:block;}
+.key-status{font-family:var(--fm);font-size:10px;letter-spacing:0.06em;padding:7px 11px;margin-bottom:8px;border:1px solid var(--jv-line);border-radius:var(--jv-r-2);}
+.key-ok{color:var(--jv-success);border-color:rgba(77,230,168,0.4)!important;background:rgba(77,230,168,0.06);}
+.key-bad{color:var(--jv-warning);border-color:rgba(255,179,71,0.4)!important;background:rgba(255,179,71,0.06);}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0;}
+.toggle-label{font-family:var(--fs);font-size:14px;font-weight:500;color:var(--jv-ink-1);}
+.toggle{width:38px;height:22px;border-radius:999px;background:var(--jv-graphite);border:1px solid var(--jv-line-strong);cursor:pointer;position:relative;transition:all 180ms var(--jv-ease);flex-shrink:0;}
+.toggle.on{background:rgba(77,230,224,0.22);border-color:var(--jv-line-ion);}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--jv-ink-3);transition:all 180ms var(--jv-ease);}
+.toggle.on::after{left:18px;background:var(--jv-ion);box-shadow:0 0 8px var(--jv-ion-glow);}
+.sm-save{width:100%;padding:12px;background:var(--jv-ion);border:none;color:#04060A;font-family:var(--fm);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all var(--jv-dur-2);font-weight:600;border-radius:var(--jv-r-2);}
+.sm-save:hover{background:var(--jv-ion-soft);box-shadow:0 0 24px var(--jv-ion-glow);}
+
+/* ═══ SETTINGS — Full-screen categorized modal ═══ */
+@keyframes jvFade{from{opacity:0}to{opacity:1}}
+#settings-modal{padding:32px;background:rgba(4,6,10,0.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);animation:jvFade 220ms var(--jv-ease) both;}
+.st-shell{width:100%;max-width:1180px;height:100%;max-height:780px;background:var(--jv-obsidian);border:1px solid var(--jv-line-strong);border-top:1px solid var(--jv-line-ion);box-shadow:0 40px 80px rgba(0,0,0,0.7),0 0 0 1px rgba(77,230,224,0.04);display:flex;flex-direction:column;overflow:hidden;}
+.st-bar{height:36px;border-bottom:1px solid var(--jv-line);display:flex;align-items:center;padding:0 16px;gap:14px;background:var(--jv-void);flex-shrink:0;}
+.st-bar-dot{width:6px;height:6px;border-radius:50%;background:var(--jv-ion);box-shadow:0 0 8px var(--jv-ion);flex-shrink:0;}
+.st-bar-label{font-family:var(--fm);font-size:10px;color:var(--jv-ion);letter-spacing:0.18em;text-transform:uppercase;}
+.st-bar-line{flex:1;height:1px;background:linear-gradient(to right,var(--jv-line) 0%,transparent 60%);}
+.st-bar-email{font-family:var(--fm);font-size:10px;color:var(--jv-ink-3);letter-spacing:0.14em;}
+.st-bar-close{background:transparent;border:1px solid var(--jv-line);color:var(--jv-ink-2);cursor:pointer;width:24px;height:24px;border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all var(--jv-dur-2);}
+.st-bar-close:hover{border-color:var(--jv-pulse);color:var(--jv-pulse);}
+.st-body{flex:1;display:flex;min-height:0;}
+.st-nav{width:260px;flex-shrink:0;border-right:1px solid var(--jv-line);background:var(--jv-void);padding:28px 14px;display:flex;flex-direction:column;overflow-y:auto;}
+.st-nav-head{padding:0 10px 18px;}
+.st-nav-menu{font-family:var(--fm);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--jv-ink-3);margin-bottom:8px;}
+.st-nav-title{font-family:var(--fd);font-size:38px;line-height:0.95;color:var(--jv-ink-1);font-weight:700;letter-spacing:-0.01em;}
+.st-nav-items{display:flex;flex-direction:column;gap:1px;}
+.st-nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:2px;cursor:pointer;border:1px solid transparent;position:relative;transition:all 120ms var(--jv-ease);color:var(--jv-ink-2);font-size:13px;}
+.st-nav-item:hover{background:rgba(244,246,251,0.03);}
+.st-nav-item.active{background:rgba(77,230,224,0.07);border-color:var(--jv-line-ion);color:var(--jv-ink-1);font-weight:500;}
+.st-nav-item.active::before{content:'';position:absolute;top:-1px;left:-1px;width:10px;height:1px;background:var(--jv-ion);}
+.st-nav-item.active::after{content:'';position:absolute;top:-1px;left:-1px;width:1px;height:10px;background:var(--jv-ion);}
+.st-nav-item svg{flex-shrink:0;}
+.st-nav-item.active svg{color:var(--jv-ion);}
+.st-nav-footer{margin-top:auto;padding:12px 10px;border-top:1px solid var(--jv-line);display:flex;align-items:center;gap:10px;}
+.st-content{flex:1;overflow-y:auto;}
+.st-pane{padding:36px 44px 48px;max-width:760px;display:none;}
+.st-pane.active{display:block;}
+.st-pane-eyebrow{font-family:var(--fm);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--jv-ion);margin-bottom:6px;}
+.st-pane-title{font-family:var(--fs);font-size:28px;font-weight:600;color:var(--jv-ink-1);letter-spacing:-0.02em;}
+.st-pane-sub{font-size:13px;color:var(--jv-ink-3);margin-top:6px;}
+.st-section{font-family:var(--fm);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--jv-ink-3);margin-top:28px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--jv-line);}
+.st-row{display:grid;grid-template-columns:220px 1fr;gap:24px;align-items:center;padding:16px 0;border-bottom:1px solid var(--jv-line);}
+.st-row.top{align-items:start;}
+.st-row-label{font-size:13px;color:var(--jv-ink-1);font-weight:500;}
+.st-row-hint{font-size:12px;color:var(--jv-ink-3);margin-top:4px;line-height:1.4;}
+.st-row-val{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:8px;}
+.st-field{width:280px;padding:9px 12px;background:var(--jv-graphite);border:1px solid var(--jv-line);border-radius:2px;color:var(--jv-ink-1);font-family:var(--fs);font-size:13px;outline:none;transition:border-color var(--jv-dur-2);}
+.st-field:focus{border-color:var(--jv-ion);box-shadow:0 0 0 3px rgba(77,230,224,0.12);}
+.st-field::placeholder{color:var(--jv-ink-4);}
+.st-field.mono{font-family:var(--fm);font-size:12px;letter-spacing:0.04em;}
+.st-select{width:280px;padding:9px 12px;background:var(--jv-graphite);border:1px solid var(--jv-line);border-radius:2px;color:var(--jv-ink-1);font-family:var(--fs);font-size:13px;cursor:pointer;outline:none;}
+.st-savebar{margin-top:28px;padding:14px 16px;background:var(--jv-graphite);border:1px solid var(--jv-line);border-radius:2px;display:none;align-items:center;gap:12px;}
+.st-savebar-static{display:flex;}
+@keyframes savebarIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+#settings-modal.dirty .st-savebar:not(.st-savebar-static){display:flex;animation:savebarIn 220ms var(--jv-ease) both;}
+.st-savebar-dot{width:6px;height:6px;border-radius:50%;background:var(--jv-arc);box-shadow:0 0 8px var(--jv-arc);flex-shrink:0;}
+.st-savebar-text{flex:1;font-family:var(--fm);font-size:11px;color:var(--jv-ink-2);letter-spacing:0.06em;}
+.st-btn-ghost{background:transparent;color:var(--jv-ink-1);border:1px solid var(--jv-line-strong);padding:8px 14px;border-radius:2px;cursor:pointer;font-family:var(--fm);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;display:inline-flex;align-items:center;gap:6px;transition:all var(--jv-dur-2);}
+.st-btn-ghost:hover{border-color:var(--jv-ion);color:var(--jv-ion);}
+.st-btn-primary{background:var(--jv-ion);color:var(--jv-void);border:1px solid transparent;padding:8px 14px;border-radius:2px;cursor:pointer;font-family:var(--fm);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;font-weight:500;box-shadow:0 0 16px rgba(77,230,224,0.3);transition:all var(--jv-dur-2);}
+.st-btn-primary:hover{background:var(--jv-ion-soft);box-shadow:0 0 24px var(--jv-ion-glow);}
+.st-btn-danger{background:transparent;color:var(--jv-pulse);border:1px solid rgba(255,77,122,0.5);padding:8px 14px;border-radius:2px;cursor:pointer;font-family:var(--fm);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;font-weight:500;transition:all var(--jv-dur-2);}
+.st-btn-danger:hover{background:var(--jv-pulse);color:#fff;box-shadow:0 0 16px rgba(255,77,122,0.4);}
+
+/* Stat cards (Nutzung) */
+.st-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px;}
+.st-stat{padding:14px 16px;border:1px solid var(--jv-line);border-radius:var(--jv-r-2);background:var(--jv-graphite);}
+.st-stat-label{font-family:var(--fm);font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--jv-ink-3);margin-bottom:8px;}
+.st-stat-val{font-family:var(--fm);font-size:28px;color:var(--jv-ink-1);letter-spacing:-0.02em;font-variant-numeric:tabular-nums;line-height:1;}
+.st-stat-sub{font-family:var(--fm);font-size:10px;color:var(--jv-ink-3);margin-top:6px;letter-spacing:0.06em;}
+.st-stat-val.ion{color:var(--jv-ion);}
+.st-stat-val.arc{color:var(--jv-arc);}
+
+/* 7-day activity chart */
+.st-chart{display:flex;align-items:flex-end;gap:8px;height:120px;padding:14px 16px;border:1px solid var(--jv-line);border-radius:var(--jv-r-2);background:var(--jv-graphite);margin-top:8px;}
+.st-chart-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.st-chart-bar-fill{width:100%;background:linear-gradient(180deg,var(--jv-ion) 0%,var(--jv-ion-deep) 100%);border-radius:2px;box-shadow:0 0 8px rgba(77,230,224,0.3);transition:height .4s var(--jv-ease);min-height:2px;}
+.st-chart-bar-fill.empty{background:var(--jv-slate);box-shadow:none;}
+.st-chart-bar-label{font-family:var(--fm);font-size:9px;color:var(--jv-ink-3);letter-spacing:0.06em;}
+
+/* Connector cards (Konnektoren) */
+.st-conn{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid var(--jv-line);border-radius:var(--jv-r-2);background:var(--jv-graphite);margin-bottom:8px;transition:all var(--jv-dur-2);}
+.st-conn:hover{border-color:var(--jv-line-strong);}
+.st-conn.connected{border-color:var(--jv-line-ion);}
+.st-conn-icon{width:36px;height:36px;display:flex;align-items:center;justify-content:center;color:var(--jv-ink-2);background:var(--jv-slate);border:1px solid var(--jv-line);border-radius:var(--jv-r-2);flex-shrink:0;}
+.st-conn.connected .st-conn-icon{color:var(--jv-ion);border-color:var(--jv-line-ion);background:rgba(77,230,224,0.06);}
+.st-conn-body{flex:1;min-width:0;}
+.st-conn-name{font-size:13px;color:var(--jv-ink-1);font-weight:500;margin-bottom:2px;}
+.st-conn-hint{font-size:12px;color:var(--jv-ink-3);line-height:1.4;}
+.st-conn-status{font-family:var(--fm);font-size:9px;letter-spacing:0.14em;text-transform:uppercase;padding:3px 8px;border-radius:var(--jv-r-pill);border:1px solid var(--jv-line);color:var(--jv-ink-3);flex-shrink:0;display:inline-flex;align-items:center;gap:6px;}
+.st-conn-status::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;}
+.st-conn-status.on{color:var(--jv-success);border-color:rgba(77,230,168,0.4);background:rgba(77,230,168,0.06);}
+.st-conn-status.off{color:var(--jv-ink-3);}
+.st-conn-status.warn{color:var(--jv-warning);border-color:rgba(255,179,71,0.4);background:rgba(255,179,71,0.06);}
+
+/* Inline expand for connector config */
+.st-conn-form{display:none;padding:14px 16px;border:1px solid var(--jv-line-ion);border-top:none;border-radius:0 0 var(--jv-r-2) var(--jv-r-2);background:var(--jv-graphite);margin-top:-8px;margin-bottom:8px;}
+.st-conn-form.show{display:block;}
+.st-conn-form .st-field{width:100%;margin-bottom:8px;}
+.st-conn-form-row{display:flex;gap:8px;align-items:center;margin-top:10px;}
+.st-conn-form-row .st-btn-primary,.st-conn-form-row .st-btn-ghost{padding:7px 12px;font-size:9px;}
+
+/* Danger zone (Datenschutz) */
+.st-danger{margin-top:24px;padding:16px;border:1px solid rgba(255,77,122,0.3);border-radius:var(--jv-r-2);background:rgba(255,77,122,0.04);}
+.st-danger-title{font-family:var(--fm);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--jv-pulse);margin-bottom:6px;}
+.st-danger-text{font-size:13px;color:var(--jv-ink-2);line-height:1.5;margin-bottom:12px;}
+
+/* Beta tag for nav */
+.st-nav-beta{font-family:var(--fm);font-size:9px;letter-spacing:0.16em;text-transform:uppercase;padding:2px 6px;border-radius:2px;color:var(--jv-arc);border:1px solid rgba(255,179,71,0.35);margin-left:auto;}
+
+/* Light-mode neutral overrides for new pieces */
+body.light .st-stat,
+body.light .st-chart,
+body.light .st-conn,
+body.light .st-conn-form{background:var(--jv-graphite);}
+body.light .st-conn-icon{background:var(--jv-slate);}
+body.light .st-chart-bar-fill.empty{background:var(--jv-slate);}
+body.light .st-btn-primary{color:#FFFFFF;}
+
+/* ═══ MAIN APP — Sidebar Layout ═══ */
+#app{display:none;position:relative;z-index:1;
+  grid-template-columns:260px 1fr 280px;grid-template-rows:1fr;height:100vh;}
+#app.show{display:grid;}
+
+/* ═══ SIDEBAR ═══ */
+#sidebar{background:var(--jv-void);border-right:1px solid var(--jv-line);display:flex;flex-direction:column;overflow:hidden;}
+.sb-logo{padding:18px 18px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--jv-line);}
+.sb-logo svg{width:22;height:22;flex-shrink:0;}
+.sb-logo-text{font-family:var(--fm);font-size:15px;font-weight:500;letter-spacing:-0.01em;color:var(--jv-ink-1);}
+.sb-version{font-family:var(--fm);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;padding:3px 8px;border-radius:var(--jv-r-pill);display:inline-flex;align-items:center;gap:6px;color:var(--jv-ion);background:rgba(77,230,224,0.1);border:1px solid rgba(77,230,224,0.3);}
+.sb-version::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--jv-ion);box-shadow:0 0 8px var(--jv-ion);}
+.sb-new{padding:14px 14px 8px;}
+.sb-new-btn{width:100%;padding:10px 18px;font-family:var(--fm);font-size:12px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;border:1px solid var(--jv-line-strong);background:transparent;color:var(--jv-ink-1);cursor:pointer;border-radius:var(--jv-r-2);transition:all var(--jv-dur-2);display:flex;align-items:center;justify-content:center;gap:8px;}
+.sb-new-btn:hover{border-color:var(--jv-ion);color:var(--jv-ion);background:rgba(77,230,224,0.04);}
+.sb-eyebrow{padding:12px 14px 6px;font-family:var(--fm);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--jv-ink-3);}
+.sb-sessions{flex:1;overflow-y:auto;padding:0 8px;}
+.sb-sess{padding:9px 10px;border-radius:var(--jv-r-2);cursor:pointer;border:1px solid transparent;margin-bottom:2px;position:relative;transition:all 120ms var(--jv-ease);}
+.sb-sess:hover{background:rgba(244,246,251,0.03);}
+.sb-sess.active{background:rgba(77,230,224,0.06);border-color:var(--jv-line-ion);}
+.sb-sess.active::before{content:'';position:absolute;top:-1px;left:-1px;width:12px;height:1px;background:var(--jv-ion);}
+.sb-sess.active::after{content:'';position:absolute;top:-1px;left:-1px;width:1px;height:12px;background:var(--jv-ion);}
+.sb-sess-title{font-size:13px;color:var(--jv-ink-2);margin-bottom:2px;}
+.sb-sess.active .sb-sess-title{color:var(--jv-ink-1);}
+.sb-sess-time{font-family:var(--fm);font-size:10px;color:var(--jv-ink-3);letter-spacing:0.05em;}
+
+
+
+.sb-footer{padding:12px 14px;border-top:1px solid var(--jv-line);display:flex;align-items:center;gap:10px;cursor:pointer;transition:background var(--jv-dur-2);}
+.sb-footer:hover{background:rgba(244,246,251,0.03);}
+.sb-avatar{width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 30% 30%,var(--jv-ion-deep),var(--jv-slate));border:1px solid var(--jv-line-ion);display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:11px;color:var(--jv-ion-soft);flex-shrink:0;}
+.sb-user-info{flex:1;min-width:0;}
+.sb-user-name{font-size:12px;color:var(--jv-ink-1);}
+.sb-user-role{font-family:var(--fm);font-size:9px;color:var(--jv-ion);letter-spacing:0.14em;text-transform:uppercase;}
+.sb-gear{width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid var(--jv-line);color:var(--jv-ink-3);cursor:pointer;font-size:15px;transition:all var(--jv-dur-2);border-radius:var(--jv-r-2);flex-shrink:0;}
+.sb-gear:hover{border-color:var(--jv-ion);color:var(--jv-ion);background:rgba(77,230,224,0.06);}
+
+/* ═══ CENTER ═══ */
+#ct{display:flex;flex-direction:column;overflow:hidden;position:relative;}
+
+/* Orb Header */
+#orb-hdr{padding:20px 28px;border-bottom:1px solid var(--jv-line);display:flex;align-items:center;gap:20px;background:linear-gradient(180deg,rgba(77,230,224,0.03) 0%,transparent 100%);position:relative;overflow:hidden;flex-shrink:0;}
+#orb-hdr::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(244,246,251,0.04) 1px,transparent 1px);background-size:14px 14px;opacity:.6;pointer-events:none;}
+.orb{width:72px;height:72px;position:relative;flex-shrink:0;}
+.orb-ring-outer{position:absolute;inset:0;border-radius:50%;border:1px solid var(--jv-line-ion);transition:all .4s var(--jv-ease);}
+.orb-ring-inner{position:absolute;inset:14px;border-radius:50%;border:1.5px solid var(--jv-line-ion);transition:all .4s var(--jv-ease);}
+.orb-core{position:absolute;inset:27px;border-radius:50%;background:var(--jv-ion);box-shadow:0 0 32px rgba(77,230,224,0.45);transition:all .4s var(--jv-ease);}
+.orb.think .orb-ring-outer{border-color:rgba(255,179,71,0.5);border-style:dashed;animation:jv-spin 6s linear infinite;}
+.orb.think .orb-ring-inner{border-color:rgba(255,179,71,0.5);}
+.orb.think .orb-core{background:var(--jv-arc);box-shadow:0 0 24px rgba(255,179,71,0.4);}
+.orb.idle .orb-ring-outer{border-color:var(--jv-line);}
+.orb.idle .orb-ring-inner{border-color:var(--jv-line);}
+.orb.idle .orb-core{background:var(--jv-ink-3);box-shadow:none;}
+.orb.listen .orb-ring-outer{animation:jv-pulse-orb 2.4s ease-in-out infinite;}
+.orb.speak .orb-core{animation:jv-pulse-orb 1.2s ease-in-out infinite;}
+.orb.err .orb-ring-outer{border-color:rgba(255,77,122,0.5);}
+.orb.err .orb-ring-inner{border-color:rgba(255,77,122,0.5);}
+.orb.err .orb-core{background:var(--jv-pulse);box-shadow:0 0 24px rgba(255,77,122,0.4);}
+@keyframes jv-pulse-orb{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.05);opacity:.85;}}
+@keyframes jv-spin{from{transform:rotate(0);}to{transform:rotate(360deg);}}
+
+.orb-info{flex:1;position:relative;min-width:0;}
+.orb-badges{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.state-badge{font-family:var(--fm);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;padding:4px 9px;border-radius:var(--jv-r-pill);display:inline-flex;align-items:center;gap:6px;color:var(--jv-ion);background:rgba(77,230,224,0.1);border:1px solid rgba(77,230,224,0.3);}
+.state-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor;}
+.state-badge.think{color:var(--jv-arc);background:rgba(255,179,71,0.1);border-color:rgba(255,179,71,0.3);}
+.state-badge.err{color:var(--jv-pulse);background:rgba(255,77,122,0.1);border-color:rgba(255,77,122,0.3);}
+.orb-session{font-family:var(--fm);font-size:11px;color:var(--jv-ink-3);letter-spacing:0.06em;}
+.orb-title{font-family:var(--fm);font-size:24px;color:var(--jv-ink-1);letter-spacing:-0.02em;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.orb-right{display:flex;align-items:center;gap:8px;position:relative;flex-shrink:0;}
+.api-badge-mini{font-family:var(--fm);font-size:9px;padding:3px 9px;border:1px solid var(--jv-line);color:var(--jv-ink-3);letter-spacing:0.14em;text-transform:uppercase;border-radius:var(--jv-r-pill);}
+.ksb{font-family:var(--fm);font-size:9px;letter-spacing:0.14em;padding:6px 11px;
+  background:transparent;border:1px solid rgba(255,77,122,0.4);color:var(--jv-pulse);cursor:pointer;transition:all var(--jv-dur-2);font-weight:500;border-radius:var(--jv-r-2);text-transform:uppercase;}
+.ksb:hover{background:var(--jv-pulse);color:#fff;box-shadow:0 0 16px rgba(255,77,122,0.4);}
+
+/* Setup banner */
+#setup-banner{display:none;padding:9px 16px;background:rgba(255,179,71,0.06);border-bottom:1px solid rgba(255,179,71,0.3);font-family:var(--fm);font-size:10px;color:var(--jv-warning);align-items:center;justify-content:space-between;gap:12px;letter-spacing:0.02em;flex-shrink:0;}
+#setup-banner.show{display:flex;}
+.banner-btn{padding:5px 11px;border:1px solid rgba(255,179,71,0.4);background:transparent;color:var(--jv-warning);font-family:var(--fm);font-size:9px;letter-spacing:0.14em;cursor:pointer;white-space:nowrap;transition:all var(--jv-dur-2);font-weight:500;border-radius:var(--jv-r-2);text-transform:uppercase;}
+.banner-btn:hover{background:var(--jv-warning);color:#04060A;}
+
+/* Thinking bar */
+#tbar{height:2px;background:transparent;overflow:hidden;display:none;position:relative;flex-shrink:0;}
+#tbar.on{display:block;}
+#tbar::after{content:'';position:absolute;top:0;left:-30%;width:30%;height:100%;background:linear-gradient(90deg,transparent,var(--jv-ion),transparent);animation:tsa 1.2s linear infinite;}
+@keyframes tsa{from{left:-30%;}to{left:100%;}}
+
+/* Thinking steps (collapsible in center) */
+#think-drawer{display:none;border-bottom:1px solid var(--jv-line);max-height:180px;overflow:hidden;flex-shrink:0;background:rgba(77,230,224,0.02);}
+#think-drawer.on{display:block;}
+#think-header{padding:6px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;border-bottom:1px solid var(--jv-line);}
+#think-header span{font-family:var(--fm);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--jv-ion);font-weight:500;}
+.think-agent-badge{font-family:var(--fm);font-size:9px;color:var(--jv-ion);letter-spacing:0.06em;}
+#think-steps{overflow-y:auto;padding:6px 12px;display:flex;flex-direction:column;gap:4px;max-height:140px;}
+.think-step{font-family:var(--fs);font-size:12px;line-height:1.5;color:var(--jv-ink-2);
+  padding:6px 10px;border-left:2px solid var(--jv-mist);background:rgba(77,230,224,0.02);
+  border-radius:0 var(--jv-r-2) var(--jv-r-2) 0;transition:all var(--jv-dur-2);}
+.think-step.active{border-left-color:var(--jv-ion);background:rgba(77,230,224,0.06);color:var(--jv-ink-1);}
+.think-step .ts-label{font-family:var(--fm);font-size:9px;letter-spacing:0.18em;color:var(--jv-ink-3);text-transform:uppercase;margin-bottom:2px;display:block;}
+
+/* ═══ CHAT ═══ */
+#chat{flex:1;overflow-y:auto;padding:24px 28px;display:flex;flex-direction:column;gap:8px;scroll-behavior:smooth;}
+.msg{display:flex;gap:12px;animation:msg-in .25s var(--jv-ease);}
+@keyframes msg-in{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.msg.user{flex-direction:row-reverse;}
+.mav{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;position:relative;}
+.mav-orb{position:absolute;inset:0;border-radius:50%;border:1px solid var(--jv-line-ion);}
+.mav-orb-inner{position:absolute;inset:6px;border-radius:50%;border:1px solid var(--jv-line-ion);}
+.mav-orb-core{position:absolute;inset:12px;border-radius:50%;background:var(--jv-ion);box-shadow:0 0 8px var(--jv-ion);}
+.msg.user .mav{background:var(--jv-slate);border:1px solid var(--jv-line-strong);font-family:var(--fm);font-size:10px;color:var(--jv-ink-2);}
+.mc{max-width:76%;min-width:0;}
+.ml{font-family:var(--fm);font-size:10px;letter-spacing:0.06em;color:var(--jv-ink-3);margin-bottom:4px;}
+.ml span.j-tag{color:var(--jv-ion);}
+.msg.user .ml{text-align:right;color:var(--jv-ink-3);}
+.mb{padding:12px 16px;border:1px solid var(--jv-line);background:var(--jv-graphite);font-family:var(--fs);font-size:14px;line-height:1.6;color:var(--jv-ink-1);border-radius:var(--jv-r-2);position:relative;word-wrap:break-word;overflow-wrap:break-word;}
+.msg.user .mb{background:var(--jv-slate);border-color:var(--jv-line);}
+.msg-actions{display:none;gap:4px;margin-top:4px;justify-content:flex-end;}
+.msg:hover .msg-actions{display:flex;}
+.msg-act{background:none;border:1px solid var(--jv-line);color:var(--jv-ink-3);cursor:pointer;padding:5px;border-radius:var(--jv-r-2);display:flex;align-items:center;justify-content:center;transition:all var(--jv-dur-2);width:26px;height:26px;}
+.msg-act:hover{border-color:var(--jv-ion);color:var(--jv-ion);background:rgba(77,230,224,0.06);}
+.msg-act.copied{color:var(--jv-success);border-color:rgba(77,230,168,0.4);}
+
+/* ═══ CODE BLOCKS ═══ */
+.code-box{margin:8px 0;border:1px solid var(--jv-line);background:var(--jv-void);overflow:hidden;border-radius:var(--jv-r-2);}
+.code-head{display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:rgba(77,230,224,0.04);border-bottom:1px solid var(--jv-line);}
+.code-lang{font-family:var(--fm);font-size:10px;letter-spacing:0.14em;color:var(--jv-ion);text-transform:uppercase;}
+.code-copy{font-family:var(--fm);font-size:10px;color:var(--jv-ink-3);background:none;border:1px solid var(--jv-line);padding:3px 9px;cursor:pointer;transition:all var(--jv-dur-2);letter-spacing:0.06em;border-radius:var(--jv-r-2);}
+.code-copy:hover{border-color:var(--jv-ion);color:var(--jv-ion);}
+.code-copy.copied{color:var(--jv-success);border-color:rgba(77,230,168,0.4);}
+.code-body{padding:12px;overflow-x:auto;font-family:var(--fm);font-size:13px;line-height:1.55;color:#D4D4D4;white-space:pre;}
+.hl-kw{color:#C586C0;}.hl-bi{color:#569CD6;}.hl-fn{color:#DCDCAA;}.hl-str{color:#CE9178;}.hl-num{color:#B5CEA8;}.hl-cm{color:#6A9955;font-style:italic;}.hl-op{color:#D4D4D4;}.hl-cls{color:#4EC9B0;}
+
+/* Typing dots */
+.typing-dots{display:flex;align-items:center;gap:5px;padding:14px 16px;border:1px solid var(--jv-line);background:var(--jv-graphite);border-radius:var(--jv-r-2);}
+.typing-dots span{width:6px;height:6px;border-radius:50%;background:var(--jv-ion);opacity:.3;animation:tdot 1.2s infinite;}
+.typing-dots span:nth-child(1){animation-delay:0s;}
+.typing-dots span:nth-child(2){animation-delay:.2s;}
+.typing-dots span:nth-child(3){animation-delay:.4s;}
+@keyframes tdot{0%,60%,100%{opacity:.2;transform:scale(.8);}30%{opacity:1;transform:scale(1);}}
+
+.safety-msg{padding:9px 12px;border:1px solid rgba(255,77,122,0.4);background:rgba(255,77,122,0.06);font-family:var(--fm);font-size:10px;color:var(--jv-pulse);border-radius:var(--jv-r-2);}
+.perm-msg{padding:11px 13px;border:1px solid rgba(255,179,71,0.4);background:rgba(255,179,71,0.06);border-radius:var(--jv-r-2);}
+.perm-title{font-family:var(--fm);font-size:9px;letter-spacing:0.18em;color:var(--jv-warning);margin-bottom:6px;text-transform:uppercase;font-weight:500;}
+.perm-reason{font-family:var(--fs);font-size:14px;color:var(--jv-ink-1);margin-bottom:10px;line-height:1.5;}
+.pbts{display:flex;gap:7px;}
+.btn{font-family:var(--fm);font-size:9px;letter-spacing:0.06em;padding:6px 14px;border:1px solid currentColor;background:transparent;cursor:pointer;text-transform:uppercase;transition:all var(--jv-dur-2) var(--jv-ease);font-weight:500;border-radius:var(--jv-r-2);}
+.ba{color:var(--jv-success);}.ba:hover{background:var(--jv-success);color:#04060A;}
+.bd{color:var(--jv-pulse);}.bd:hover{background:var(--jv-pulse);color:#fff;}
+.bc{color:var(--jv-ion);}.bc:hover{background:var(--jv-ion);color:#04060A;}
+
+/* ═══ COMPOSER ═══ */
+#composer{padding:12px 20px 16px;border-top:1px solid var(--jv-line);background:var(--jv-obsidian);flex-shrink:0;}
+#composer-row{display:flex;align-items:center;gap:0;background:var(--jv-graphite);border:1px solid var(--jv-line);border-radius:var(--jv-r-2);padding:4px 4px 4px 16px;transition:all .2s;}
+#composer-row:focus-within{border-color:var(--jv-line-ion);box-shadow:0 0 0 3px rgba(77,230,224,0.12);}
+#tinp{flex:1;background:transparent;border:none;outline:none;color:var(--jv-ink-1);font-family:var(--fs);font-size:15px;padding:10px 0;}
+#tinp::placeholder{color:var(--jv-ink-4);}
+#micbtn{width:40px;height:40px;border-radius:var(--jv-r-2);border:none;cursor:pointer;background:transparent;color:var(--jv-ink-2);display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;transition:all var(--jv-dur-2);}
+#micbtn:hover{color:var(--jv-ion);background:rgba(77,230,224,0.06);}
+#micbtn.on{background:rgba(77,230,224,0.12);color:var(--jv-ion);}
+#micbtn.on svg{filter:drop-shadow(0 0 6px var(--jv-ion));}
+#visionbtn{width:40px;height:40px;border-radius:var(--jv-r-2);border:none;cursor:pointer;background:transparent;color:var(--jv-ink-2);display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;transition:all var(--jv-dur-2);}
+#visionbtn:hover{color:var(--jv-ion);background:rgba(77,230,224,0.06);}
+#visionbtn.on{background:rgba(77,230,224,0.12);color:var(--jv-ion);animation:visionPulse 2s ease-in-out infinite;}
+@keyframes visionPulse{0%,100%{box-shadow:0 0 0 0 rgba(77,230,224,0.3);}50%{box-shadow:0 0 12px 4px rgba(77,230,224,0.25);}}
+/* ══ COPILOT ══════════════════════════════════════════════════════════════ */
+#copilotbtn{width:40px;height:40px;border-radius:var(--jv-r-2);border:none;cursor:pointer;background:transparent;color:var(--jv-ink-2);display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;transition:all var(--jv-dur-2);}
+#copilotbtn:hover{color:var(--jv-ion);background:rgba(77,230,224,0.06);}
+#copilotbtn.on{background:rgba(77,230,224,0.12);color:var(--jv-ion);animation:visionPulse 2s ease-in-out infinite;}
+#copilot-bar{display:none;align-items:center;gap:12px;margin:0 16px 8px;padding:10px 14px;background:linear-gradient(90deg,rgba(77,230,224,0.10),rgba(77,230,224,0.02));border:1px solid var(--jv-line-ion);border-left:2px solid var(--jv-ion);border-radius:var(--jv-r-2);}
+#copilot-bar.on{display:flex;}
+.cp-dot{width:9px;height:9px;border-radius:50%;background:var(--jv-ion);box-shadow:0 0 8px var(--jv-ion);flex-shrink:0;animation:cpDot 1.2s ease-in-out infinite;}
+@keyframes cpDot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(.7);}}
+.cp-info{flex:1;min-width:0;}
+.cp-status{font-family:var(--fm);font-size:12px;color:var(--jv-ion);letter-spacing:0.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cp-task{font-family:var(--fm);font-size:10px;color:var(--jv-ink-3);letter-spacing:0.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;}
+.cp-stepc{font-family:var(--fm);font-size:10px;color:var(--jv-ink-3);letter-spacing:0.06em;flex-shrink:0;}
+.cp-stop{padding:7px 14px;background:rgba(255,77,122,0.12);border:1px solid rgba(255,77,122,0.5);color:var(--jv-pulse);font-family:var(--fm);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border-radius:var(--jv-r-2);transition:all var(--jv-dur-2);flex-shrink:0;font-weight:600;}
+.cp-stop:hover{background:rgba(255,77,122,0.22);}
+.cp-log{font-family:var(--fm);font-size:11px;color:var(--jv-ink-3);line-height:1.6;letter-spacing:0.01em;padding:5px 10px;margin:3px 0;border-left:2px solid var(--jv-line-ion);background:rgba(77,230,224,0.03);border-radius:0 var(--jv-r-2) var(--jv-r-2) 0;animation:msg-in var(--jv-dur-2) var(--jv-ease);}
+.cp-log .cp-log-step{color:var(--jv-ion);font-weight:600;margin-right:6px;}
+.cp-log .cp-log-res{color:var(--jv-ink-4);}
+.cp-plan{font-family:var(--fm);font-size:11px;color:var(--jv-ink-2);line-height:1.6;padding:8px 12px;margin:6px 0;border-left:2px solid var(--jv-ion);background:rgba(54,209,255,0.05);border-radius:0 var(--jv-r-2) var(--jv-r-2) 0;animation:msg-in var(--jv-dur-2) var(--jv-ease);}
+.cp-plan.warn{border-left-color:#ffb020;background:rgba(255,176,32,0.07);}
+.cp-plan .cp-plan-head{color:var(--jv-ion);font-weight:700;letter-spacing:0.04em;margin-bottom:4px;}
+.cp-plan.warn .cp-plan-head{color:#ffb020;}
+.cp-plan .cp-plan-reason{color:var(--jv-ink-4);font-style:italic;margin-bottom:5px;}
+.cp-plan .cp-plan-list{margin:0;padding-left:18px;}
+.cp-plan .cp-plan-list li{margin:2px 0;}
+.cp-log.err{border-left-color:rgba(255,77,122,0.5);color:var(--jv-pulse-soft);background:rgba(255,77,122,0.04);}
+.cpa-body{font-family:var(--fs);font-size:13px;color:var(--jv-ink-2);line-height:1.6;margin-bottom:18px;padding:12px;background:var(--jv-slate);border:1px solid var(--jv-line);border-radius:var(--jv-r-2);word-break:break-word;}
+.cpa-actions{display:flex;flex-direction:column;gap:8px;}
+.cpa-btn{width:100%;padding:11px;font-family:var(--fm);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;border-radius:var(--jv-r-2);font-weight:600;transition:all var(--jv-dur-2);border:1px solid var(--jv-line);background:transparent;color:var(--jv-ink-2);}
+.cpa-btn:hover{border-color:var(--jv-ion);color:var(--jv-ink-1);}
+.cpa-btn.primary{background:var(--jv-ion);border:none;color:#04060A;}
+.cpa-btn.primary:hover{filter:brightness(1.08);}
+.cpa-btn.warn{border-color:rgba(255,179,71,0.5);color:var(--jv-warning);}
+.cpa-btn.danger{border-color:rgba(255,77,122,0.5);color:var(--jv-pulse);}
+.cp-check{display:flex;align-items:center;gap:8px;font-family:var(--fm);font-size:11px;color:var(--jv-ink-2);margin-bottom:14px;cursor:pointer;letter-spacing:0.02em;}
+.cp-check input{accent-color:var(--jv-ion);width:15px;height:15px;cursor:pointer;}
+.cp-hint{font-family:var(--fm);font-size:9px;color:var(--jv-ink-4);line-height:1.6;letter-spacing:0.03em;margin-top:12px;text-align:center;}
+#sbtn{width:40px;height:40px;border-radius:var(--jv-r-2);border:none;cursor:pointer;background:var(--jv-slate);color:var(--jv-ink-3);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .18s;}
+#sbtn.active{background:var(--jv-ion);color:#04060A;box-shadow:0 0 16px rgba(77,230,224,0.4);}
+#composer-hint{margin-top:8px;display:flex;justify-content:space-between;font-family:var(--fm);font-size:10px;color:var(--jv-ink-3);letter-spacing:0.06em;}
+
+/* ═══ RIGHT RAIL ═══ */
+#rail{border-left:1px solid var(--jv-line);background:var(--jv-void);display:flex;flex-direction:column;overflow:hidden;}
+.rail-header{padding:14px 16px;border-bottom:1px solid var(--jv-line);display:flex;justify-content:space-between;align-items:center;}
+.rail-eyebrow{font-family:var(--fm);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--jv-ion);font-weight:500;}
+
+/* Tabs */
+.tbr{display:flex;border-bottom:1px solid var(--jv-line);}
+.tb{flex:1;padding:9px 5px;font-family:var(--fm);font-size:9px;letter-spacing:0.14em;text-align:center;color:var(--jv-ink-3);cursor:pointer;text-transform:uppercase;transition:all var(--jv-dur-2);border-right:1px solid var(--jv-line);font-weight:500;}
+.tb:last-child{border-right:none;}
+.tb:hover{color:var(--jv-ink-1);background:rgba(77,230,224,0.03);}
+.tb.on{color:var(--jv-ion);background:rgba(77,230,224,0.06);border-bottom:1px solid var(--jv-ion);}
+.tc{display:none;}.tc.on{display:block;}
+.ps{flex-shrink:0;border-bottom:1px solid var(--jv-line);}
+.ps.grow{flex:1;overflow-y:auto;overflow-x:hidden;}
+.ph{padding:8px 14px;font-family:var(--fm);font-size:10px;letter-spacing:0.18em;color:var(--jv-ion);text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--jv-line);font-weight:500;}
+
+/* Todo */
+.tlist{padding:7px 8px;display:flex;flex-direction:column;gap:4px;}
+.ti{display:flex;align-items:center;gap:7px;padding:7px 8px;border:1px solid var(--jv-line);font-family:var(--fs);font-size:13px;cursor:pointer;transition:all var(--jv-dur-2);border-radius:var(--jv-r-2);}
+.ti:hover{border-color:var(--jv-line-strong);}
+.ti.done{color:var(--jv-ink-3);text-decoration:line-through;border-color:transparent;}
+.ti.running{border-color:rgba(255,179,71,0.4);background:rgba(255,179,71,0.04);}
+.tck{width:14px;height:14px;border:1px solid var(--jv-mist);border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;color:var(--jv-ion);}
+.ti.done .tck{background:var(--jv-ion-deep);color:#04060A;border-color:var(--jv-ion-deep);}
+.ti.running .tck{border-color:var(--jv-arc);color:var(--jv-arc);}
+.ti-txt{flex:1;color:var(--jv-ink-1);}
+.tdel{color:var(--jv-pulse);font-size:13px;opacity:0;transition:opacity var(--jv-dur-2);background:none;border:none;cursor:pointer;}
+.ti:hover .tdel{opacity:1;}
+.todo-actions{padding:8px;border-top:1px solid var(--jv-line);display:flex;flex-direction:column;gap:6px;}
+.todo-btn{width:100%;padding:9px;font-family:var(--fm);font-size:9px;letter-spacing:0.06em;cursor:pointer;text-transform:uppercase;transition:all var(--jv-dur-2);font-weight:500;border:1px solid var(--jv-ion);background:transparent;color:var(--jv-ion);border-radius:var(--jv-r-2);}
+.todo-btn:hover{background:var(--jv-ion);color:#04060A;}
+.todo-btn.solved{border-color:var(--jv-success);color:var(--jv-success);}
+.todo-btn.solved:hover{background:var(--jv-success);color:#04060A;}
+.todo-btn.stop{border-color:rgba(255,77,122,0.4);color:var(--jv-pulse);}
+.todo-btn.stop:hover{background:var(--jv-pulse);color:#fff;}
+.todo-add-btn{width:100%;padding:8px;border:1px dashed var(--jv-line-ion);background:transparent;color:var(--jv-ion);font-family:var(--fs);font-size:13px;font-weight:500;cursor:pointer;transition:all var(--jv-dur-2);border-radius:var(--jv-r-2);}
+.todo-add-btn:hover{background:rgba(77,230,224,0.06);}
+.todo-error{margin:6px 8px;padding:9px 11px;border:1px solid rgba(255,179,71,0.4);background:rgba(255,179,71,0.06);font-family:var(--fs);font-size:12px;color:var(--jv-warning);line-height:1.5;border-radius:var(--jv-r-2);}
+
+/* Memory */
+.mi{padding:10px 12px;margin:4px 9px;background:var(--jv-graphite);border:1px solid var(--jv-line);border-radius:var(--jv-r-2);font-family:var(--fs);font-size:12px;display:flex;gap:8px;}
+.mi-t{flex:1;line-height:1.5;color:var(--jv-ink-1);}
+.mi-key{color:var(--jv-ion);font-family:var(--fm);font-weight:500;}
+.mi-d{background:none;border:none;cursor:pointer;color:var(--jv-pulse);font-size:12px;opacity:.3;transition:opacity var(--jv-dur-2);}
+.mi-d:hover{opacity:1;}
+
+/* Suggestions */
+.sug{padding:9px 11px;margin:4px 9px;border:1px solid var(--jv-line);font-family:var(--fs);font-size:13px;color:var(--jv-ink-2);cursor:pointer;transition:all var(--jv-dur-2);display:flex;align-items:center;gap:8px;border-radius:var(--jv-r-2);}
+.sug:hover{border-color:var(--jv-ion);color:var(--jv-ion);background:rgba(77,230,224,0.04);}
+.sug::before{content:'→';font-family:var(--fm);font-size:11px;color:var(--jv-ink-3);}
+
+.rail-bar{margin-top:10px;height:4px;background:var(--jv-slate);border-radius:2px;position:relative;overflow:hidden;}
+.rail-bar-fill{position:absolute;left:0;top:0;bottom:0;background:var(--jv-ion);border-radius:2px;box-shadow:0 0 8px rgba(77,230,224,0.5);transition:width .5s var(--jv-ease);}
+
+/* Kill overlay */
+#kill-ov{position:fixed;inset:0;background:rgba(255,0,0,.04);display:none;align-items:center;justify-content:center;z-index:600;overflow:hidden;}
+#kill-ov.on{display:flex;}
+#kill-ov.persistent{display:flex;}
+#kill-ov::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,77,122,.02) 2px,rgba(255,77,122,.02) 4px);pointer-events:none;animation:kill-scan 4s linear infinite;}
+#kill-ov::after{content:'';position:absolute;inset:0;border:2px solid rgba(255,77,122,0.5);animation:kill-border 1.5s ease-in-out infinite;pointer-events:none;}
+@keyframes kill-scan{from{transform:translateY(-100%);}to{transform:translateY(100%);}}
+@keyframes kill-border{0%,100%{border-color:rgba(255,77,122,0.3);}50%{border-color:rgba(255,77,122,0.6);box-shadow:inset 0 0 80px rgba(255,77,122,0.05);}}
+.kill-content{position:relative;text-align:center;z-index:1;}
+.km{font-family:var(--fm);font-size:24px;letter-spacing:0.18em;color:var(--jv-pulse);text-align:center;position:relative;text-transform:uppercase;font-weight:500;animation:kill-glitch 3s infinite;}
+.km::before,.km::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%;}
+.km::before{color:#ff0040;animation:kill-glitch-1 .3s infinite;clip-path:polygon(0 0,100% 0,100% 45%,0 45%);}
+.km::after{color:#ff2200;animation:kill-glitch-2 .3s infinite;clip-path:polygon(0 55%,100% 55%,100% 100%,0 100%);}
+@keyframes kill-glitch{0%,92%,100%{text-shadow:0 0 20px rgba(255,77,122,0.4);}94%{text-shadow:-2px 0 #ff0040,2px 0 rgba(77,230,224,0.3);}96%{text-shadow:2px 0 #ff0040,-2px 0 rgba(77,230,224,0.3);}}
+@keyframes kill-glitch-1{0%,100%{transform:translate(0);}25%{transform:translate(-2px,1px);}75%{transform:translate(1px,-1px);}}
+@keyframes kill-glitch-2{0%,100%{transform:translate(0);}25%{transform:translate(2px,-1px);}75%{transform:translate(-1px,1px);}}
+.ks2{font-family:var(--fm);font-size:10px;letter-spacing:0.18em;color:rgba(255,77,122,.6);margin-top:10px;text-align:center;text-transform:uppercase;}
+.ks-line{width:160px;height:1px;background:linear-gradient(90deg,transparent,var(--jv-pulse),transparent);margin:14px auto;opacity:.6;}
+
+/* Screenshot Countdown */
+#ss-countdown{position:fixed;inset:0;background:rgba(4,6,10,.85);display:none;align-items:center;justify-content:center;z-index:800;backdrop-filter:blur(20px);}
+#ss-countdown.on{display:flex;}
+.ss-num{font-family:var(--fm);font-size:96px;color:var(--jv-ion);font-weight:300;text-shadow:0 0 60px var(--jv-ion-glow);animation:ss-pulse .9s ease-out;}
+.ss-label{font-family:var(--fm);font-size:10px;letter-spacing:0.18em;color:var(--jv-ink-3);margin-top:12px;text-transform:uppercase;}
+@keyframes ss-pulse{0%{transform:scale(1.3);opacity:0;}30%{transform:scale(1);opacity:1;}100%{opacity:.2;}}
+.ss-flash{animation:ss-flash-anim .3s;}
+@keyframes ss-flash-anim{0%{background:rgba(255,255,255,.15);}100%{background:rgba(4,6,10,.85);}}
+
+/* Notification */
+#notif{position:fixed;top:16px;right:16px;padding:9px 14px;border:1px solid var(--jv-line-ion);background:rgba(10,13,20,.95);backdrop-filter:blur(12px);font-family:var(--fm);font-size:11px;color:var(--jv-ion);letter-spacing:0.02em;z-index:700;transform:translateX(120%);transition:transform .25s var(--jv-ease);border-radius:var(--jv-r-2);}
+#notif.on{transform:translateX(0);}
+
+@keyframes jv-dot{0%,100%{opacity:1;}50%{opacity:.3;}}
+</style>
+</head>
+<body>
+
+<!-- BOOT -->
+<div id="boot">
+  <div style="text-align:center;margin-bottom:8px;">
+    <svg width="48" height="48" viewBox="0 0 64 64" fill="none" style="margin-bottom:12px">
+      <circle cx="32" cy="32" r="30" stroke="rgba(77,230,224,0.3)" stroke-width="1"/>
+      <circle cx="32" cy="32" r="22" stroke="rgba(77,230,224,0.4)" stroke-width="1.5"/>
+      <circle cx="32" cy="32" r="14" stroke="#4DE6E0" stroke-width="2"/>
+      <circle cx="32" cy="32" r="6" fill="#4DE6E0"/>
+      <circle cx="32" cy="32" r="3" fill="#F4F6FB"/>
+      <path d="M2 14 L2 2 L14 2" stroke="rgba(77,230,224,0.5)" stroke-width="1.25"/>
+      <path d="M50 2 L62 2 L62 14" stroke="rgba(77,230,224,0.5)" stroke-width="1.25"/>
+      <path d="M62 50 L62 62 L50 62" stroke="rgba(77,230,224,0.5)" stroke-width="1.25"/>
+      <path d="M14 62 L2 62 L2 50" stroke="rgba(77,230,224,0.5)" stroke-width="1.25"/>
+    </svg>
+    <div style="font-family:var(--fm);font-size:18px;letter-spacing:0.18em;color:var(--jv-ink-1);font-weight:500">JARVIS</div>
+  </div>
+  <div class="boot-sub">JUST A RATHER VERY INTELLIGENT SYSTEM · v2.8</div>
+  <div class="bpw">
+    <div class="bpl"><span id="bstep">SYSTEM INITIALISIERUNG</span><span id="bpct">0%</span></div>
+    <div class="bpb"><div class="bpf" id="bfill"></div></div>
+  </div>
+  <div class="blog" id="blog"></div>
+</div>
+
+<!-- KILL OVERLAY -->
+<div id="kill-ov"><div class="kill-content"><div class="km" data-text="KILL-SWITCH AKTIVIERT">KILL-SWITCH AKTIVIERT</div><div class="ks-line"></div><div class="ks2">ALLE SYSTEME GESTOPPT</div><div class="ks-line" style="width:100px;margin:12px auto;"></div><div class="ks2" style="font-size:14px;opacity:1;color:rgba(255,77,122,.95);letter-spacing:0.12em;margin-top:0">STRG+ALT+J ZUM DEAKTIVIEREN</div><button onclick="toggleKill()" style="margin-top:20px;padding:11px 36px;background:transparent;border:1.5px solid rgba(255,77,122,0.7);color:rgba(255,77,122,0.95);font-family:var(--fm);font-size:12px;letter-spacing:0.18em;text-transform:uppercase;cursor:pointer;border-radius:4px;transition:all 0.2s;display:block;margin-left:auto;margin-right:auto" onmouseover="this.style.background='rgba(255,77,122,0.12)';this.style.borderColor='rgba(255,77,122,0.95)'" onmouseout="this.style.background='transparent';this.style.borderColor='rgba(255,77,122,0.7)'">KILL-SWITCH DEAKTIVIEREN</button></div></div>
+
+<!-- SETTINGS MODAL — Full-screen categorized -->
+<div id="settings-modal" class="modal">
+  <div class="st-shell">
+    <!-- Top bar -->
+    <div class="st-bar">
+      <span class="st-bar-dot"></span>
+      <span class="st-bar-label">SYS · KONFIG</span>
+      <div class="st-bar-line"></div>
+      <span class="st-bar-email">SEBI.ZUPANC@GMAIL.COM</span>
+      <button class="st-bar-close" onclick="closeSettings()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <!-- Body -->
+    <div class="st-body">
+      <!-- Left nav -->
+      <nav class="st-nav">
+        <div class="st-nav-head">
+          <div class="st-nav-menu">MENU</div>
+          <div class="st-nav-title">Einstellungen</div>
+        </div>
+        <div class="st-nav-items">
+          <div class="st-nav-item active" data-pane="general" onclick="switchSettingsPane(this)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Allgemein
+          </div>
+          <div class="st-nav-item" data-pane="account" onclick="switchSettingsPane(this)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+            Konto
+          </div>
+          <div class="st-nav-item" data-pane="privacy" onclick="switchSettingsPane(this)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Datenschutz
+          </div>
+          <div class="st-nav-item" data-pane="usage" onclick="switchSettingsPane(this)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
+            Nutzung
+          </div>
+          <div class="st-nav-item" data-pane="skills" onclick="switchSettingsPane(this)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 10 6-10 6L2 8z"/><path d="m2 17 10 6 10-6M2 12l10 6 10-6"/></svg>
+            Fähigkeiten
+          </div>
+          <div class="st-nav-item" data-pane="connect" onclick="switchSettingsPane(this)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v3a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8z"/></svg>
+            Konnektoren
+          </div>
+          <div class="st-nav-item" data-pane="activation" onclick="switchSettingsPane(this)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></svg>
+            Aktivierung
+          </div>
+          <div class="st-nav-item" data-pane="code" onclick="switchSettingsPane(this)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+            Jarvis Code
+          </div>
+          <div class="st-nav-item" data-pane="browser" onclick="switchSettingsPane(this)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/></svg>
+            Jarvis im Browser<span class="st-nav-beta">Beta</span>
+          </div>
+        </div>
+        <div class="st-nav-footer">
+          <div class="sb-avatar">S</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;color:var(--jv-ink-1)">Sebastian</div>
+            <div style="font-family:var(--fm);font-size:9px;color:var(--jv-ion);letter-spacing:0.14em;text-transform:uppercase">● OPERATOR · LOKAL</div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Content area -->
+      <div class="st-content">
+
+        <!-- ALLGEMEIN -->
+        <div class="st-pane active" id="st-general">
+          <div style="margin-bottom:28px">
+            <div class="st-pane-eyebrow">ALLGEMEIN</div>
+            <div class="st-pane-title">Allgemein</div>
+            <div class="st-pane-sub">Sprache der App, Erscheinungsbild, Hinweise.</div>
+          </div>
+          <div class="st-row top">
+            <div><div class="st-row-label">Sprache</div><div class="st-row-hint">Sprache der Antworten und Sprachausgabe.</div></div>
+            <div class="st-row-val">
+              <div class="chip on" data-f="sprache" data-v="de-DE">Deutsch</div>
+              <div class="chip" data-f="sprache" data-v="en-US">English</div>
+              <div class="chip" data-f="sprache" data-v="fr-FR">Francais</div>
+              <div class="chip" data-f="sprache" data-v="es-ES">Espanol</div>
+              <div class="chip" data-f="sprache" data-v="it-IT">Italiano</div>
+              <div class="chip" data-f="sprache" data-v="tr-TR">Turkce</div>
+            </div>
+          </div>
+          <div class="st-row">
+            <div><div class="st-row-label">Heller Modus</div><div class="st-row-hint">Helle Oberfläche statt dunkel.</div></div>
+            <div class="st-row-val"><div class="toggle" id="tgl-light" onclick="toggleLightMode()"></div></div>
+          </div>
+          <div class="st-row">
+            <div><div class="st-row-label">Vorschläge anzeigen</div><div class="st-row-hint">Proaktive Folge-Aktionen unter der letzten Antwort.</div></div>
+            <div class="st-row-val"><div class="toggle on" id="tgl-sug" onclick="toggleSwitch('tgl-sug')"></div></div>
+          </div>
+          <div class="st-savebar">
+            <span class="st-savebar-dot"></span>
+            <span class="st-savebar-text">Nicht gespeicherte Änderungen.</span>
+            <button class="st-btn-ghost" onclick="closeSettings()">Verwerfen</button>
+            <button class="st-btn-primary" id="sm-save-btn">Speichern</button>
+          </div>
+        </div>
+
+        <!-- KONTO -->
+        <div class="st-pane" id="st-account">
+          <div style="margin-bottom:28px">
+            <div class="st-pane-eyebrow">KONTO</div>
+            <div class="st-pane-title">Konto</div>
+            <div class="st-pane-sub">Identität und wie Jarvis mit dir spricht.</div>
+          </div>
+          <div class="st-row">
+            <div><div class="st-row-label">Vollständiger Name</div></div>
+            <div class="st-row-val"><input class="st-field" id="s-name" type="text" value="Sebastian"></div>
+          </div>
+          <div class="st-row">
+            <div><div class="st-row-label">Wohnort</div><div class="st-row-hint">Standort für Wetter, Briefing und Zeitzonen.</div></div>
+            <div class="st-row-val"><input class="st-field" id="s-loc" type="text" placeholder="Wien, Österreich" value="Wien, Österreich"></div>
+          </div>
+          <div class="st-section">ANREDE &amp; STIL</div>
+          <div class="st-row top">
+            <div><div class="st-row-label">Anrede</div><div class="st-row-hint">Wie Jarvis dich anspricht.</div></div>
+            <div class="st-row-val" id="anrede-row">
+              <div class="chip on" data-f="anrede" data-v="Sir">Sir</div>
+              <div class="chip" data-f="anrede" data-v="Chef">Chef</div>
+              <div class="chip" data-f="anrede" data-v="Bro">Bro</div>
+              <div class="chip" data-f="anrede" data-v="Ma'am">Ma'am</div>
+              <div class="chip" data-f="anrede" data-v="">Kein</div>
+              <div class="chip-add" onclick="openCustomAnrede()" title="Eigene Anrede">+</div>
+            </div>
+          </div>
+          <div class="st-row top">
+            <div><div class="st-row-label">Redeart</div><div class="st-row-hint">Sprachstil der Antworten.</div></div>
+            <div class="st-row-val">
+              <div class="chip on" data-f="redeart" data-v="professionell">Professionell</div>
+              <div class="chip" data-f="redeart" data-v="normal">Normal</div>
+              <div class="chip" data-f="redeart" data-v="jugendlich">Jugendlich</div>
+            </div>
+          </div>
+          <div class="st-savebar">
+            <span class="st-savebar-dot"></span>
+            <span class="st-savebar-text">Nicht gespeicherte Änderungen.</span>
+            <button class="st-btn-ghost" onclick="closeSettings()">Verwerfen</button>
+            <button class="st-btn-primary" onclick="document.getElementById('sm-save-btn').click()">Speichern</button>
+          </div>
+        </div>
+
+        <!-- FÄHIGKEITEN -->
+        <div class="st-pane" id="st-skills">
+          <div style="margin-bottom:28px">
+            <div class="st-pane-eyebrow">FÄHIGKEITEN</div>
+            <div class="st-pane-title">Fähigkeiten</div>
+            <div class="st-pane-sub">KI-Anbieter, Modelle und Sprach-Engine.</div>
+          </div>
+          <div class="st-section" style="margin-top:0">KI-ANBIETER</div>
+          <div class="api-grid" style="margin-bottom:18px">
+            <div class="ap on" data-p="anthropic"><span class="ap-name">Anthropic</span><div class="ap-sub">Claude</div></div>
+            <div class="ap" data-p="openai"><span class="ap-name">OpenAI</span><div class="ap-sub">ChatGPT</div></div>
+            <div class="ap" data-p="gemini"><span class="ap-name">Google</span><div class="ap-sub">Gemini</div></div>
+            <div class="ap" data-p="nvidia"><span class="ap-name">NVIDIA</span><div class="ap-sub">NIM</div></div>
+            <div class="ap" data-p="mistral"><span class="ap-name">Mistral</span><div class="ap-sub">AI</div></div>
+            <div class="ap" data-p="local"><span class="ap-name">Lokal</span><div class="ap-sub">Ollama</div></div>
+          </div>
+          <div class="st-row">
+            <div><div class="st-row-label">API-Key</div><div class="st-row-hint">Wird verschlüsselt im System-Schlüsselbund gespeichert.</div></div>
+            <div class="st-row-val" style="flex-direction:column;align-items:flex-end;gap:6px">
+              <div class="af show" id="af-anthropic"><input class="st-field mono" id="k-anthropic" type="password" placeholder="sk-ant-api03-..." style="width:320px"></div>
+              <div class="af" id="af-openai"><input class="st-field mono" id="k-openai" type="password" placeholder="sk-..." style="width:320px"></div>
+              <div class="af" id="af-gemini"><input class="st-field mono" id="k-gemini" type="password" placeholder="AIza..." style="width:320px"></div>
+              <div class="af" id="af-nvidia">
+                <input class="st-field mono" id="k-nvidia" type="password" placeholder="nvapi-..." style="width:320px;margin-bottom:6px">
+                <input class="st-field mono" id="m-nvidia" type="text" placeholder="Modell: meta/llama-3.1-70b-instruct" style="width:320px">
+              </div>
+              <div class="af" id="af-mistral"><input class="st-field mono" id="k-mistral" type="password" placeholder="API-Key" style="width:320px"></div>
+              <div class="af" id="af-local">
+                <input class="st-field mono" id="u-local" type="text" placeholder="http://localhost:11434" value="http://localhost:11434" style="width:320px;margin-bottom:6px">
+                <input class="st-field mono" id="m-local" type="text" placeholder="Modell: llama3, mistral ..." style="width:320px">
+              </div>
+            </div>
+          </div>
+          <div class="st-row">
+            <div><div class="st-row-label">Status</div></div>
+            <div class="st-row-val">
+              <div class="key-status key-bad" id="sm-key-status" style="margin:0">Kein API-Key gesetzt</div>
+            </div>
+          </div>
+          <div class="st-section">SPRACH-ENGINE</div>
+          <div class="st-row">
+            <div><div class="st-row-label">Sprachausgabe (TTS)</div><div class="st-row-hint">Antworten werden vorgelesen.</div></div>
+            <div class="st-row-val"><div class="toggle on" id="tgl-tts" onclick="toggleSwitch('tgl-tts')"></div></div>
+          </div>
+          <div class="st-row">
+            <div><div class="st-row-label">TTS-Stimme</div><div class="st-row-hint">Wird gefiltert nach gewählter Sprache.</div></div>
+            <div class="st-row-val">
+              <select class="st-select" id="voice-select"><option value="">Standard</option></select>
+            </div>
+          </div>
+          <div class="st-savebar">
+            <span class="st-savebar-dot"></span>
+            <span class="st-savebar-text">Nicht gespeicherte Änderungen.</span>
+            <button class="st-btn-ghost" onclick="closeSettings()">Verwerfen</button>
+            <button class="st-btn-primary" onclick="document.getElementById('sm-save-btn').click()">Speichern</button>
+          </div>
+        </div>
+
+        <!-- AKTIVIERUNG -->
+        <div class="st-pane" id="st-activation">
+          <div style="margin-bottom:28px">
+            <div class="st-pane-eyebrow">AKTIVIERUNG</div>
+            <div class="st-pane-title">Aktivierung</div>
+            <div class="st-pane-sub">Wake Word, Klatsch-Erkennung und Mikrofon-Trigger.</div>
+          </div>
+          <div class="st-row">
+            <div><div class="st-row-label">Wake Word</div><div class="st-row-hint">"Hey Jarvis" zur Aktivierung.</div></div>
+            <div class="st-row-val"><div class="toggle" id="tgl-wake" onclick="toggleSwitch('tgl-wake')"></div></div>
+          </div>
+          <div class="st-row">
+            <div><div class="st-row-label">Klatsch-Aktivierung</div><div class="st-row-hint">2× Klatschen als Trigger.</div></div>
+            <div class="st-row-val"><div class="toggle" id="tgl-clap" onclick="toggleSwitch('tgl-clap')"></div></div>
+          </div>
+          <div id="clap-settings" style="display:none;padding:16px 0;border-bottom:1px solid var(--jv-line);">
+            <div class="st-row" style="border:none;padding:0">
+              <div><div class="st-row-label">Empfindlichkeit</div><div class="st-row-hint">Threshold für Klatsch-Erkennung.</div></div>
+              <div class="st-row-val" style="gap:12px">
+                <input type="range" id="clap-slider" min="0.05" max="0.9" step="0.05" value="0.3" style="width:200px;accent-color:var(--jv-ion);">
+                <span id="clap-val" style="font-family:var(--fm);font-size:12px;color:var(--jv-ion);min-width:36px;text-align:right">0.30</span>
+              </div>
+            </div>
+            <div style="margin-top:12px;display:flex;justify-content:flex-end">
+              <button class="st-btn-ghost" onclick="calibrateClap()">Kalibrieren</button>
+            </div>
+          </div>
+          <div class="st-savebar">
+            <span class="st-savebar-dot"></span>
+            <span class="st-savebar-text">Nicht gespeicherte Änderungen.</span>
+            <button class="st-btn-ghost" onclick="closeSettings()">Verwerfen</button>
+            <button class="st-btn-primary" onclick="document.getElementById('sm-save-btn').click()">Speichern</button>
+          </div>
+        </div>
+
+        <!-- DATENSCHUTZ -->
+        <div class="st-pane" id="st-privacy">
+          <div style="margin-bottom:28px">
+            <div class="st-pane-eyebrow">DATENSCHUTZ</div>
+            <div class="st-pane-title">Datenschutz</div>
+            <div class="st-pane-sub">Alle Daten bleiben lokal auf diesem Gerät. Du entscheidest, was Jarvis behält.</div>
+          </div>
+          <div class="st-section" style="margin-top:0">VERARBEITUNG</div>
+          <div class="st-row">
+            <div><div class="st-row-label">Konversationen merken</div><div class="st-row-hint">Verlauf für Kontext und Folgefragen lokal speichern.</div></div>
+            <div class="st-row-val"><div class="toggle on" id="tgl-mem-history" onclick="toggleSwitch('tgl-mem-history')"></div></div>
+          </div>
+          <div class="st-row">
+            <div><div class="st-row-label">Automatisches Gedächtnis</div><div class="st-row-hint">Jarvis darf wichtige Fakten selbst als Erinnerung speichern.</div></div>
+            <div class="st-row-val"><div class="toggle on" id="tgl-mem-auto" onclick="toggleSwitch('tgl-mem-auto')"></div></div>
+          </div>
+          <div class="st-row">
+            <div><div class="st-row-label">Bildschirm-Vision</div><div class="st-row-hint">Screenshots an die Vision-API senden (nur bei Bedarf).</div></div>
+            <div class="st-row-val"><div class="toggle on" id="tgl-vision-allow" onclick="toggleSwitch('tgl-vision-allow')"></div></div>
+          </div>
+          <div class="st-row">
+            <div><div class="st-row-label">Telemetrie</div><div class="st-row-hint">Anonyme Fehlerberichte zur Diagnose.</div></div>
+            <div class="st-row-val"><div class="toggle" id="tgl-telemetry" onclick="toggleSwitch('tgl-telemetry')"></div></div>
+          </div>
+
+          <div class="st-section">SPEICHERORT</div>
+          <div class="st-row">
+            <div><div class="st-row-label">Verzeichnis</div><div class="st-row-hint">Alle Daten sind Fernet-verschlüsselt.</div></div>
+            <div class="st-row-val"><code class="st-field mono" style="background:var(--jv-void);padding:9px 12px;display:inline-block;width:auto;font-size:11px" id="s-mem-path">~/.jarvis/</code></div>
+          </div>
+          <div class="st-row">
+            <div><div class="st-row-label">Gespeicherte Einträge</div></div>
+            <div class="st-row-val">
+              <span class="st-conn-status on" id="s-stat-mem">● 0 Erinnerungen</span>
+              <span class="st-conn-status" id="s-stat-hist" style="margin-left:8px">● 0 Verlauf</span>
+            </div>
+          </div>
+
+          <div class="st-danger">
+            <div class="st-danger-title">GEFAHRENZONE</div>
+            <div class="st-danger-text">Alle Erinnerungen, Verlauf und Routinen löschen. Dies kann nicht rückgängig gemacht werden.</div>
+            <button class="st-btn-danger" onclick="confirmWipe()">Alle Daten löschen</button>
+          </div>
+
+          <div class="st-savebar">
+            <span class="st-savebar-dot"></span>
+            <span class="st-savebar-text">Nicht gespeicherte Änderungen.</span>
+            <button class="st-btn-ghost" onclick="closeSettings()">Verwerfen</button>
+            <button class="st-btn-primary" onclick="document.getElementById('sm-save-btn').click()">Speichern</button>
+          </div>
+        </div>
+
+        <!-- NUTZUNG -->
+        <div class="st-pane" id="st-usage">
+          <div style="margin-bottom:28px">
+            <div class="st-pane-eyebrow">NUTZUNG</div>
+            <div class="st-pane-title">Nutzung</div>
+            <div class="st-pane-sub">Sitzungsmetriken und Verbrauch über die letzten 7 Tage.</div>
+          </div>
+
+          <div class="st-stat-grid">
+            <div class="st-stat">
+              <div class="st-stat-label">TOKENS HEUTE</div>
+              <div class="st-stat-val ion" id="u-tok-today">0</div>
+              <div class="st-stat-sub" id="u-tok-delta">Δ aus Sitzung</div>
+            </div>
+            <div class="st-stat">
+              <div class="st-stat-label">NACHRICHTEN</div>
+              <div class="st-stat-val" id="u-msg-count">0</div>
+              <div class="st-stat-sub">letzte 7 Tage</div>
+            </div>
+            <div class="st-stat">
+              <div class="st-stat-label">ERINNERUNGEN</div>
+              <div class="st-stat-val" id="u-mem-count">0</div>
+              <div class="st-stat-sub">aktive Einträge</div>
+            </div>
+          </div>
+
+          <div class="st-section">AKTIVITÄT — LETZTE 7 TAGE</div>
+          <div class="st-chart" id="u-chart"></div>
+
+          <div class="st-section">DETAILS</div>
+          <div class="st-row">
+            <div><div class="st-row-label">Routinen aktiv</div></div>
+            <div class="st-row-val"><span class="st-conn-status on" id="u-rout-count">● 0</span></div>
+          </div>
+          <div class="st-row">
+            <div><div class="st-row-label">Aktueller KI-Anbieter</div></div>
+            <div class="st-row-val"><span class="api-badge-mini" id="u-provider">–</span></div>
+          </div>
+
+          <div class="st-savebar st-savebar-static" style="margin-top:24px">
+            <span class="st-savebar-dot" style="background:var(--jv-success);box-shadow:0 0 8px var(--jv-success)"></span>
+            <span class="st-savebar-text">Live aus dem Backend.</span>
+            <button class="st-btn-ghost" onclick="refreshUsage()">Aktualisieren</button>
+          </div>
+        </div>
+
+        <!-- KONNEKTOREN -->
+        <div class="st-pane" id="st-connect">
+          <div style="margin-bottom:28px">
+            <div class="st-pane-eyebrow">KONNEKTOREN</div>
+            <div class="st-pane-title">Konnektoren</div>
+            <div class="st-pane-sub">Verbinde Jarvis mit deinen Diensten — Kalender, Tasks, E-Mail, Smart Home.</div>
+          </div>
+
+          <div class="st-section" style="margin-top:0">PRODUKTIVITÄT</div>
+          <div class="st-conn" data-conn="calendar" id="conn-calendar">
+            <div class="st-conn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+            <div class="st-conn-body">
+              <div class="st-conn-name">Google Calendar</div>
+              <div class="st-conn-hint">Termine lesen und anlegen per Sprache.</div>
+            </div>
+            <span class="st-conn-status off" id="conn-status-calendar">● Nicht verbunden</span>
+            <button class="st-btn-ghost" onclick="expandConn('calendar')">Verbinden</button>
+          </div>
+          <div class="st-conn-form" id="conn-form-calendar">
+            <input class="st-field mono" id="conn-calendar-creds" type="password" placeholder="OAuth-Token oder credentials.json Pfad">
+            <div class="st-conn-form-row">
+              <button class="st-btn-primary" onclick="saveConn('calendar')">Speichern</button>
+              <button class="st-btn-ghost" onclick="testConn('calendar')">Verbindung testen</button>
+              <button class="st-btn-ghost" onclick="collapseConn('calendar')" style="margin-left:auto">Abbrechen</button>
+            </div>
+          </div>
+
+          <div class="st-conn" data-conn="todoist" id="conn-todoist">
+            <div class="st-conn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+            <div class="st-conn-body">
+              <div class="st-conn-name">Todoist</div>
+              <div class="st-conn-hint">Aufgaben lesen, anlegen und abhaken.</div>
+            </div>
+            <span class="st-conn-status off" id="conn-status-todoist">● Nicht verbunden</span>
+            <button class="st-btn-ghost" onclick="expandConn('todoist')">Verbinden</button>
+          </div>
+          <div class="st-conn-form" id="conn-form-todoist">
+            <input class="st-field mono" id="conn-todoist-key" type="password" placeholder="Todoist API-Token">
+            <div class="st-conn-form-row">
+              <button class="st-btn-primary" onclick="saveConn('todoist')">Speichern</button>
+              <button class="st-btn-ghost" onclick="testConn('todoist')">Verbindung testen</button>
+              <button class="st-btn-ghost" onclick="collapseConn('todoist')" style="margin-left:auto">Abbrechen</button>
+            </div>
+          </div>
+
+          <div class="st-conn" data-conn="notion" id="conn-notion">
+            <div class="st-conn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h12l4 4v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><path d="M14 4v6h6"/></svg></div>
+            <div class="st-conn-body">
+              <div class="st-conn-name">Notion</div>
+              <div class="st-conn-hint">Datenbank-Tasks lesen und anlegen.</div>
+            </div>
+            <span class="st-conn-status off" id="conn-status-notion">● Nicht verbunden</span>
+            <button class="st-btn-ghost" onclick="expandConn('notion')">Verbinden</button>
+          </div>
+          <div class="st-conn-form" id="conn-form-notion">
+            <input class="st-field mono" id="conn-notion-key" type="password" placeholder="Notion Integration-Token" style="margin-bottom:8px">
+            <input class="st-field mono" id="conn-notion-db" type="text" placeholder="Datenbank-ID">
+            <div class="st-conn-form-row">
+              <button class="st-btn-primary" onclick="saveConn('notion')">Speichern</button>
+              <button class="st-btn-ghost" onclick="testConn('notion')">Verbindung testen</button>
+              <button class="st-btn-ghost" onclick="collapseConn('notion')" style="margin-left:auto">Abbrechen</button>
+            </div>
+          </div>
+
+          <div class="st-section">KOMMUNIKATION</div>
+          <div class="st-conn" data-conn="email" id="conn-email">
+            <div class="st-conn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+            <div class="st-conn-body">
+              <div class="st-conn-name">E-Mail (IMAP/SMTP)</div>
+              <div class="st-conn-hint">Posteingang lesen, Antworten entwerfen.</div>
+            </div>
+            <span class="st-conn-status off" id="conn-status-email">● Nicht verbunden</span>
+            <button class="st-btn-ghost" onclick="expandConn('email')">Verbinden</button>
+          </div>
+          <div class="st-conn-form" id="conn-form-email">
+            <input class="st-field mono" id="conn-email-addr" type="text" placeholder="E-Mail-Adresse" style="margin-bottom:8px">
+            <input class="st-field mono" id="conn-email-pass" type="password" placeholder="App-Passwort" style="margin-bottom:8px">
+            <input class="st-field mono" id="conn-email-imap" type="text" placeholder="IMAP-Server (z.B. imap.gmail.com)" style="margin-bottom:8px">
+            <input class="st-field mono" id="conn-email-smtp" type="text" placeholder="SMTP-Server (z.B. smtp.gmail.com)">
+            <div class="st-conn-form-row">
+              <button class="st-btn-primary" onclick="saveConn('email')">Speichern</button>
+              <button class="st-btn-ghost" onclick="testConn('email')">Verbindung testen</button>
+              <button class="st-btn-ghost" onclick="collapseConn('email')" style="margin-left:auto">Abbrechen</button>
+            </div>
+          </div>
+
+          <div class="st-section">UMGEBUNG</div>
+          <div class="st-conn" data-conn="homeassistant" id="conn-homeassistant">
+            <div class="st-conn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+            <div class="st-conn-body">
+              <div class="st-conn-name">Home Assistant</div>
+              <div class="st-conn-hint">Lichter, Klima und Medien steuern.</div>
+            </div>
+            <span class="st-conn-status off" id="conn-status-homeassistant">● Nicht verbunden</span>
+            <button class="st-btn-ghost" onclick="expandConn('homeassistant')">Verbinden</button>
+          </div>
+          <div class="st-conn-form" id="conn-form-homeassistant">
+            <input class="st-field mono" id="conn-ha-url" type="text" placeholder="http://homeassistant.local:8123" style="margin-bottom:8px">
+            <input class="st-field mono" id="conn-ha-token" type="password" placeholder="Long-Lived Access Token">
+            <div class="st-conn-form-row">
+              <button class="st-btn-primary" onclick="saveConn('homeassistant')">Speichern</button>
+              <button class="st-btn-ghost" onclick="testConn('homeassistant')">Verbindung testen</button>
+              <button class="st-btn-ghost" onclick="collapseConn('homeassistant')" style="margin-left:auto">Abbrechen</button>
+            </div>
+          </div>
+
+          <div class="st-section">INHALTE</div>
+          <div class="st-conn" data-conn="youtube" id="conn-youtube">
+            <div class="st-conn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>
+            <div class="st-conn-body">
+              <div class="st-conn-name">YouTube-Zusammenfassungen</div>
+              <div class="st-conn-hint">Transkripte abrufen — kein API-Key nötig.</div>
+            </div>
+            <span class="st-conn-status on" id="conn-status-youtube">● Verfügbar</span>
+            <div class="toggle on" id="tgl-conn-youtube" onclick="toggleSwitch('tgl-conn-youtube')"></div>
+          </div>
+
+          <div class="st-conn" data-conn="research" id="conn-research">
+            <div class="st-conn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+            <div class="st-conn-body">
+              <div class="st-conn-name">Research Briefing</div>
+              <div class="st-conn-hint">Tägliche Artikel, Paper und News zu deinen Themen.</div>
+            </div>
+            <span class="st-conn-status off" id="conn-status-research">● Aus</span>
+            <button class="st-btn-ghost" onclick="expandConn('research')">Konfigurieren</button>
+          </div>
+          <div class="st-conn-form" id="conn-form-research">
+            <input class="st-field" id="conn-research-topics" type="text" placeholder="Themen, kommagetrennt — z.B. KI, Startups, Python">
+            <div class="st-conn-form-row">
+              <button class="st-btn-primary" onclick="saveConn('research')">Speichern</button>
+              <button class="st-btn-ghost" onclick="collapseConn('research')" style="margin-left:auto">Abbrechen</button>
+            </div>
+          </div>
+
+          <div class="st-savebar st-savebar-static">
+            <span class="st-savebar-dot" style="background:var(--jv-success);box-shadow:0 0 8px var(--jv-success)"></span>
+            <span class="st-savebar-text">Änderungen werden pro Konnektor sofort gespeichert.</span>
+            <button class="st-btn-ghost" onclick="refreshConnectors()">Aktualisieren</button>
+          </div>
+        </div>
+
+        <!-- JARVIS CODE -->
+        <div class="st-pane" id="st-code">
+          <div style="margin-bottom:28px">
+            <div class="st-pane-eyebrow">JARVIS CODE</div>
+            <div class="st-pane-title">Jarvis Code</div>
+            <div class="st-pane-sub">Code-Boxen werden vor der Anzeige automatisch geprüft und formatiert.</div>
+          </div>
+
+          <div class="st-section" style="margin-top:0">CODE-VERARBEITUNG</div>
+          <div class="st-row">
+            <div><div class="st-row-label">Syntax-Check</div><div class="st-row-hint">Python via py_compile, JavaScript via node --check.</div></div>
+            <div class="st-row-val"><div class="toggle on" id="tgl-code-check" onclick="toggleSwitch('tgl-code-check')"></div></div>
+          </div>
+          <div class="st-row">
+            <div><div class="st-row-label">Auto-Format</div><div class="st-row-hint">Python via black, JS/HTML via prettier (sofern installiert).</div></div>
+            <div class="st-row-val"><div class="toggle on" id="tgl-code-format" onclick="toggleSwitch('tgl-code-format')"></div></div>
+          </div>
+          <div class="st-row">
+            <div><div class="st-row-label">Korrektur-Versuche</div><div class="st-row-hint">Wie oft Jarvis bei Syntaxfehlern erneut versucht.</div></div>
+            <div class="st-row-val">
+              <select class="st-select" id="s-code-retries" style="width:140px">
+                <option value="1">1×</option>
+                <option value="2">2×</option>
+                <option value="3" selected>3×</option>
+                <option value="5">5×</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="st-section">TOOLS</div>
+          <div class="st-row">
+            <div><div class="st-row-label">Verfügbar im System</div><div class="st-row-hint">Wird beim Speichern erkannt.</div></div>
+            <div class="st-row-val" id="s-code-tools" style="gap:6px">
+              <span class="st-conn-status off">● black</span>
+              <span class="st-conn-status off">● prettier</span>
+              <span class="st-conn-status off">● node</span>
+            </div>
+          </div>
+
+          <div class="st-savebar">
+            <span class="st-savebar-dot"></span>
+            <span class="st-savebar-text">Nicht gespeicherte Änderungen.</span>
+            <button class="st-btn-ghost" onclick="closeSettings()">Verwerfen</button>
+            <button class="st-btn-primary" onclick="document.getElementById('sm-save-btn').click()">Speichern</button>
+          </div>
+        </div>
+
+        <!-- JARVIS IM BROWSER (BETA) -->
+        <div class="st-pane" id="st-browser">
+          <div style="margin-bottom:28px">
+            <div class="st-pane-eyebrow">JARVIS IM BROWSER · BETA</div>
+            <div class="st-pane-title">Jarvis im Browser</div>
+            <div class="st-pane-sub">Browser-Erweiterung — derzeit in geschlossener Beta.</div>
+          </div>
+
+          <div class="st-conn" style="border-color:rgba(255,179,71,0.35);background:rgba(255,179,71,0.04)">
+            <div class="st-conn-icon" style="color:var(--jv-arc);border-color:rgba(255,179,71,0.4);background:rgba(255,179,71,0.06)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v3M12 16h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+            </div>
+            <div class="st-conn-body">
+              <div class="st-conn-name" style="color:var(--jv-arc)">Geschlossene Beta</div>
+              <div class="st-conn-hint">Erweiterung noch nicht verfügbar — Wartelist trägt sich beim Backend ein.</div>
+            </div>
+          </div>
+
+          <div class="st-section">FUNKTIONEN</div>
+          <div class="st-row">
+            <div><div class="st-row-label">Side-Panel im Browser</div><div class="st-row-hint">Jarvis als persistente Spalte neben aktiver Seite.</div></div>
+            <div class="st-row-val"><span class="st-conn-status warn">● Geplant</span></div>
+          </div>
+          <div class="st-row">
+            <div><div class="st-row-label">Seiteninhalt lesen</div><div class="st-row-hint">DOM und sichtbarer Text als Kontext.</div></div>
+            <div class="st-row-val"><span class="st-conn-status warn">● Geplant</span></div>
+          </div>
+          <div class="st-row">
+            <div><div class="st-row-label">Sprach-Trigger im Tab</div><div class="st-row-hint">Mikrofon-Hotkey aus jedem Browser-Tab.</div></div>
+            <div class="st-row-val"><span class="st-conn-status warn">● Geplant</span></div>
+          </div>
+
+          <div class="st-section">WARTELIST</div>
+          <div class="st-row">
+            <div><div class="st-row-label">Beta-Code anfordern</div><div class="st-row-hint">Wir benachrichtigen dich, sobald die Erweiterung ausgerollt wird.</div></div>
+            <div class="st-row-val"><button class="st-btn-ghost" onclick="notify('Wartelist eingetragen')">Anmelden</button></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WIPE CONFIRM MODAL -->
+<div id="wipe-modal" class="modal">
+  <div class="sm-panel" style="width:420px;border-top-color:var(--jv-pulse);border-color:rgba(255,77,122,0.5)">
+    <div class="sm-title" style="color:var(--jv-pulse);font-size:13px">ALLE DATEN LÖSCHEN</div>
+    <div class="sm-sub">Dies kann nicht rückgängig gemacht werden.</div>
+    <div class="sm-sect">
+      <div style="font-size:13px;line-height:1.5;color:var(--jv-ink-2);margin-bottom:12px">
+        Folgende Daten werden permanent entfernt:
+        <ul style="margin:8px 0 0 18px;font-size:12px;color:var(--jv-ink-3);line-height:1.7">
+          <li>Alle Erinnerungen (KV-Speicher)</li>
+          <li>Konversations-Verlauf</li>
+          <li>Routinen und Projekte</li>
+        </ul>
+      </div>
+      <label style="font-family:var(--fm);font-size:10px;letter-spacing:0.14em;color:var(--jv-pulse);text-transform:uppercase">Tippe LÖSCHEN zum Bestätigen</label>
+      <input class="sm-input" id="wipe-confirm" type="text" placeholder="LÖSCHEN" autocomplete="off" style="margin-top:8px">
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="st-btn-ghost" onclick="closeWipe()" style="flex:1">Abbrechen</button>
+      <button class="st-btn-danger" onclick="executeWipe()" style="flex:1">Löschen</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETUP MODAL -->
+<div id="setup-modal" class="modal">
+  <div class="sm-panel">
+    <div class="sm-title">JARVIS</div>
+    <div class="sm-sub">Erstkonfiguration</div>
+    <div class="sm-sect">
+      <label class="sm-label">Anrede</label>
+      <div class="sm-row">
+        <div class="chip on" data-f="anrede" data-v="Sir">Sir</div>
+        <div class="chip" data-f="anrede" data-v="Chef">Chef</div>
+        <div class="chip" data-f="anrede" data-v="Bro">Bro</div>
+        <div class="chip" data-f="anrede" data-v="Ma'am">Ma'am</div>
+        <div class="chip" data-f="anrede" data-v="">Kein</div>
+      </div>
+    </div>
+    <div class="sm-sect">
+      <label class="sm-label">Redeart</label>
+      <div class="sm-row">
+        <div class="chip on" data-f="redeart" data-v="professionell">Professionell</div>
+        <div class="chip" data-f="redeart" data-v="normal">Normal</div>
+        <div class="chip" data-f="redeart" data-v="jugendlich">Jugendlich</div>
+      </div>
+    </div>
+    <div class="sm-sect">
+      <label class="sm-label">KI-Anbieter &amp; API-Key</label>
+      <div class="api-grid" id="setup-api-grid">
+        <div class="ap on" data-p="anthropic"><span class="ap-name">Claude</span></div>
+        <div class="ap" data-p="openai"><span class="ap-name">ChatGPT</span></div>
+        <div class="ap" data-p="gemini"><span class="ap-name">Gemini</span></div>
+        <div class="ap" data-p="nvidia"><span class="ap-name">NVIDIA NIM</span></div>
+        <div class="ap" data-p="mistral"><span class="ap-name">Mistral</span></div>
+        <div class="ap" data-p="local"><span class="ap-name">Ollama</span></div>
+      </div>
+      <div class="af show" id="saf-anthropic"><input class="sm-input" id="sk-anthropic" type="password" placeholder="sk-ant-api03-..."></div>
+      <div class="af" id="saf-openai"><input class="sm-input" id="sk-openai" type="password" placeholder="sk-..."></div>
+      <div class="af" id="saf-gemini"><input class="sm-input" id="sk-gemini" type="password" placeholder="AIza..."></div>
+      <div class="af" id="saf-nvidia">
+        <input class="sm-input" id="sk-nvidia" type="password" placeholder="nvapi-..." style="margin-bottom:5px">
+        <input class="sm-input" id="sm-nvidia" type="text" placeholder="meta/llama-3.1-70b-instruct">
+      </div>
+      <div class="af" id="saf-mistral"><input class="sm-input" id="sk-mistral" type="password" placeholder="API-Key"></div>
+      <div class="af" id="saf-local">
+        <input class="sm-input" id="su-local" type="text" value="http://localhost:11434" style="margin-bottom:5px">
+        <input class="sm-input" id="sm-local" type="text" placeholder="llama3">
+      </div>
+    </div>
+    <div class="sm-sect">
+      <label class="sm-label">Wohnort</label>
+      <input class="sm-input" id="setup-loc" type="text" value="Wien, Österreich">
+    </div>
+    <button class="sm-save" id="setup-done-btn">JARVIS STARTEN</button>
+  </div>
+</div>
+
+<!-- CUSTOM ANREDE MODAL -->
+<div id="anrede-modal" class="modal">
+  <div class="sm-panel" style="width:360px">
+    <button class="sm-close" onclick="closeCustomAnrede()">✕</button>
+    <div class="sm-title" style="font-size:13px">EIGENE ANREDE</div>
+    <div class="sm-sub">Wie soll JARVIS Sie nennen?</div>
+    <div class="sm-sect">
+      <input class="sm-input" id="custom-anrede-input" type="text" placeholder="z.B. Boss, Meister, Captain..." maxlength="20">
+    </div>
+    <button class="sm-save" onclick="saveCustomAnrede()">HINZUFÜGEN</button>
+  </div>
+</div>
+
+<!-- TODO ADD MODAL -->
+<div id="todo-modal" class="modal">
+  <div class="sm-panel" style="width:400px">
+    <button class="sm-close" onclick="closeTodoModal()">✕</button>
+    <div class="sm-title" style="font-size:13px">NEUE AUFGABE</div>
+    <div class="sm-sub">Aufgabe zur To-Do Liste hinzufügen</div>
+    <div class="sm-sect">
+      <input class="sm-input" id="todo-input" type="text" placeholder="z.B. Öffne Chrome und suche nach...">
+    </div>
+    <button class="sm-save" onclick="saveTodoFromModal()">HINZUFÜGEN</button>
+  </div>
+</div>
+
+<!-- SCREENSHOT COUNTDOWN -->
+<div id="ss-countdown"><div style="text-align:center"><div class="ss-num" id="ss-num">5</div><div class="ss-label">SCREENSHOT IN</div></div></div>
+
+<!-- COPILOT: AUFGABE STARTEN -->
+<div id="copilot-task-modal" class="modal">
+  <div class="sm-panel" style="width:460px">
+    <button class="sm-close" onclick="closeCopilotModal()">✕</button>
+    <div class="sm-title">COPILOT</div>
+    <div class="sm-sub">JARVIS steuert deinen PC</div>
+    <div class="sm-sect">
+      <input class="sm-input" id="copilot-task-input" type="text" placeholder="z.B. Öffne die Tagesnachrichten">
+    </div>
+    <label class="cp-check"><input type="checkbox" id="copilot-allow-all"><span>Immer erlauben — ohne Nachfrage bis fertig</span></label>
+    <button class="sm-save" onclick="startCopilot()">STARTEN</button>
+    <div class="cp-hint">See → Think → Act. Stop-Button oder Strg+Alt+J bricht jederzeit ab.<br>Passwörter werden niemals automatisch eingegeben.</div>
+  </div>
+</div>
+
+<!-- COPILOT: HANDSHAKE (Bestätigung / Checkpoint / Nutzer-Eingabe) -->
+<div id="copilot-ask-modal" class="modal">
+  <div class="sm-panel" style="width:440px">
+    <div class="sm-title" id="cpa-title">BESTÄTIGUNG</div>
+    <div class="sm-sub" id="cpa-sub">COPILOT</div>
+    <div class="cpa-body" id="cpa-body"></div>
+    <div class="cpa-actions" id="cpa-actions"></div>
+  </div>
+</div>
+
+<!-- NOTIFICATION -->
+<div id="notif"></div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <div class="sb-logo">
+      <svg width="22" height="22" viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="32" r="30" stroke="#4DE6E0" stroke-width="1" opacity="0.4"/>
+        <circle cx="32" cy="32" r="22" stroke="#4DE6E0" stroke-width="1.5" opacity="0.7"/>
+        <circle cx="32" cy="32" r="14" stroke="#4DE6E0" stroke-width="2"/>
+        <circle cx="32" cy="32" r="6" fill="#4DE6E0"/>
+        <path d="M2 14 L2 2 L14 2" stroke="rgba(77,230,224,0.5)" stroke-width="1.25"/>
+        <path d="M50 2 L62 2 L62 14" stroke="rgba(77,230,224,0.5)" stroke-width="1.25"/>
+        <path d="M62 50 L62 62 L50 62" stroke="rgba(77,230,224,0.5)" stroke-width="1.25"/>
+        <path d="M14 62 L2 62 L2 50" stroke="rgba(77,230,224,0.5)" stroke-width="1.25"/>
+      </svg>
+      <span class="sb-logo-text">JARVIS</span>
+      <span class="sb-version">v2.8</span>
+    </div>
+    <div class="sb-new">
+      <button class="sb-new-btn" onclick="location.reload()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        NEUE SESSION
+      </button>
+    </div>
+
+    <div class="sb-eyebrow">Denkprozess</div>
+    <div id="think-steps" style="flex:1;overflow-y:auto;padding:4px 8px;display:flex;flex-direction:column;gap:4px;">
+      <div style="padding:14px 8px;text-align:center;color:var(--jv-ink-4);font-family:var(--fm);font-size:10px;line-height:1.8;letter-spacing:0.02em" class="think-empty">Warte auf Eingabe.</div>
+    </div>
+    <span class="think-agent-badge" id="think-agent" style="padding:0 14px 4px;display:block;min-height:14px;"></span>
+
+  </div>
+
+  <!-- Center -->
+  <div id="ct">
+    <!-- Orb Header -->
+    <div id="orb-hdr">
+      <div class="orb" id="orb-el">
+        <div class="orb-ring-outer"></div>
+        <div class="orb-ring-inner"></div>
+        <div class="orb-core"></div>
+      </div>
+      <div class="orb-info">
+        <div class="orb-badges">
+          <div class="state-badge" id="state-badge"><span id="stxt">BEREIT</span></div>
+          <span class="orb-session"><span id="clk">--:--:--</span></span>
+        </div>
+        <div class="orb-title" id="orb-title">Bereit, wenn du es bist.</div>
+      </div>
+      <div class="orb-right">
+        <div class="api-badge-mini" id="apib">–</div>
+        <button class="ksb" id="ksbtn">STRG+ALT+J</button>
+      </div>
+      <div id="sdot" class="dot" style="display:none;"></div>
+    </div>
+
+    <div id="setup-banner">
+      <span id="banner-txt">API-Key fehlt — Einstellungen öffnen.</span>
+      <button class="banner-btn" onclick="openSettings()">EINSTELLUNGEN</button>
+    </div>
+    <div id="tbar"></div>
+
+    <!-- Copilot status bar (shows while copilot is active) -->
+    <div id="copilot-bar">
+      <div class="cp-dot"></div>
+      <div class="cp-info">
+        <div class="cp-status" id="cp-status">Copilot bereit</div>
+        <div class="cp-task" id="cp-task"></div>
+      </div>
+      <div class="cp-stepc" id="cp-stepc"></div>
+      <button class="cp-stop" id="cp-stop" onclick="stopCopilot()">STOPP</button>
+    </div>
+
+    <!-- Think drawer (shows during thinking) -->
+    <div id="think-drawer">
+      <div id="think-header"><span>DENKSCHRITTE</span></div>
+    </div>
+
+    <div id="chat"></div>
+
+    <!-- Composer -->
+    <div id="composer">
+      <div id="composer-row">
+        <button id="micbtn" title="Mikrofon (gedrückt halten)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></svg></button>
+        <button id="visionbtn" title="Live-Vision (Bildschirm beobachten)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        <button id="copilotbtn" title="Copilot — JARVIS steuert deinen PC"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="M13 13l6 6"/></svg></button>
+        <input type="text" id="tinp" placeholder="Frag Jarvis, oder drücke Strg+K" autocomplete="off">
+        <button id="sbtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
+      </div>
+      <div id="composer-hint">
+        <span>Strg+K zum Fokus · Alt für Sprache · Esc zum Lösen</span>
+        <span id="char-count">0/2000</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Rail -->
+  <div id="rail">
+    <div class="rail-header">
+      <span class="rail-eyebrow">Kontext</span>
+    </div>
+    <div class="ps">
+      <div class="tbr">
+        <div class="tb on" data-tab="todo">TODO</div>
+        <div class="tb" data-tab="memory">GEDÄCHTNIS</div>
+        <div class="tb" data-tab="suggest" id="tab-btn-suggest">VORSCHLÄGE</div>
+      </div>
+    </div>
+    <div class="ps grow tc on" id="tab-todo" style="display:flex;flex-direction:column;">
+      <div class="ph"><span>AUFGABEN</span></div>
+      <div class="tlist" id="todo-list" style="flex:1;overflow-y:auto;"><div style="padding:14px;text-align:center;color:var(--jv-ink-4);font-family:var(--fm);font-size:10px;letter-spacing:0.06em">KEINE AUFGABEN</div></div>
+      <div id="todo-error-box"></div>
+      <div class="todo-actions">
+        <button class="todo-add-btn" onclick="openTodoModal()">+ Aufgabe hinzufügen</button>
+        <button class="todo-btn" id="todo-start-btn" onclick="startTodo()">TO-DO STARTEN</button>
+        <button class="todo-btn stop" id="todo-cancel-btn" onclick="cancelTodo()" style="display:none">ABBRECHEN</button>
+      </div>
+    </div>
+    <div class="ps grow tc" id="tab-memory">
+      <div class="ph"><span>ERINNERUNGEN</span><button class="btn bc" onclick="sendWS('get_memories',{})" style="padding:2px 7px;font-size:12px" title="Aktualisieren">↻</button></div>
+      <div id="mem-list"><div style="padding:14px;text-align:center;color:var(--jv-ink-4);font-family:var(--fm);font-size:10px">LADE...</div></div>
+    </div>
+    <div class="ps grow tc" id="tab-suggest">
+      <div class="ph"><span>VORSCHLÄGE</span></div>
+      <div id="sug-list"><div style="padding:14px;color:var(--jv-ink-4);font-family:var(--fm);font-size:10px;text-align:center">WARTE...</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Account-Button: fest unten-links -->
+<div class="sb-footer" id="account-corner" onclick="openSettings()" title="Einstellungen" style="position:fixed;bottom:0;left:0;width:260px;z-index:200;background:var(--jv-void);border-top:1px solid var(--jv-line);border-right:1px solid var(--jv-line);">
+  <div class="sb-avatar">S</div>
+  <div class="sb-user-info">
+    <div class="sb-user-name">Sebastian</div>
+    <div class="sb-user-role">● OPERATOR · LOKAL</div>
+  </div>
+  <button class="sb-gear" onclick="event.stopPropagation();openSettings()" title="Einstellungen">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  </button>
+</div>
+
+<script>
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+// ══ BOOT ════════════════════════════════════════════════════════════════════
+const BOOT_STEPS=[
+  {p:8,l:'KERNEL',t:'Systemkern initialisiert.'},{p:20,l:'SPEICHER',t:'RAM-Prüfung OK.'},
+  {p:33,l:'SPRACH-ENGINE',t:'TTS/STT Module bereit.'},{p:46,l:'SICHERHEIT',t:'SafetyGuard aktiv.'},
+  {p:58,l:'KI-GEHIRN',t:'Multi-Agent-Pool geladen.'},{p:70,l:'GEDÄCHTNIS',t:'Persistente Daten geladen.'},
+  {p:82,l:'NETZWERK',t:'WebSocket-Server gestartet.'},{p:92,l:'API-VERBINDUNG',t:'Verbinde mit Backend...'},
+  {p:100,l:'SYSTEM BEREIT',t:'JARVIS v2.8 online.'},
+];
+async function runBoot(){
+  const fill=document.getElementById('bfill'),pct=document.getElementById('bpct'),step=document.getElementById('bstep');
+  for(const s of BOOT_STEPS){
+    await sleep(230+Math.random()*150);
+    fill.style.width=s.p+'%';pct.textContent=s.p+'%';step.textContent=s.l;
+    const d=document.createElement('div');d.className='blog-ok';d.textContent='● '+s.t;
+    document.getElementById('blog').appendChild(d);document.getElementById('blog').scrollTop=9999;
+  }
+  await sleep(300);
+  const b=document.getElementById('boot');
+  if(b){
+    b.style.transition='opacity .5s';
+    b.style.opacity='0';
+    await sleep(510);
+    b.style.display='none';
+  }
+  launchApp();
+}
+runBoot().catch(()=>launchApp());
+
+// ══ STATE ════════════════════════════════════════════════════════════════════
+const S={
+  cfg:JSON.parse(localStorage.getItem('jcfg')||'null'),
+  ws:null,listening:false,actionCount:0,typingEl:null,
+  todoItems:[],todoRunning:false,killActive:false,
+  customAnreden:JSON.parse(localStorage.getItem('jcustomanrede')||'[]'),
+};
+
+// ══ LAUNCH ═══════════════════════════════════════════════════════════════════
+function launchApp(){
+  restoreCustomAnreden();
+  document.getElementById('app').classList.add('show');
+  if(S.cfg){startApp();}
+  else{document.getElementById('setup-modal').classList.add('show');setupChips();}
+}
+function startApp(){
+  loadCfgIntoSettings();updateBadge();startClock();
+  initWS();initKeys();initTabs();initInputs();
+  applySuggestionVisibility();
+}
+
+// ══ CUSTOM ANREDE ════════════════════════════════════════════════════════════
+function restoreCustomAnreden(){
+  const row=document.getElementById('anrede-row');if(!row)return;
+  const addBtn=row.querySelector('.chip-add');
+  S.customAnreden.forEach(a=>{
+    if(!row.querySelector(`.chip[data-v="${CSS.escape(a)}"]`)){
+      const c=document.createElement('div');c.className='chip';c.dataset.f='anrede';c.dataset.v=a;c.textContent=a;
+      row.insertBefore(c,addBtn);
+    }
+  });
+}
+function openCustomAnrede(){document.getElementById('anrede-modal').classList.add('show');setTimeout(()=>document.getElementById('custom-anrede-input').focus(),100);}
+function closeCustomAnrede(){document.getElementById('anrede-modal').classList.remove('show');}
+function saveCustomAnrede(){
+  const val=document.getElementById('custom-anrede-input').value.trim();
+  if(!val){notify('Bitte etwas eingeben','err');return;}
+  if(!S.customAnreden.includes(val)){S.customAnreden.push(val);localStorage.setItem('jcustomanrede',JSON.stringify(S.customAnreden));}
+  const row=document.getElementById('anrede-row');const addBtn=row.querySelector('.chip-add');
+  row.querySelectorAll('.chip[data-f="anrede"]').forEach(x=>x.classList.remove('on'));
+  const c=document.createElement('div');c.className='chip on';c.dataset.f='anrede';c.dataset.v=val;c.textContent=val;
+  c.addEventListener('click',()=>{row.querySelectorAll('.chip[data-f="anrede"]').forEach(x=>x.classList.remove('on'));c.classList.add('on');});
+  row.insertBefore(c,addBtn);
+  document.getElementById('custom-anrede-input').value='';
+  closeCustomAnrede();notify('Anrede hinzugefügt');
+}
+
+// ══ CHIPS ════════════════════════════════════════════════════════════════════
+function setupChips(){
+  document.querySelectorAll('.chip[data-f]').forEach(c=>c.addEventListener('click',()=>{
+    document.querySelectorAll(`.chip[data-f="${c.dataset.f}"]`).forEach(x=>x.classList.remove('on'));
+    c.classList.add('on');
+  }));
+  document.querySelectorAll('.ap').forEach(card=>card.addEventListener('click',()=>{
+    const grid=card.closest('.api-grid,#setup-api-grid');
+    grid?.querySelectorAll('.ap').forEach(x=>x.classList.remove('on'));
+    card.classList.add('on');
+    const inSettings=card.closest('#settings-modal');
+    const prefix=inSettings?'af-':'saf-';
+    document.querySelectorAll(`[id^="${prefix}"]`).forEach(f=>f.classList.remove('show'));
+    document.getElementById(prefix+card.dataset.p)?.classList.add('show');
+  }));
+}
+document.addEventListener('DOMContentLoaded',setupChips);
+
+// ══ TOGGLE SWITCH ════════════════════════════════════════════════════════════
+function toggleSwitch(id){document.getElementById(id).classList.toggle('on');}
+
+// ══ SETUP DONE ════════════════════════════════════════════════════════════════
+document.getElementById('setup-done-btn').addEventListener('click',()=>{
+  const p=document.querySelector('#setup-api-grid .ap.on')?.dataset.p||'anthropic';
+  const keyMap={anthropic:'sk-anthropic',openai:'sk-openai',gemini:'sk-gemini',nvidia:'sk-nvidia',mistral:'sk-mistral'};
+  const key=p!=='local'?(document.getElementById(keyMap[p])?.value.trim()||''):'';
+  if(!key&&p!=='local'){notify('Bitte API-Key eingeben.','err');return;}
+  const anrede=document.querySelector('#setup-modal .chip[data-f="anrede"].on')?.dataset.v||'Sir';
+  const redeart=document.querySelector('#setup-modal .chip[data-f="redeart"].on')?.dataset.v||'professionell';
+  const extra={};
+  if(p==='nvidia')extra.nvidia_model=document.getElementById('sm-nvidia')?.value.trim()||'meta/llama-3.1-70b-instruct';
+  if(p==='local'){extra.local_url=document.getElementById('su-local')?.value.trim()||'http://localhost:11434';extra.local_model=document.getElementById('sm-local')?.value.trim()||'llama3';}
+  S.cfg={anrede,redeart,api_provider:p,api_key:key,sprache:'de-DE',
+    wohnort:document.getElementById('setup-loc')?.value.trim()||'Wien',
+    tts_enabled:true,suggestions_enabled:true,...extra};
+  localStorage.setItem('jcfg',JSON.stringify(S.cfg));
+  document.getElementById('setup-modal').classList.remove('show');
+  startApp();sendWS('save_config',S.cfg);
+  addMsg('jarvis',`Willkommen${anrede?', '+anrede:''}. JARVIS v2.8 bereit.`);
+});
+
+// ══ SETTINGS ══════════════════════════════════════════════════════════════════
+function markDirty(){document.getElementById('settings-modal').classList.add('dirty');}
+function clearDirty(){document.getElementById('settings-modal').classList.remove('dirty');}
+function openSettings(){loadCfgIntoSettings();document.getElementById('settings-modal').classList.add('show');clearDirty();}
+function closeSettings(){document.getElementById('settings-modal').classList.remove('show');clearDirty();}
+function switchSettingsPane(el){
+  document.querySelectorAll('.st-nav-item').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.st-pane').forEach(p=>p.classList.remove('active'));
+  const pane=el.dataset.pane;
+  document.getElementById('st-'+pane)?.classList.add('active');
+  // Lazy-load backend data per pane
+  if(pane==='usage'){refreshUsage();}
+  if(pane==='connect'){refreshConnectors();}
+  if(pane==='privacy'){refreshPrivacyStats();}
+  if(pane==='code'){refreshCodeTools();}
+}
+
+// ══ NUTZUNG ══════════════════════════════════════════════════════════════════
+function refreshUsage(){
+  sendWS('get_usage_stats',{});
+  const cur=S.tokenCount||0;
+  document.getElementById('u-tok-today').textContent=cur>=1000?((cur/1000).toFixed(1)+'k'):cur;
+  document.getElementById('u-provider').textContent={anthropic:'CLAUDE',openai:'GPT-4o',gemini:'GEMINI',nvidia:'NVIDIA',mistral:'MISTRAL',local:'OLLAMA'}[S.cfg?.api_provider]||'–';
+}
+function renderUsageChart(buckets){
+  const c=document.getElementById('u-chart');if(!c)return;
+  const max=Math.max(1,...buckets.map(b=>b.count));
+  const days=['Mo','Di','Mi','Do','Fr','Sa','So'];
+  // Reorder so today is rightmost using bucket.dow
+  c.innerHTML=buckets.map(b=>{
+    const h=Math.max(2,Math.round((b.count/max)*88));
+    const empty=b.count===0?'empty':'';
+    return `<div class="st-chart-bar"><div class="st-chart-bar-fill ${empty}" style="height:${h}px" title="${b.count} Nachrichten"></div><div class="st-chart-bar-label">${b.label}</div></div>`;
+  }).join('');
+}
+function renderUsageStats(stats){
+  if(!stats)return;
+  document.getElementById('u-msg-count').textContent=stats.messages_week??0;
+  document.getElementById('u-mem-count').textContent=stats.memories??0;
+  document.getElementById('u-rout-count').textContent='● '+(stats.routines??0);
+  if(stats.activity)renderUsageChart(stats.activity);
+}
+
+// ══ DATENSCHUTZ ══════════════════════════════════════════════════════════════
+function refreshPrivacyStats(){
+  sendWS('get_usage_stats',{});
+  // path is always ~/.jarvis/ on user home
+}
+function applyPrivacyStats(stats){
+  if(!stats)return;
+  const m=document.getElementById('s-stat-mem');if(m)m.textContent='● '+(stats.memories??0)+' Erinnerungen';
+  const h=document.getElementById('s-stat-hist');if(h)h.textContent='● '+(stats.history??0)+' Verlauf';
+}
+function confirmWipe(){document.getElementById('wipe-modal').classList.add('show');setTimeout(()=>document.getElementById('wipe-confirm').focus(),100);}
+function closeWipe(){document.getElementById('wipe-modal').classList.remove('show');document.getElementById('wipe-confirm').value='';}
+function executeWipe(){
+  const v=document.getElementById('wipe-confirm').value.trim();
+  if(v!=='LÖSCHEN'){notify('Bestätigung muss exakt "LÖSCHEN" sein','err');return;}
+  sendWS('clear_all_data',{});
+  closeWipe();
+  notify('Alle Daten werden gelöscht...');
+}
+
+// ══ KONNEKTOREN ══════════════════════════════════════════════════════════════
+function refreshConnectors(){sendWS('get_connectors_status',{});}
+function expandConn(name){document.getElementById('conn-form-'+name)?.classList.add('show');}
+function collapseConn(name){document.getElementById('conn-form-'+name)?.classList.remove('show');}
+function saveConn(name){
+  const payload={name};
+  if(name==='calendar')payload.creds=document.getElementById('conn-calendar-creds').value.trim();
+  else if(name==='todoist')payload.token=document.getElementById('conn-todoist-key').value.trim();
+  else if(name==='notion'){payload.token=document.getElementById('conn-notion-key').value.trim();payload.database_id=document.getElementById('conn-notion-db').value.trim();}
+  else if(name==='email'){payload.email=document.getElementById('conn-email-addr').value.trim();payload.password=document.getElementById('conn-email-pass').value;payload.imap=document.getElementById('conn-email-imap').value.trim();payload.smtp=document.getElementById('conn-email-smtp').value.trim();}
+  else if(name==='homeassistant'){payload.url=document.getElementById('conn-ha-url').value.trim();payload.token=document.getElementById('conn-ha-token').value.trim();}
+  else if(name==='research')payload.topics=document.getElementById('conn-research-topics').value.split(',').map(s=>s.trim()).filter(Boolean);
+  sendWS('save_connector',payload);
+  notify(name+' gespeichert');
+  collapseConn(name);
+  setTimeout(refreshConnectors,500);
+}
+function testConn(name){sendWS('test_connector',{name});notify('Teste '+name+'...');}
+function applyConnectorsStatus(items){
+  if(!items)return;
+  Object.entries(items).forEach(([name,info])=>{
+    const card=document.getElementById('conn-'+name);
+    const status=document.getElementById('conn-status-'+name);
+    if(!status)return;
+    if(info.connected){
+      status.className='st-conn-status on';
+      status.textContent='● '+(info.label||'Verbunden');
+      card?.classList.add('connected');
+    }else if(info.warn){
+      status.className='st-conn-status warn';
+      status.textContent='● '+(info.label||'Geprüft');
+    }else{
+      status.className='st-conn-status off';
+      status.textContent='● '+(info.label||'Nicht verbunden');
+      card?.classList.remove('connected');
+    }
+  });
+}
+
+// ══ JARVIS CODE ══════════════════════════════════════════════════════════════
+function refreshCodeTools(){sendWS('get_code_tools',{});}
+function applyCodeTools(tools){
+  if(!tools)return;
+  const el=document.getElementById('s-code-tools');if(!el)return;
+  el.innerHTML=['black','prettier','node'].map(t=>{
+    const ok=tools[t];
+    return `<span class="st-conn-status ${ok?'on':'off'}">● ${t}</span>`;
+  }).join('');
+}
+
+function loadCfgIntoSettings(){
+  if(!S.cfg)return;
+  restoreCustomAnreden();
+  const p=S.cfg.api_provider||'anthropic';
+  document.querySelectorAll('#settings-modal .chip[data-f="anrede"]').forEach(c=>c.classList.toggle('on',c.dataset.v===(S.cfg.anrede||'')));
+  document.querySelectorAll('#settings-modal .chip[data-f="redeart"]').forEach(c=>c.classList.toggle('on',c.dataset.v===(S.cfg.redeart||'professionell')));
+  document.querySelectorAll('#settings-modal .chip[data-f="sprache"]').forEach(c=>c.classList.toggle('on',c.dataset.v===(S.cfg.sprache||'de-DE')));
+  document.querySelectorAll('#settings-modal .ap').forEach(c=>c.classList.toggle('on',c.dataset.p===p));
+  document.querySelectorAll('#settings-modal [id^="af-"]').forEach(f=>f.classList.remove('show'));
+  document.getElementById('af-'+p)?.classList.add('show');
+  if(S.cfg.wohnort){const l=document.getElementById('s-loc');if(l)l.value=S.cfg.wohnort;}
+  if(S.cfg.nvidia_model){const m=document.getElementById('m-nvidia');if(m)m.value=S.cfg.nvidia_model;}
+  const ttsOn=S.cfg.tts_enabled!==false;
+  const ttsEl=document.getElementById('tgl-tts');
+  if(ttsOn){ttsEl.classList.add('on');}else{ttsEl.classList.remove('on');}
+  const sugOn=S.cfg.suggestions_enabled!==false;
+  const sugEl=document.getElementById('tgl-sug');
+  if(sugOn){sugEl.classList.add('on');}else{sugEl.classList.remove('on');}
+  populateVoices();
+  const vsel=document.getElementById('voice-select');if(vsel&&S.cfg.tts_voice)vsel.value=S.cfg.tts_voice;
+  updateKeyStatusEl(S.cfg.api_key?.length>10);
+  const lightOn=document.body.classList.contains('light');
+  const lightEl=document.getElementById('tgl-light');
+  if(lightEl){if(lightOn){lightEl.classList.add('on');}else{lightEl.classList.remove('on');}}
+  // Wake Word & Clap
+  const wakeEl=document.getElementById('tgl-wake');
+  if(wakeEl){if(S.cfg.wake_word_enabled){wakeEl.classList.add('on');}else{wakeEl.classList.remove('on');}}
+  const clapEl=document.getElementById('tgl-clap');
+  if(clapEl){if(S.cfg.clap_enabled){clapEl.classList.add('on');}else{clapEl.classList.remove('on');}}
+  const clapSettings=document.getElementById('clap-settings');
+  if(clapSettings)clapSettings.style.display=S.cfg.clap_enabled?'block':'none';
+  const clapSlider=document.getElementById('clap-slider');
+  if(clapSlider&&S.cfg.clap_threshold){clapSlider.value=S.cfg.clap_threshold;document.getElementById('clap-val').textContent=parseFloat(S.cfg.clap_threshold).toFixed(2);}
+  // Privacy toggles
+  const privTgls=[['tgl-mem-history','memory_history',true],['tgl-mem-auto','memory_auto',true],['tgl-vision-allow','vision_allowed',true],['tgl-telemetry','telemetry_enabled',false]];
+  privTgls.forEach(([id,key,def])=>{
+    const el=document.getElementById(id);if(!el)return;
+    const v=S.cfg[key];const on=(v===undefined?def:v);
+    if(on)el.classList.add('on');else el.classList.remove('on');
+  });
+  // Code toggles + retries
+  const codeTgls=[['tgl-code-check','code_check',true],['tgl-code-format','code_format',true]];
+  codeTgls.forEach(([id,key,def])=>{
+    const el=document.getElementById(id);if(!el)return;
+    const v=S.cfg[key];const on=(v===undefined?def:v);
+    if(on)el.classList.add('on');else el.classList.remove('on');
+  });
+  const retries=document.getElementById('s-code-retries');
+  if(retries)retries.value=String(S.cfg.code_retries||3);
+  // Email from cfg.user_name
+  const nameEl=document.getElementById('s-name');
+  if(nameEl)nameEl.value=S.cfg.user_name||S.cfg.name||'Sebastian';
+}
+function updateKeyStatusEl(ok){
+  const el=document.getElementById('sm-key-status');if(!el)return;
+  if(ok){el.className='key-status key-ok';el.textContent='API-Key aktiv';}
+  else{el.className='key-status key-bad';el.textContent='Kein API-Key gesetzt';}
+}
+
+document.getElementById('sm-save-btn').addEventListener('click',()=>{
+  const p=document.querySelector('#settings-modal .ap.on')?.dataset.p||'anthropic';
+  const keyMap={anthropic:'k-anthropic',openai:'k-openai',gemini:'k-gemini',nvidia:'k-nvidia',mistral:'k-mistral'};
+  const key=p!=='local'?(document.getElementById(keyMap[p])?.value.trim()||''):'';
+  const anrede=document.querySelector('#settings-modal .chip[data-f="anrede"].on')?.dataset.v??S.cfg?.anrede??'';
+  const redeart=document.querySelector('#settings-modal .chip[data-f="redeart"].on')?.dataset.v||S.cfg?.redeart||'professionell';
+  const sprache=document.querySelector('#settings-modal .chip[data-f="sprache"].on')?.dataset.v||S.cfg?.sprache||'de-DE';
+  const wohnort=document.getElementById('s-loc')?.value.trim()||S.cfg?.wohnort||'';
+  const tts_enabled=document.getElementById('tgl-tts').classList.contains('on')?true:false;
+  const suggestions_enabled=document.getElementById('tgl-sug').classList.contains('on')?true:false;
+  const tts_voice=document.getElementById('voice-select')?.value||'';
+  if(!key&&p!=='local'&&!(S.cfg?.api_key)){notify('API-Key eingeben.','err');return;}
+  const extra={};
+  if(p==='nvidia')extra.nvidia_model=document.getElementById('m-nvidia')?.value.trim()||'meta/llama-3.1-70b-instruct';
+  if(p==='local'){extra.local_url=document.getElementById('u-local')?.value.trim()||'http://localhost:11434';extra.local_model=document.getElementById('m-local')?.value.trim()||'llama3';}
+  const wake_word_enabled=document.getElementById('tgl-wake').classList.contains('on')?true:false;
+  const clap_enabled=document.getElementById('tgl-clap').classList.contains('on')?true:false;
+  const clap_threshold=parseFloat(document.getElementById('clap-slider')?.value||0.3);
+  // Privacy
+  const memory_history=document.getElementById('tgl-mem-history')?.classList.contains('on')??true;
+  const memory_auto=document.getElementById('tgl-mem-auto')?.classList.contains('on')??true;
+  const vision_allowed=document.getElementById('tgl-vision-allow')?.classList.contains('on')??true;
+  const telemetry_enabled=document.getElementById('tgl-telemetry')?.classList.contains('on')??false;
+  // Code
+  const code_check=document.getElementById('tgl-code-check')?.classList.contains('on')??true;
+  const code_format=document.getElementById('tgl-code-format')?.classList.contains('on')??true;
+  const code_retries=parseInt(document.getElementById('s-code-retries')?.value||3);
+  // Account / name
+  const user_name=document.getElementById('s-name')?.value.trim()||S.cfg?.user_name||S.cfg?.name||'';
+  if(!S.cfg)S.cfg={};
+  Object.assign(S.cfg,{anrede,redeart,sprache,api_provider:p,wohnort,tts_enabled:tts_enabled,suggestions_enabled:suggestions_enabled,tts_voice,wake_word_enabled,clap_enabled,clap_threshold,memory_history,memory_auto,vision_allowed,telemetry_enabled,code_check,code_format,code_retries,user_name,...extra});
+  if(key)S.cfg.api_key=key;
+  localStorage.setItem('jcfg',JSON.stringify(S.cfg));
+  sendWS('save_config',S.cfg);
+  updateBadge();updateKeyStatusEl(S.cfg.api_key?.length>10);
+  applySuggestionVisibility();
+  if(!tts_enabled)stopAllSpeech();
+  clearDirty();
+  document.getElementById('setup-banner').classList.remove('show');
+  notify('Einstellungen gespeichert');
+});
+
+// Dirty-Tracking: Änderungen in Einstellungen erkennen
+document.addEventListener('DOMContentLoaded',()=>{
+  const modal=document.getElementById('settings-modal');
+  modal.addEventListener('click',e=>{
+    if(e.target.closest('.chip[data-f],.toggle,.ap')&&e.target.closest('.st-pane'))markDirty();
+  });
+  modal.addEventListener('input',e=>{if(e.target.closest('.st-pane'))markDirty();});
+});
+
+function applySuggestionVisibility(){
+  const on=S.cfg?.suggestions_enabled!==false;
+  document.getElementById('tab-btn-suggest').style.display=on?'':'none';
+  if(!on){
+    if(document.getElementById('tab-suggest').classList.contains('on')){
+      document.querySelectorAll('.tb').forEach(x=>x.classList.toggle('on',x.dataset.tab==='todo'));
+      document.querySelectorAll('.tc').forEach(c=>c.classList.toggle('on',c.id==='tab-todo'));
+    }
+  }
+}
+
+// ══ WEBSOCKET ════════════════════════════════════════════════════════════════
+function initWS(){
+  try{
+    // Use the same host as current page to avoid localhost/127.0.0.1 mismatch
+    const wsProto=window.location.protocol==='https:'?'wss:':'ws:';
+    const wsHost=window.location.hostname;
+    const wsPort=8766;
+    const wsUrl=`${wsProto}//${wsHost}:${wsPort}`;
+    console.log('[WebSocket] Connecting to:', wsUrl);
+    S.ws=new WebSocket(wsUrl);
+    S.ws.onopen=()=>{console.log('[WebSocket] Connected');setStatus('VERBUNDEN','');notify('Backend verbunden');sendWS('get_memories',{});sendWS('get_routines',{});if(S.cfg)sendWS('save_config',S.cfg);};
+    S.ws.onmessage=e=>{try{handleMsg(JSON.parse(e.data));}catch(err){console.error('[WebSocket] Message error:', err)}};
+    S.ws.onclose=()=>{console.log('[WebSocket] Closed');setStatus('GETRENNT','err');setTimeout(initWS,3000);};
+    S.ws.onerror=(err)=>{console.error('[WebSocket] Error:', err);setStatus('OFFLINE','err');};
+  }catch(err){console.error('[WebSocket] Init error:', err);setStatus('OFFLINE','err');}
+}
+function sendWS(type,data){if(S.ws?.readyState===WebSocket.OPEN)S.ws.send(JSON.stringify({type,...data}));}
+
+// ══ MSG HANDLER ══════════════════════════════════════════════════════════════
+function handleMsg(m){
+  const {type,data}=m;
+  ({
+    message:()=>{removeTyping();const sb=document.getElementById('sbub');if(sb){const p=sb.closest('.msg');if(p)p.remove();}addMsg(data.role,data.text);if(data.role==='jarvis')speak(data.text);},
+    user_input:()=>addMsg('user',data.text),
+    stream_chunk:()=>handleStream(data.text),
+    thinking:()=>setThink(data.status),
+    status:()=>document.getElementById('stxt').textContent=data.text,
+    agent_selected:()=>setAgent(data.agent),
+    thinking_step:()=>addThinkStep(data.label,data.text),
+    safety_warning:()=>addSafety(data),
+    permission_request:()=>addPerm(data.grund),
+    todo_update:()=>renderTodo(data.items),
+    todo_running:()=>setTodoRunning(data.id),
+    todo_done_item:()=>markTodoDone(data.id),
+    todo_error:()=>showTodoError(data.message),
+    todo_complete:()=>todoComplete(),
+    startup_suggestions:()=>renderSug(data.suggestions),
+    kill_switch:()=>activateKill(),
+    kill_deactivated:()=>deactivateKill(),
+    memory_saved:()=>{notify('Gespeichert');sendWS('get_memories',{});},
+    memories_data:()=>renderMem(data.memories),
+    routines_data:()=>{},
+    needs_setup:()=>{document.getElementById('banner-txt').textContent=(data.reason||'API-Key fehlt')+'  — Einstellungen öffnen.';document.getElementById('setup-banner').classList.add('show');},
+    config_update:()=>updateKeyStatusEl(data.api_key_set),
+    config_saved:()=>{notify('Config bestätigt');updateKeyStatusEl(!!data.key_preview);},
+    mic_done:()=>{S.listening=false;document.getElementById('micbtn').classList.remove('on');setStatus('BEREIT','');},
+    screenshot_countdown:()=>startScreenshot(data.query),
+    live_vision_status:()=>{const btn=document.getElementById('visionbtn');if(data.active){btn.classList.add('on');notify('Live-Vision aktiv');}else{btn.classList.remove('on');notify('Live-Vision gestoppt');}},
+    wake_word_status:()=>{const el=document.getElementById('tgl-wake');if(data.enabled){el.classList.add('on');notify('Wake Word aktiv');}else{el.classList.remove('on');notify('Wake Word deaktiviert');}},
+    clap_status:()=>{const el=document.getElementById('tgl-clap');if(data.enabled){el.classList.add('on');document.getElementById('clap-settings').style.display='block';notify('Klatsch-Aktivierung aktiv');}else{el.classList.remove('on');document.getElementById('clap-settings').style.display='none';notify('Klatsch-Aktivierung deaktiviert');}},
+    clap_calibrated:()=>{const s=document.getElementById('clap-slider');const v=document.getElementById('clap-val');if(s){s.value=data.threshold;v.textContent=data.threshold.toFixed(2);}notify('Kalibriert: '+data.threshold.toFixed(2));},
+    wake_triggered:()=>{notify('Hey Jarvis erkannt!');setStatus('HÖRE ZU...','listen');document.getElementById('micbtn').classList.add('on');S.listening=true;},
+    notify:()=>notify(data.text),
+    usage_stats:()=>{renderUsageStats(data.stats);applyPrivacyStats(data.stats);},
+    connectors_status:()=>applyConnectorsStatus(data.connectors),
+    connector_saved:()=>{notify((data.name||'Konnektor')+' gespeichert');refreshConnectors();},
+    connector_test:()=>{const ok=data.ok;notify((data.name||'Test')+': '+(ok?'OK':(data.error||'Fehler')),ok?'':'err');refreshConnectors();},
+    code_tools:()=>applyCodeTools(data.tools),
+    data_cleared:()=>{notify('Alle Daten gelöscht');sendWS('get_memories',{});refreshPrivacyStats();},
+    copilot_started:()=>setCopilotActive(true,data.task),
+    copilot_status:()=>setCopilotStatus(data.text,data.phase,data.step),
+    copilot_plan:()=>copilotPlan(data),
+    copilot_step:()=>addCopilotStep(data),
+    copilot_confirm:()=>copilotAsk('confirm',data),
+    copilot_checkpoint:()=>copilotAsk('checkpoint',data),
+    copilot_need_user:()=>copilotAsk('need_user',data),
+    copilot_done:()=>copilotDone(data.status,data.summary),
+  }[type]||(()=>{}))();
+}
+
+// ══ DENKPROZESS ══════════════════════════════════════════════════════════════
+function clearThinkSteps(){document.getElementById('think-steps').innerHTML='';}
+function addThinkStep(label,text){
+  const c=document.getElementById('think-steps');
+  const empty=c.querySelector('.think-empty');if(empty)empty.remove();
+  c.querySelectorAll('.think-step.active').forEach(s=>s.classList.remove('active'));
+  const d=document.createElement('div');d.className='think-step active';
+  d.innerHTML=`<span class="ts-label">${esc(label||'SCHRITT')}</span>${esc(text)}`;
+  c.appendChild(d);c.scrollTop=9999;
+}
+function resetThinkPanel(){
+  document.getElementById('think-steps').innerHTML='<div class="think-empty" style="padding:14px 8px;text-align:center;color:var(--jv-ink-4);font-family:var(--fm);font-size:10px;line-height:1.8;letter-spacing:0.02em">Warte auf Eingabe.</div>';
+  document.getElementById('think-agent').textContent='';
+}
+
+// ══ CHAT + CODE PARSING ══════════════════════════════════════════════════════
+function renderMd(t){
+  t=t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  t=t.replace(/\*(.+?)\*/g,'<em>$1</em>');
+  t=t.replace(/~~(.+?)~~/g,'<del>$1</del>');
+  t=t.replace(/`([^`]+)`/g,'<code style="font-family:var(--fm);font-size:12px;background:var(--jv-slate);border:1px solid var(--jv-line);border-radius:2px;padding:1px 5px;color:var(--jv-ion)">$1</code>');
+  t=t.replace(/\n/g,'<br>');
+  return t;
+}
+function renderContent(text){
+  const parts=[];const re=/```(\w*)\n?([\s\S]*?)```/g;
+  let last=0,m;
+  while((m=re.exec(text))!==null){
+    if(m.index>last)parts.push({type:'text',content:text.slice(last,m.index)});
+    parts.push({type:'code',lang:m[1]||'code',content:m[2].replace(/\n$/,'')});
+    last=m.index+m[0].length;
+  }
+  if(last<text.length)parts.push({type:'text',content:text.slice(last)});
+  if(!parts.length)parts.push({type:'text',content:text});
+
+  return parts.map(p=>{
+    if(p.type==='code'){
+      const id='c'+Math.random().toString(36).slice(2,9);
+      return `<div class="code-box"><div class="code-head"><span class="code-lang">${esc(p.lang)}</span><button class="code-copy" onclick="copyCode('${id}',this)">KOPIEREN</button></div><div class="code-body" id="${id}">${hlCode(p.content,p.lang)}</div></div>`;
+    }
+    return `<span>${renderMd(esc(p.content))}</span>`;
+  }).join('');
+}
+function copyCode(id,btn){
+  const el=document.getElementById(id);if(!el)return;
+  navigator.clipboard.writeText(el.textContent).then(()=>{
+    btn.textContent='KOPIERT';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='KOPIEREN';btn.classList.remove('copied');},1500);
+  });
+}
+function hlCode(code,lang){
+  const e=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const kw='\\b(if|else|elif|for|while|return|def|class|import|from|try|except|finally|with|as|in|not|and|or|is|lambda|yield|async|await|raise|pass|break|continue|del|global|nonlocal|function|const|let|var|switch|case|default|throw|catch|new|delete|typeof|instanceof|export|extends|implements|interface|public|private|static|void|enum|struct|fn|pub|use|mod|mut|impl|trait|match|loop|move)\\b';
+  const bi='\\b(True|False|None|true|false|null|undefined|NaN|self|this|console|window|document|print|len|range|str|int|float|list|dict|set|type|super|Math|Array|Object|String|Number|Promise|require)\\b';
+  let h=e(code);
+  h=h.replace(/(\/\/.*|#.*)/gm,'<span class="hl-cm">$1</span>');
+  h=h.replace(/(\/\*[\s\S]*?\*\/)/gm,'<span class="hl-cm">$1</span>');
+  h=h.replace(/("""[\s\S]*?"""|'''[\s\S]*?''')/gm,'<span class="hl-cm">$1</span>');
+  h=h.replace(/(?<!class="hl-cm">.*?)("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`)/gm,function(m){return m.includes('class="hl-')?m:'<span class="hl-str">'+m+'</span>';});
+  h=h.replace(new RegExp('(?<!<[^>]*)'+kw+'(?![^<]*>)','g'),'<span class="hl-kw">$1</span>');
+  h=h.replace(new RegExp('(?<!<[^>]*)'+bi+'(?![^<]*>)','g'),'<span class="hl-bi">$1</span>');
+  h=h.replace(/(?<!<[^>]*)\b(\d+\.?\d*)\b(?![^<]*>)/g,'<span class="hl-num">$1</span>');
+  h=h.replace(/(?<!<[^>]*)(\w+)(?=\s*\()/g,function(m,fn){return m.includes('class="hl-')?m:'<span class="hl-fn">'+fn+'</span>';});
+  return h;
+}
+
+function addMsg(role,text){
+  removeTyping();
+  const chat=document.getElementById('chat');
+  const isJ=role==='jarvis';
+  const div=document.createElement('div');
+  div.className=`msg ${isJ?'':'user'}`;
+  div.dataset.role=role;div.dataset.text=text;
+  const t=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+  const body=isJ?renderContent(text):renderMd(esc(text));
+  const copyIcon='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+  const retryIcon='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12a9 9 0 1 1 9 9"/><path d="M3 21v-5h5"/></svg>';
+  const actions=`<div class="msg-actions"><button class="msg-act" onclick="copyMsg(this)" title="Kopieren">${copyIcon}</button>${!isJ?`<button class="msg-act" onclick="retryMsg(this)" title="Wiederholen">${retryIcon}</button>`:''}</div>`;
+  const avatar=isJ?'<div class="mav"><div class="mav-orb"></div><div class="mav-orb-inner"></div><div class="mav-orb-core"></div></div>':'<div class="mav">U</div>';
+  div.innerHTML=`${avatar}<div class="mc"><div class="ml">${isJ?'<span class="j-tag">JARVIS</span>':'NUTZER'} · ${t}</div><div class="mb">${body}</div>${actions}</div>`;
+  chat.appendChild(div);chat.scrollTop=9999;
+  S.tokenCount=(S.tokenCount||0)+Math.ceil(text.length/4);
+}
+function copyMsg(btn){
+  const msg=btn.closest('.msg');
+  const text=msg?.dataset.text||'';
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.classList.add('copied');
+    setTimeout(()=>{btn.classList.remove('copied');},1500);
+  });
+}
+function retryMsg(btn){
+  const msg=btn.closest('.msg');
+  const text=msg?.dataset.text||'';
+  if(!text)return;
+  const next=msg.nextElementSibling;
+  if(next&&next.dataset.role==='jarvis')next.remove();
+  msg.remove();
+  clearThinkSteps();
+  addMsg('user',text);
+  if(S.ws?.readyState===WebSocket.OPEN){sendWS('user_text',{text});}
+  else{processOffline(text);}
+}
+function showTyping(){
+  if(S.typingEl)return;
+  const chat=document.getElementById('chat');
+  const div=document.createElement('div');div.className='msg';div.id='typing-indicator';
+  div.innerHTML=`<div class="mav"><div class="mav-orb"></div><div class="mav-orb-inner"></div><div class="mav-orb-core"></div></div><div class="mc"><div class="ml"><span class="j-tag">JARVIS</span></div><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
+  chat.appendChild(div);S.typingEl=div;chat.scrollTop=9999;
+}
+function removeTyping(){if(S.typingEl){S.typingEl.remove();S.typingEl=null;}const el=document.getElementById('typing-indicator');if(el)el.remove();}
+function handleStream(text){
+  removeTyping();const chat=document.getElementById('chat');
+  let bub=document.getElementById('sbub');
+  if(!bub){
+    const div=document.createElement('div');div.className='msg';
+    const t=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+    div.innerHTML=`<div class="mav"><div class="mav-orb"></div><div class="mav-orb-inner"></div><div class="mav-orb-core"></div></div><div class="mc"><div class="ml"><span class="j-tag">JARVIS</span> · ${t}</div><div class="mb" id="sbub" data-raw=""></div></div>`;
+    chat.appendChild(div);bub=document.getElementById('sbub');
+  }
+  const raw=(bub.dataset.raw||'')+text;bub.dataset.raw=raw;
+  bub.innerHTML=renderContent(raw);chat.scrollTop=9999;
+}
+function setThink(on){
+  document.getElementById('tbar').className=on?'on':'';
+  if(on){showTyping();setStatus('DENKT...','think');}
+  else{removeTyping();setStatus('BEREIT','');
+    const b=document.getElementById('sbub');if(b)b.id='';
+  }
+}
+function addSafety(d){
+  removeTyping();const chat=document.getElementById('chat');const div=document.createElement('div');
+  div.innerHTML=`<div class="safety-msg">SICHERHEITSALARM [${(d.level||'').toUpperCase()}] — ${esc(d.message)}</div>`;
+  chat.appendChild(div.firstChild);chat.scrollTop=9999;
+}
+function addPerm(grund){
+  removeTyping();const id='p'+Date.now();const chat=document.getElementById('chat');const div=document.createElement('div');
+  div.innerHTML=`<div class="perm-msg" id="${id}"><div class="perm-title">ERLAUBNIS ERFORDERLICH</div><div class="perm-reason">${esc(grund)}</div><div class="pbts"><button class="btn ba" onclick="perm('${id}',true)">ERLAUBEN</button><button class="btn bd" onclick="perm('${id}',false)">ABLEHNEN</button></div></div>`;
+  chat.appendChild(div.firstChild);chat.scrollTop=9999;
+}
+function perm(id,ok){
+  sendWS('permission_response',{granted:ok});const el=document.getElementById(id);
+  if(el){el.style.opacity='.5';el.innerHTML+=`<div style="margin-top:7px;font-family:var(--fm);font-size:10px;color:${ok?'var(--jv-success)':'var(--jv-pulse)'}">${ok?'ERLAUBT':'ABGELEHNT'}</div>`;el.querySelectorAll('.btn').forEach(b=>b.disabled=true);}
+}
+
+// ══ ORB STATUS ════════════════════════════════════════════════════════════════
+const ORB_TITLES={
+  '':'Bereit, wenn du es bist.',
+  'listen':'Sprich. Ich höre zu.',
+  'think':'Arbeite daran.',
+  'speak':'Antwort bereit.',
+  'err':'Verbindung unterbrochen.',
+};
+function setStatus(text,type){
+  document.getElementById('stxt').textContent=text;
+  const orb=document.getElementById('orb-el');
+  const badge=document.getElementById('state-badge');
+  orb.className='orb '+(type||'');
+  badge.className='state-badge '+(type||'');
+  document.getElementById('orb-title').textContent=ORB_TITLES[type||'']||text;
+}
+const AGENT_NAMES={conversation:'KONVERSATION',computer_control:'PC-STEUERUNG',web_search:'WEBSUCHE',coding:'CODING',analysis:'ANALYSE',planning:'PLANUNG',memory:'GEDÄCHTNIS',system:'SYSTEM',screen_vision:'BILDSCHIRM'};
+function setAgent(ag){document.getElementById('think-agent').textContent=AGENT_NAMES[ag]||ag.toUpperCase();}
+function updateBadge(){
+  const labels={anthropic:'CLAUDE',openai:'GPT-4o',gemini:'GEMINI',nvidia:'NVIDIA NIM',mistral:'MISTRAL',local:'OLLAMA'};
+  document.getElementById('apib').textContent=labels[S.cfg?.api_provider]||'–';
+}
+
+// ══ LIGHT MODE ════════════════════════════════════════════════════════════════
+function applyLightMode(on){
+  document.body.classList.toggle('light',on);
+  const tgl=document.getElementById('tgl-light');
+  if(tgl){if(on){tgl.classList.add('on');}else{tgl.classList.remove('on');}}
+  localStorage.setItem('jlightmode',on?'1':'0');
+}
+function toggleLightMode(){
+  const on=!document.body.classList.contains('light');
+  applyLightMode(on);
+}
+(function(){
+  const saved=localStorage.getItem('jlightmode');
+  if(saved==='1'){applyLightMode(true);}
+})();
+
+// ══ KILL ══════════════════════════════════════════════════════════════════════
+function activateKill(){
+  if(S.killActive)return;
+  S.killActive=true;
+  stopAllSpeech();
+  if(S.listening){S.listening=false;document.getElementById('micbtn').classList.remove('on');}
+  document.getElementById('kill-ov').classList.add('persistent');
+  setStatus('KILL-SWITCH','err');
+  document.getElementById('tinp').disabled=true;
+  document.getElementById('sbtn').disabled=true;
+  document.getElementById('micbtn').disabled=true;
+  document.getElementById('ksbtn').textContent='ENTSPERREN';
+  document.getElementById('ksbtn').style.borderColor='rgba(77,230,168,0.4)';
+  document.getElementById('ksbtn').style.color='var(--jv-success)';
+  S.todoRunning=false;
+  document.getElementById('todo-cancel-btn').style.display='none';
+  const tbtn=document.getElementById('todo-start-btn');
+  tbtn.textContent='TO-DO STARTEN';tbtn.disabled=true;tbtn.classList.remove('solved');tbtn.onclick=startTodo;
+  // Copilot ebenfalls visuell stoppen (Backend stoppt via Kill-Event)
+  setCopilotActive(false,'');
+  document.getElementById('copilot-ask-modal')?.classList.remove('show');
+  document.getElementById('copilot-task-modal')?.classList.remove('show');
+}
+function deactivateKill(){
+  if(!S.killActive)return;
+  S.killActive=false;
+  document.getElementById('kill-ov').classList.remove('persistent');
+  setStatus('BEREIT','');
+  document.getElementById('tinp').disabled=false;
+  document.getElementById('sbtn').disabled=false;
+  document.getElementById('micbtn').disabled=false;
+  document.getElementById('ksbtn').textContent='STRG+ALT+J';
+  document.getElementById('ksbtn').style.borderColor='';
+  document.getElementById('ksbtn').style.color='';
+  document.getElementById('todo-start-btn').disabled=false;
+  notify('Kill-Switch deaktiviert');
+}
+function toggleKill(){
+  if(S.killActive){deactivateKill();sendWS('kill_deactivate',{});}
+  else{activateKill();sendWS('kill_switch',{});}
+}
+document.getElementById('ksbtn').addEventListener('click',toggleKill);
+
+// ══ CLOCK ══════════════════════════════════════════════════════════════════════
+function startClock(){const up=()=>document.getElementById('clk').textContent=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit',second:'2-digit'});up();setInterval(up,1000);}
+
+// ══ INPUT ══════════════════════════════════════════════════════════════════════
+function initInputs(){
+  document.getElementById('sbtn').addEventListener('click',sendMsg);
+  const mic=document.getElementById('micbtn');
+  function micStart(e){
+    e.preventDefault();
+    if(S.listening)return;
+    S.listening=true;mic.classList.add('on');
+    setStatus('HÖRE ZU...','listen');notify('Sprechen Sie jetzt');
+    sendWS('start_listening',{});
+  }
+  function micStop(e){
+    e.preventDefault();
+    if(!S.listening)return;
+    S.listening=false;mic.classList.remove('on');
+    setStatus('BEREIT','');
+    sendWS('stop_listening',{});
+  }
+  mic.addEventListener('mousedown',micStart);
+  mic.addEventListener('mouseup',micStop);
+  mic.addEventListener('mouseleave',micStop);
+  mic.addEventListener('touchstart',micStart,{passive:false});
+  mic.addEventListener('touchend',micStop,{passive:false});
+  mic.addEventListener('touchcancel',micStop,{passive:false});
+  document.getElementById('visionbtn').addEventListener('click',()=>{if(S.killActive){notify('Kill-Switch aktiv.','err');return;}sendWS('toggle_live_vision',{});});
+  document.getElementById('copilotbtn').addEventListener('click',openCopilotModal);
+  document.getElementById('copilot-task-input')?.addEventListener('keydown',e=>{if(e.key==='Enter')startCopilot();});
+  document.getElementById('custom-anrede-input')?.addEventListener('keydown',e=>{if(e.key==='Enter')saveCustomAnrede();});
+  document.getElementById('todo-input')?.addEventListener('keydown',e=>{if(e.key==='Enter')saveTodoFromModal();});
+  const tinp=document.getElementById('tinp');
+  tinp.addEventListener('input',()=>{
+    document.getElementById('char-count').textContent=tinp.value.length+'/2000';
+    document.getElementById('sbtn').classList.toggle('active',tinp.value.trim().length>0);
+  });
+}
+function initKeys(){
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Enter'&&document.activeElement===document.getElementById('tinp'))sendMsg();
+    if(e.ctrlKey&&e.key==='k'){e.preventDefault();document.getElementById('tinp').focus();}
+  });
+}
+function sendMsg(){
+  if(S.killActive){notify('Kill-Switch aktiv.','err');return;}
+  const inp=document.getElementById('tinp');const txt=inp.value.trim();if(!txt)return;
+  inp.value='';
+  document.getElementById('char-count').textContent='0/2000';
+  document.getElementById('sbtn').classList.remove('active');
+  clearThinkSteps();
+  addMsg('user',txt);
+  if(S.ws?.readyState===WebSocket.OPEN){sendWS('user_text',{text:txt});}
+  else{processOffline(txt);}
+}
+
+// ══ SCREENSHOT COUNTDOWN ═════════════════════════════════════════════════════
+async function startScreenshot(query){
+  if(S.killActive)return;
+  const ov=document.getElementById('ss-countdown');
+  const num=document.getElementById('ss-num');
+  ov.classList.add('on');
+  for(let i=5;i>=1;i--){
+    num.textContent=i;
+    num.style.animation='none';num.offsetHeight;num.style.animation='ss-pulse .9s ease-out';
+    await sleep(1000);
+  }
+  ov.classList.add('ss-flash');
+  await sleep(300);
+  ov.classList.remove('on','ss-flash');
+  notify('Screenshot aufgenommen');
+  sendWS('screenshot_analyze',{query:query||''});
+}
+
+// ══ OFFLINE AI ════════════════════════════════════════════════════════════════
+async function processOffline(text){
+  const cfg=S.cfg;if(!cfg?.api_key){addMsg('jarvis','Kein API-Key — Einstellungen öffnen.');openSettings();return;}
+  showTyping();
+  const sys={professionell:'Du bist JARVIS. Präzise, Fachbegriffe, Deutsch.',normal:'Du bist JARVIS. Freundlich, klar, Deutsch.',jugendlich:'Du bist JARVIS. Jugendslang (bro, gng, wallah). Deutsch.'}[cfg.redeart||'normal']+(cfg.anrede?` Anrede: ${cfg.anrede}.`:'')+(cfg.wohnort?` Standort des Nutzers: ${cfg.wohnort}. Nutze diesen ohne nachzufragen.`:'');
+  try{
+    let reply='';
+    if(cfg.api_provider==='anthropic'){
+      const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':cfg.api_key,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2048,system:sys,messages:[{role:'user',content:text}]})});
+      const d=await r.json();reply=d.content?.[0]?.text||d.error?.message||'Fehler';
+    }else if(cfg.api_provider==='openai'){
+      const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.api_key},body:JSON.stringify({model:cfg.openai_model||'gpt-4o-mini',max_tokens:2048,messages:[{role:'system',content:sys},{role:'user',content:text}]})});
+      const d=await r.json();reply=d.choices?.[0]?.message?.content||d.error?.message||'Fehler';
+    }else if(cfg.api_provider==='gemini'){
+      const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${cfg.api_key}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:sys+'\n\n'+text}]}]})});
+      const d=await r.json();reply=d.candidates?.[0]?.content?.parts?.[0]?.text||'Fehler';
+    }else if(cfg.api_provider==='mistral'){
+      const r=await fetch('https://api.mistral.ai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.api_key},body:JSON.stringify({model:'mistral-large-latest',max_tokens:2048,messages:[{role:'system',content:sys},{role:'user',content:text}]})});
+      const d=await r.json();reply=d.choices?.[0]?.message?.content||'Fehler';
+    }else if(cfg.api_provider==='nvidia'){reply='NVIDIA NIM: python jarvis.py starten (Browser-CORS).';}
+    else{reply='Lokales Modell: python jarvis.py starten.';}
+    removeTyping();addMsg('jarvis',reply);speak(reply);
+  }catch(e){removeTyping();addMsg('jarvis','Fehler: '+e.message);}
+}
+
+// ══ TTS ══════════════════════════════════════════════════════════════════════
+function populateVoices(){
+  const sel=document.getElementById('voice-select');if(!sel)return;
+  const voices=window.speechSynthesis?.getVoices()||[];
+  sel.innerHTML='<option value="">Standard</option>';
+  voices.forEach(v=>{
+    const opt=document.createElement('option');
+    opt.value=v.name;
+    opt.textContent=`${v.name} (${v.lang})`;
+    sel.appendChild(opt);
+  });
+  if(S.cfg?.tts_voice)sel.value=S.cfg.tts_voice;
+}
+function speak(text){
+  if(!window.speechSynthesis)return;
+  if(S.cfg?.tts_enabled===false)return;
+  let clean=text.replace(/```[\s\S]*?```/g,' Codeblock. ').replace(/\s+/g,' ').trim();
+  window.speechSynthesis.cancel();
+  const lang=S.cfg?.sprache||'de-DE';
+  const chunks=clean.match(/[^.!?]+[.!?]*/g)||[clean];
+  const voices=window.speechSynthesis.getVoices();
+  const selectedName=S.cfg?.tts_voice||'';
+  const voice=selectedName?voices.find(v=>v.name===selectedName):voices.find(v=>v.lang===lang)||voices.find(v=>v.lang.startsWith(lang.split('-')[0]));
+  chunks.forEach((chunk,i)=>{
+    const u=new SpeechSynthesisUtterance(chunk.trim());
+    u.lang=lang;u.rate=1.0;u.pitch=0.9;if(voice)u.voice=voice;
+    if(i===0)u.onstart=()=>setStatus('SPRICHT...','speak');
+    if(i===chunks.length-1)u.onend=()=>setStatus('BEREIT','');
+    window.speechSynthesis.speak(u);
+  });
+}
+function stopAllSpeech(){
+  if(window.speechSynthesis)window.speechSynthesis.cancel();
+}
+if(window.speechSynthesis){
+  window.speechSynthesis.onvoiceschanged=()=>populateVoices();
+  setTimeout(populateVoices,500);
+}
+
+// ══ TABS ══════════════════════════════════════════════════════════════════════
+function initTabs(){
+  document.querySelectorAll('.tb').forEach(t=>t.addEventListener('click',()=>{
+    document.querySelectorAll('.tb').forEach(x=>x.classList.toggle('on',x===t));
+    document.querySelectorAll('.tc').forEach(c=>c.classList.toggle('on',c.id==='tab-'+t.dataset.tab));
+  }));
+}
+
+// ══ TODO ══════════════════════════════════════════════════════════════════════
+function renderTodo(items){
+  S.todoItems=items||[];
+  const l=document.getElementById('todo-list');
+  if(!S.todoItems.length){l.innerHTML='<div style="padding:14px;text-align:center;color:var(--jv-ink-4);font-family:var(--fm);font-size:10px">KEINE AUFGABEN</div>';return;}
+  l.innerHTML=S.todoItems.map(t=>`<div class="ti ${t.done?'done':''} ${t.running?'running':''}" onclick="togTodo(${t.id})"><div class="tck">${t.done?'●':t.running?'▲':''}</div><span class="ti-txt">${esc(t.text)}</span><button class="tdel" onclick="event.stopPropagation();delTodo(${t.id})">✕</button></div>`).join('');
+}
+function togTodo(id){if(S.todoRunning)return;const t=S.todoItems.find(x=>x.id===id);if(t){t.done=!t.done;renderTodo(S.todoItems);sendWS('todo_edit',{items:S.todoItems});}}
+function delTodo(id){if(S.todoRunning)return;S.todoItems=S.todoItems.filter(t=>t.id!==id);renderTodo(S.todoItems);sendWS('todo_edit',{items:S.todoItems});}
+
+function openTodoModal(){document.getElementById('todo-modal').classList.add('show');setTimeout(()=>document.getElementById('todo-input').focus(),100);}
+function closeTodoModal(){document.getElementById('todo-modal').classList.remove('show');}
+function saveTodoFromModal(){
+  const txt=document.getElementById('todo-input').value.trim();if(!txt){notify('Bitte Aufgabe eingeben.','err');return;}
+  S.todoItems.push({id:Date.now(),text:txt,done:false,running:false});
+  renderTodo(S.todoItems);sendWS('todo_edit',{items:S.todoItems});
+  document.getElementById('todo-input').value='';closeTodoModal();notify('Aufgabe hinzugefügt');
+}
+
+function startTodo(){
+  if(S.todoRunning){notify('Läuft bereits.','err');return;}
+  const open=S.todoItems.filter(t=>!t.done);
+  if(!open.length){notify('Keine offenen Aufgaben.','err');return;}
+  S.todoRunning=true;
+  const btn=document.getElementById('todo-start-btn');
+  btn.textContent='ARBEITE AB...';btn.disabled=true;
+  document.getElementById('todo-cancel-btn').style.display='';
+  document.getElementById('todo-error-box').innerHTML='';
+  sendWS('todo_start',{items:S.todoItems});
+}
+function cancelTodo(){
+  sendWS('todo_cancel',{});
+  S.todoRunning=false;
+  S.todoItems.forEach(t=>t.running=false);renderTodo(S.todoItems);
+  const btn=document.getElementById('todo-start-btn');
+  btn.textContent='TO-DO STARTEN';btn.disabled=false;btn.classList.remove('solved');btn.onclick=startTodo;
+  document.getElementById('todo-cancel-btn').style.display='none';
+  document.getElementById('todo-error-box').innerHTML='';
+  notify('To-Do abgebrochen');
+}
+function setTodoRunning(id){
+  S.todoItems.forEach(t=>t.running=(t.id===id));renderTodo(S.todoItems);
+}
+function markTodoDone(id){
+  const t=S.todoItems.find(x=>x.id===id);if(t){t.done=true;t.running=false;}renderTodo(S.todoItems);
+}
+function showTodoError(message){
+  S.todoRunning=false;
+  document.getElementById('todo-cancel-btn').style.display='none';
+  const box=document.getElementById('todo-error-box');
+  box.innerHTML=`<div class="todo-error">JARVIS braucht Hilfe:<br>${esc(message)}</div>`;
+  const btn=document.getElementById('todo-start-btn');
+  btn.textContent='PROBLEM GELÖST';btn.disabled=false;btn.classList.add('solved');
+  btn.onclick=()=>{
+    box.innerHTML='';btn.textContent='ARBEITE AB...';btn.disabled=true;btn.classList.remove('solved');btn.onclick=startTodo;
+    document.getElementById('todo-cancel-btn').style.display='';
+    S.todoRunning=true;sendWS('todo_continue',{items:S.todoItems});
+  };
+  notify('JARVIS braucht Hilfe','err');
+}
+function todoComplete(){
+  S.todoRunning=false;
+  const btn=document.getElementById('todo-start-btn');
+  btn.textContent='TO-DO STARTEN';btn.disabled=false;btn.classList.remove('solved');btn.onclick=startTodo;
+  document.getElementById('todo-cancel-btn').style.display='none';
+  notify('To-Do abgeschlossen');
+}
+
+// ══ MEMORY ════════════════════════════════════════════════════════════════════
+function renderMem(mems){
+  const l=document.getElementById('mem-list');
+  if(!mems?.length){l.innerHTML='<div style="padding:14px;text-align:center;color:var(--jv-ink-4);font-family:var(--fm);font-size:10px">KEINE ERINNERUNGEN</div>';return;}
+  l.innerHTML=mems.map(m=>{
+    const content=m.kv||m.content||m.trigger||'';
+    const formatted=content.includes('=')?content.split('=').map((p,i)=>i===0?`<span class="mi-key">${esc(p)}</span>`:esc(p)).join('='):esc(content);
+    return `<div class="mi"><div class="mi-t">${formatted}</div><button class="mi-d" onclick="delMem(${m.id})">✕</button></div>`;
+  }).join('');
+}
+function delMem(id){sendWS('memory_delete',{id});setTimeout(()=>sendWS('get_memories',{}),300);notify('Erinnerung gelöscht');}
+
+// ══ SUGGESTIONS ══════════════════════════════════════════════════════════════
+function renderSug(list){
+  const l=document.getElementById('sug-list');
+  if(!list?.length){l.innerHTML='<div style="padding:14px;text-align:center;color:var(--jv-ink-4);font-family:var(--fm);font-size:10px">KEINE VORSCHLÄGE</div>';return;}
+  l.innerHTML=list.map(s=>`<div class="sug" onclick="accSug(this,'${esc(s).replace(/'/g,"\\'")}')">${esc(s)}</div>`).join('');
+}
+function accSug(el,s){
+  clearThinkSteps();addMsg('user',s);
+  sendWS('user_text',{text:s});
+  el.style.opacity='.4';el.style.pointerEvents='none';
+}
+
+// ══ NOTIFY ════════════════════════════════════════════════════════════════════
+let ntT;
+function notify(text,type=''){
+  const el=document.getElementById('notif');el.textContent=text;
+  el.style.borderColor=type==='err'?'rgba(255,77,122,0.5)':'var(--jv-line-ion)';
+  el.style.color=type==='err'?'var(--jv-pulse)':'var(--jv-ion)';
+  el.classList.add('on');clearTimeout(ntT);ntT=setTimeout(()=>el.classList.remove('on'),3000);
+}
+
+// ══ COPILOT ══════════════════════════════════════════════════════════════════
+function openCopilotModal(){
+  if(S.killActive){notify('Kill-Switch aktiv.','err');return;}
+  if(S.copilotActive){notify('Copilot läuft bereits.');return;}
+  document.getElementById('copilot-task-modal').classList.add('show');
+  setTimeout(()=>document.getElementById('copilot-task-input').focus(),50);
+}
+function closeCopilotModal(){document.getElementById('copilot-task-modal').classList.remove('show');}
+function startCopilot(){
+  if(S.killActive){notify('Kill-Switch aktiv.','err');return;}
+  const inp=document.getElementById('copilot-task-input');
+  const task=(inp.value||'').trim();
+  if(!task){notify('Bitte eine Aufgabe eingeben.','err');return;}
+  const allow=document.getElementById('copilot-allow-all').checked;
+  closeCopilotModal();inp.value='';
+  clearThinkSteps();
+  addMsg('user','🖥️ Copilot: '+task);
+  sendWS('copilot_start',{task,allow_all:allow});
+}
+function stopCopilot(){sendWS('copilot_stop',{});notify('Copilot wird gestoppt…');}
+function setCopilotActive(on,task){
+  S.copilotActive=!!on;
+  document.getElementById('copilot-bar').classList.toggle('on',!!on);
+  document.getElementById('copilotbtn').classList.toggle('on',!!on);
+  if(on){
+    document.getElementById('cp-task').textContent=task?('Aufgabe: '+task):'';
+    document.getElementById('cp-status').textContent='Copilot gestartet…';
+    document.getElementById('cp-stepc').textContent='';
+  }
+}
+function setCopilotStatus(text,phase,step){
+  const s=document.getElementById('cp-status');if(s&&text)s.textContent=text;
+  const sc=document.getElementById('cp-stepc');
+  if(sc)sc.textContent=(step!==undefined&&step!==null&&step!=='')?('Schritt '+step):sc.textContent;
+}
+function copilotPlan(d){
+  const steps=(d&&d.steps)||[];
+  if(!steps.length)return;
+  const chat=document.getElementById('chat');if(!chat)return;
+  const el=document.createElement('div');
+  el.className='cp-plan'+(d.destructive?' warn':'');
+  const head=d.destructive?'⚠️ PLAN · enthält heikle Schritte':'📋 PLAN';
+  const reason=(d.destructive&&d.reason)?`<div class="cp-plan-reason">${esc(d.reason)}</div>`:'';
+  el.innerHTML=`<div class="cp-plan-head">${head}</div>${reason}<ol class="cp-plan-list">`+
+    steps.map(s=>`<li>${esc(s)}</li>`).join('')+`</ol>`;
+  chat.appendChild(el);chat.scrollTop=chat.scrollHeight;
+}
+function addCopilotStep(d){
+  const chat=document.getElementById('chat');if(!chat)return;
+  const id='cp-line-'+(d.step!==undefined?d.step:0);
+  let el=document.getElementById(id);
+  const res=(d.result||'').toString();
+  const isErr=res.toLowerCase().startsWith('fehler')||res.toLowerCase().includes('abgelehnt')||res.toLowerCase().includes('notbremse');
+  const stepLabel=(d.step!==undefined&&d.step!==null)?('#'+d.step):'';
+  const status=esc(d.status||d.action||'');
+  const resHtml=res?` <span class="cp-log-res">→ ${esc(res)}</span>`:'';
+  if(!el){el=document.createElement('div');el.className='cp-log';el.id=id;chat.appendChild(el);}
+  el.classList.toggle('err',isErr);
+  el.innerHTML=`<span class="cp-log-step">${stepLabel}</span>${status}${resHtml}`;
+  chat.scrollTop=chat.scrollHeight;
+}
+function copilotAsk(kind,d){
+  let title='',body='',btns=[];
+  if(kind==='confirm'){
+    title='BESTÄTIGUNG';
+    body='JARVIS möchte eine möglicherweise heikle Aktion ausführen:<br><br><strong>'+esc(d.detail||d.action||'')+'</strong>';
+    btns=[['ERLAUBEN','primary','allow'],['IMMER ERLAUBEN','warn','always'],['ABLEHNEN','danger','deny']];
+  }else if(kind==='checkpoint'){
+    title='WEITERMACHEN?';
+    body='Der Copilot hat <strong>'+esc(String(d.step||''))+'</strong> Schritte ausgeführt. Soll er weitermachen?';
+    btns=[['WEITER','primary','continue'],['IMMER ERLAUBEN','warn','always'],['STOPP','danger','stop']];
+  }else{
+    title='DEINE EINGABE';
+    body=esc(d.message||'Bitte gib die nötige Eingabe manuell ein, dann klicke »Weiter«.');
+    btns=[['WEITER','primary','user_done'],['STOPP','danger','stop']];
+  }
+  document.getElementById('cpa-title').textContent=title;
+  document.getElementById('cpa-body').innerHTML=body;
+  document.getElementById('cpa-actions').innerHTML=btns.map(b=>`<button class="cpa-btn ${b[1]}" onclick="copilotRespond('${b[2]}')">${esc(b[0])}</button>`).join('');
+  document.getElementById('copilot-ask-modal').classList.add('show');
+}
+function copilotRespond(decision){
+  document.getElementById('copilot-ask-modal').classList.remove('show');
+  sendWS('copilot_response',{decision});
+}
+function copilotDone(status,summary){
+  setCopilotActive(false,'');
+  document.getElementById('copilot-ask-modal').classList.remove('show');
+  const icon=status==='done'?'✅':(status==='stopped'?'⏹':'⚠️');
+  addMsg('jarvis',icon+' '+(summary||''));
+  if(status==='done'||status==='fail')speak(summary||'');
+  notify('Copilot: '+(status==='done'?'fertig':status==='stopped'?'gestoppt':'abgebrochen'),status==='fail'?'err':'');
+}
+
+// ══ UTILS ════════════════════════════════════════════════════════════════════
+const esc=t=>String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+// ══ CLAP / WAKE WORD ════════════════════════════════════════════════════════
+function calibrateClap(){notify('Kalibriere... 3 Sekunden leise sein');sendWS('calibrate_clap',{});}
+document.addEventListener('DOMContentLoaded',()=>{
+  const slider=document.getElementById('clap-slider');
+  if(slider)slider.addEventListener('input',()=>{
+    document.getElementById('clap-val').textContent=parseFloat(slider.value).toFixed(2);
+    sendWS('set_clap_threshold',{value:parseFloat(slider.value)});
+  });
+  const tglClap=document.getElementById('tgl-clap');
+  if(tglClap){
+    const obs=new MutationObserver(()=>{
+      document.getElementById('clap-settings').style.display=tglClap.classList.contains('on')?'block':'none';
+    });
+    obs.observe(tglClap,{attributes:true,attributeFilter:['class']});
+  }
+});
+
+setTimeout(()=>{
+  console.log('[Boot] Final check - S.cfg:', !!S.cfg, 'WebSocket state:', S.ws?.readyState);
+  if(!S.cfg){
+    console.log('[Boot] No config found, showing setup');
+    return;
+  }
+  if(!S.ws || S.ws.readyState!==WebSocket.OPEN){
+    console.log('[Boot] WebSocket not connected, showing offline mode');
+    const chatEl=document.getElementById('chat');
+    if(chatEl && chatEl.children.length===0){
+      addMsg('jarvis','JARVIS v2.8 aktiv.\nFür PC-Steuerung: python jarvis.py starten.');
+    }
+    if(!S.cfg?.api_key||S.cfg.api_key.length<10){
+      document.getElementById('banner-txt').textContent='API-Key fehlt — Einstellungen öffnen.';
+      document.getElementById('setup-banner').classList.add('show');
+    }
+    setStatus('OFFLINE','err');
+  }
+},1800);
+</script>
+</body>
+</html>
