@@ -1,0 +1,823 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Jarvis — Sprachgesteuerter KI-Assistent für deinen PC</title>
+<meta name="description" content="JARVIS ist ein sprachgesteuerter KI-Assistent mit Bildschirm-Vision, Gedächtnis, PC-Steuerung und Smart-Home-Anbindung. Läuft lokal auf deinem Rechner — Installation, Funktionen und Bedienung in einer Übersicht.">
+<meta name="theme-color" content="#04060a">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="canonical" href="https://my-jarvis.vercel.app/">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="My Jarvis — Sprachgesteuerter KI-Assistent für deinen PC">
+<meta property="og:description" content="Voice-first KI-Assistent mit Screen-Vision, Gedächtnis, Systemsteuerung und Smart Home. Läuft lokal, verbindet sich mit dem KI-Anbieter deiner Wahl.">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preload" href="assets/css/style.css" as="style">
+<link rel="stylesheet" href="assets/css/style.css">
+
+<!-- Reveal-Animationen nur, wenn JavaScript läuft — sonst bleibt alles sichtbar. -->
+<script>document.documentElement.className += " js";</script>
+</head>
+<body>
+
+<!-- ========================================================== Icon-Sprite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <g id="ico-attrs"></g>
+  </defs>
+  <symbol id="i-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0v-6a3 3 0 0 1 3-3z"/><path d="M19 10.5v1a7 7 0 0 1-14 0v-1"/><path d="M12 18.5v3"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 3.5l6.5 17 2.4-6.6 6.6-2.4z"/><path d="M14 14l6 6"/></symbol>
+  <symbol id="i-db" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16.5" rx="2"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="8.5 12 11.5 15 20 5.5"/><path d="M20.5 12.5V19a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4.5" width="19" height="15" rx="2"/><polyline points="3 6.5 12 13 21 6.5"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8L6 18M18 6l1.8-1.8"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8z"/><polyline points="14 2.5 14 8 19.5 8"/><path d="M8 13h8M8 17h6"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5.5 9.8V20a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V9.8"/><path d="M10 21v-6h4v6"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="3.5"/><path d="M10.5 9.2l5 2.8-5 2.8z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20.5 20.5L16.2 16.2"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 7.5a2 2 0 0 1 2-2h11.5"/><rect x="3.5" y="7.5" width="17" height="12" rx="2"/><circle cx="16.5" cy="13.5" r="1.2"/></symbol>
+  <symbol id="i-mega" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5v3a1 1 0 0 0 1 1h3l7 4V5.5l-7 4H4a1 1 0 0 0-1 1z"/><path d="M18 9.2a4 4 0 0 1 0 5.6"/></symbol>
+  <symbol id="i-alarm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 9.5v4l2.5 2"/><path d="M5 3.5L2.6 5.8M19 3.5l2.4 2.3"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l8 3.4v5.7c0 4.8-3.3 9-8 10.2-4.7-1.2-8-5.4-8-10.2V5.9z"/><polyline points="9 12 11.3 14.3 15.5 10"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2.5L4.5 13.5H11L10 21.5 19.5 10H13z"/></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9.5 2.5v3.5M14.5 2.5v3.5M9.5 18v3.5M14.5 18v3.5M2.5 9.5H6M2.5 14.5H6M18 9.5h3.5M18 14.5h3.5"/></symbol>
+  <symbol id="i-term" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="16" rx="2"/><polyline points="7 10 10 12.5 7 15"/><path d="M12.5 15H17"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.5 2.7 3.8 5.7 3.8 9S14.5 18.3 12 21c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.8h.01"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l9.3 16.5H2.7z"/><path d="M12 10v4M12 17h.01"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><polyline points="7 10.5 12 15.5 17 10.5"/><path d="M4 19.5h16"/></symbol>
+  <symbol id="i-gh" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.6 5.6.6 11.9c0 5 3.3 9.3 7.8 10.8.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.1.1 1.7 1.2 1.7 1.2 1 1.8 2.7 1.3 3.4 1 .1-.7.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.2-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.9 1.2 1.9 1.2 3.2 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6a11.4 11.4 0 0 0 7.8-10.8C23.4 5.6 18.3.5 12 .5z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+</svg>
+
+<!-- ========================================================== Navigation -->
+<header class="nav">
+  <div class="wrap nav__inner">
+    <a class="brand" href="#top">
+      <span class="brand__mark" aria-hidden="true"></span>
+      J·A·R·V·I·S
+      <span class="brand__ver">v2.8</span>
+    </a>
+
+    <nav class="nav__links" id="nav-links" aria-label="Hauptnavigation">
+      <a href="#funktionen">Was er kann</a>
+      <a href="#installation">Installation</a>
+      <a href="#nutzung">Nutzung</a>
+      <a href="#sicherheit">Sicherheit</a>
+      <a href="#faq">Hilfe</a>
+    </nav>
+
+    <div class="nav__cta">
+      <a class="btn btn--ghost btn--sm" href="https://github.com/aquaxs1/My-Jarvis" target="_blank" rel="noopener">
+        <svg><use href="#i-gh"/></svg> GitHub
+      </a>
+      <a class="btn btn--primary btn--sm" href="#installation">Installieren</a>
+      <button class="nav__burger" type="button" aria-label="Menü" aria-expanded="false" aria-controls="nav-links">
+        <svg width="20" height="20"><use href="#i-menu"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ================================================================ Hero -->
+<section class="hero">
+  <canvas id="core-canvas" aria-hidden="true"></canvas>
+  <div class="core-fallback" aria-hidden="true">
+    <div class="core-fallback__ring"></div>
+    <div class="core-fallback__ring"></div>
+    <div class="core-fallback__ring"></div>
+    <div class="core-fallback__orb"></div>
+  </div>
+
+  <div class="wrap">
+    <div class="hero__grid">
+      <span class="eyebrow"><span class="dot"></span> Open Source · läuft lokal auf deinem PC</span>
+
+      <h1>JARVIS</h1>
+      <p class="hero__sub">Just A Rather Very Intelligent System</p>
+
+      <p class="hero__lead">
+        Sprachgesteuerter KI-Assistent mit Bildschirm-Vision, dauerhaftem Gedächtnis,
+        Systemsteuerung und Smart-Home-Anbindung. Er startet lokal auf deinem Rechner,
+        öffnet ein Browser-Interface und verbindet sich mit dem KI-Anbieter deiner Wahl.
+      </p>
+
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="#installation"><svg><use href="#i-down"/></svg> In 3 Minuten installieren</a>
+        <a class="btn btn--ghost" href="#funktionen"><svg><use href="#i-zap"/></svg> Was er kann</a>
+      </div>
+
+      <div class="hero__stats">
+        <div class="stat"><b>6</b><span>KI-Anbieter</span></div>
+        <div class="stat"><b>20+</b><span>Module</span></div>
+        <div class="stat"><b>100 %</b><span>lokal gestartet</span></div>
+        <div class="stat"><b>MIT</b><span>Lizenz</span></div>
+      </div>
+    </div>
+  </div>
+
+  <a class="hero__scroll" href="#ueberblick" aria-label="Weiter zum Überblick">
+    <span></span>
+  </a>
+</section>
+
+<!-- ============================================================ Überblick -->
+<section class="section section--alt" id="ueberblick">
+  <div class="wrap">
+    <div class="section__head reveal">
+      <span class="eyebrow">Überblick</span>
+      <h2>Ein Assistent, der sieht, hört und handelt</h2>
+      <p>
+        JARVIS ist kein Chatfenster. Er sieht deinen Bildschirm, merkt sich, was du ihm sagst,
+        steuert dein System und arbeitet To-Do-Listen selbstständig ab — mit Kill-Switch und
+        Sicherheitsprüfung bei jedem Schritt.
+      </p>
+    </div>
+
+    <div class="overview reveal">
+      <div class="terminal" aria-hidden="true">
+        <div class="terminal__bar">
+          <i></i><i></i><i></i>
+          <span>jarvis — python jarvis.py</span>
+        </div>
+        <div class="terminal__body" id="terminal-body"></div>
+      </div>
+      <div class="overview__text">
+        <h3>Ein Befehl, dann läuft er</h3>
+        <p>
+          <code class="inline">python jarvis.py</code> startet den lokalen Server, der Browser öffnet sich
+          von selbst. Ab da sprichst oder tippst du einfach — JARVIS entscheidet, welches Modul
+          er dafür braucht: Vision, Kalender, Gedächtnis, E-Mail oder Systemsteuerung.
+        </p>
+        <p>
+          Im Denkprozess links siehst du live mit, was er gerade tut: Analyse, Planung, Ausführung.
+          Nichts passiert unsichtbar im Hintergrund.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid grid--3">
+      <article class="card reveal">
+        <div class="card__icon"><svg><use href="#i-cpu"/></svg></div>
+        <h3>Lokal gestartet</h3>
+        <p>JARVIS läuft als lokaler Webserver auf <code class="inline">127.0.0.1:8765</code>. Deine Daten liegen in <code class="inline">~/.jarvis/</code> — Gedächtnis und API-Keys verschlüsselt.</p>
+      </article>
+      <article class="card reveal">
+        <div class="card__icon"><svg><use href="#i-globe"/></svg></div>
+        <h3>Dein KI-Anbieter</h3>
+        <p>Claude, ChatGPT, Gemini, NVIDIA NIM, Mistral — oder komplett offline über ein lokales Ollama-Modell. Jederzeit in den Einstellungen umschaltbar.</p>
+      </article>
+      <article class="card reveal card--amber">
+        <div class="card__icon"><svg><use href="#i-shield"/></svg></div>
+        <h3>Kill-Switch inklusive</h3>
+        <p><kbd>Strg</kbd> + <kbd>Alt</kbd> + <kbd>J</kbd> stoppt sofort alles: Sprache, Befehle, Vision, laufende To-Dos. Riskante Aktionen fragen vorher nach.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================== Funktionen -->
+<section class="section" id="funktionen">
+  <div class="wrap">
+    <div class="section__head reveal">
+      <span class="eyebrow">Was er kann</span>
+      <h2>Funktionen im Überblick</h2>
+      <p>
+        Alle Module sind optional: Was du nicht einrichtest, wird einfach übersprungen —
+        JARVIS startet trotzdem.
+      </p>
+    </div>
+
+    <div class="grid grid--3">
+
+      <article class="card reveal">
+        <div class="card__icon"><svg><use href="#i-mic"/></svg></div>
+        <h3>Chat &amp; Sprache</h3>
+        <p>Natürliche Unterhaltung per Text oder Stimme. Spracheingabe über den Mikrofon-Button, Sprachausgabe per TTS — in sechs Sprachen.</p>
+        <div class="card__ex"><b>„Erklär mir Quantencomputing"</b></div>
+      </article>
+
+      <article class="card reveal">
+        <div class="card__icon"><svg><use href="#i-eye"/></svg></div>
+        <h3>Bildschirm &amp; Vision</h3>
+        <p>Screenshot-Analyse mit 5-Sekunden-Countdown. Live-Vision beobachtet den Bildschirm alle 2–3 Sekunden und meldet Veränderungen per Sprache.</p>
+        <div class="card__ex"><b>„Sieh dir meinen Bildschirm an"</b></div>
+      </article>
+
+      <article class="card reveal">
+        <div class="card__icon"><svg><use href="#i-pointer"/></svg></div>
+        <h3>PC-Steuerung</h3>
+        <p>Mausklicks, Tastatureingaben und Programmstarts — abgesichert durch Whitelist, Risikobewertung und Injection-Schutz.</p>
+        <div class="card__ex"><b>„Öffne Chrome und such nach dem Wetter"</b></div>
+      </article>
+
+      <article class="card reveal">
+        <div class="card__icon"><svg><use href="#i-db"/></svg></div>
+        <h3>Gedächtnis</h3>
+        <p>JARVIS merkt sich Informationen dauerhaft und verschlüsselt. Alles Gespeicherte steht im Memory-Tab und lässt sich einzeln löschen.</p>
+        <div class="card__ex"><b>„Merk dir, dass ich Sebastian heiße"</b></div>
+      </article>
+
+      <article class="card reveal">
+        <div class="card__icon"><svg><use href="#i-code"/></svg></div>
+        <h3>Code-Verarbeitung</h3>
+        <p>Python wird mit <code class="inline">py_compile</code> geprüft, JavaScript mit <code class="inline">node --check</code>. Bei Syntaxfehlern korrigiert JARVIS bis zu drei Mal selbst und formatiert anschließend.</p>
+        <div class="card__ex"><b>„Schreib mir ein Python-Skript für CSV-Import"</b></div>
+      </article>
+
+      <article class="card reveal">
+        <div class="card__icon"><svg><use href="#i-cal"/></svg></div>
+        <h3>Kalender</h3>
+        <p>Google Calendar lesen und Termine in natürlicher Sprache anlegen — inklusive Zeitangaben wie „Freitag 14 Uhr".</p>
+        <div class="card__ex"><b>„Was habe ich morgen?"</b></div>
+      </article>
+
+      <article class="card reveal">
+        <div class="card__icon"><svg><use href="#i-check"/></svg></div>
+        <h3>Aufgaben</h3>
+        <p>Todoist und Notion anbinden: offene Aufgaben abfragen, neue anlegen, erledigte abhaken.</p>
+        <div class="card__ex"><b>„Füge zu Todoist hinzu: E-Mail beantworten"</b></div>
+      </article>
+
+      <article class="card reveal">
+        <div class="card__icon"><svg><use href="#i-mail"/></svg></div>
+        <h3>E-Mail</h3>
+        <p>Ungelesene Mails über IMAP holen, zusammenfassen, Antworten entwerfen. Gesendet wird ausschließlich nach ausdrücklicher Bestätigung.</p>
+        <div class="card__ex"><b>„Fass meine E-Mails zusammen"</b></div>
+      </article>
+
+      <article class="card reveal">
+        <div class="card__icon"><svg><use href="#i-sun"/></svg></div>
+        <h3>Daily Briefing</h3>
+        <p>Wetter, Top-News per RSS, heutige Termine und offene Aufgaben — auf Zuruf oder automatisch jeden Morgen um 08:00 Uhr.</p>
+        <div class="card__ex"><b>„Gib mir mein Briefing"</b></div>
+      </article>
+
+      <article class="card reveal">
+        <div class="card__icon"><svg><use href="#i-file"/></svg></div>
+        <h3>Dokumente</h3>
+        <p>PDF (inkl. Tabellen), Word, TXT, MD, CSV, JSON, XML und HTML. Lange Dokumente werden automatisch in Abschnitte zerlegt.</p>
+        <div class="card__ex"><b>„Fasse C:\Dokumente\report.pdf zusammen"</b></div>
+      </article>
+
+      <article class="card reveal">
+        <div class="card__icon"><svg><use href="#i-home"/></svg></div>
+        <h3>Smart Home</h3>
+        <p>Home Assistant oder direkt die Philips-Hue-Bridge: Licht, Thermostat, Medien und ein Status-Überblick über alle Geräte.</p>
+        <div class="card__ex"><b>„Mach das Licht an"</b></div>
+      </article>
+
+      <article class="card reveal">
+        <div class="card__icon"><svg><use href="#i-video"/></svg></div>
+        <h3>YouTube</h3>
+        <p>Links werden automatisch erkannt, das Transkript geholt und zusammengefasst. Videos über 15 Minuten werden in 5-Minuten-Abschnitte geteilt.</p>
+        <div class="card__ex"><b>„Fasse dieses Video zusammen: [Link]"</b></div>
+      </article>
+
+      <article class="card reveal">
+        <div class="card__icon"><svg><use href="#i-search"/></svg></div>
+        <h3>Recherche</h3>
+        <p>RSS-Feeds, arXiv-Paper und die Hacker-News-Topstories zu deinen konfigurierten Themen — mit Detailansicht pro Artikel.</p>
+        <div class="card__ex"><b>„Was gibt's Neues in der Forschung?"</b></div>
+      </article>
+
+      <article class="card reveal">
+        <div class="card__icon"><svg><use href="#i-wallet"/></svg></div>
+        <h3>Finanzen</h3>
+        <p>Ausgaben werden aus dem Satz erkannt und kategorisiert. Monatsbudgets pro Kategorie warnen automatisch bei 80 % und 100 %.</p>
+        <div class="card__ex"><b>„Ich habe 45 Euro für Lebensmittel ausgegeben"</b></div>
+      </article>
+
+      <article class="card reveal">
+        <div class="card__icon"><svg><use href="#i-mega"/></svg></div>
+        <h3>Social Media</h3>
+        <p>LinkedIn-Beiträge, X-Threads (5–8 Tweets, nummeriert) und Newsletter — jederzeit im Ton oder in der Länge überarbeitbar.</p>
+        <div class="card__ex"><b>„Schreib einen LinkedIn-Post über KI in der Medizin"</b></div>
+      </article>
+
+      <article class="card reveal card--amber">
+        <div class="card__icon"><svg><use href="#i-alarm"/></svg></div>
+        <h3>Deadline-Warnungen</h3>
+        <p>24 Stunden vorher als Info, 1 Stunde vorher gelb, 15 Minuten vorher rot mit Ton — aus Kalender, Aufgaben und dem Gesprächsverlauf.</p>
+        <div class="card__ex"><b>„Das muss bis Freitag fertig sein"</b></div>
+      </article>
+
+      <article class="card reveal card--amber">
+        <div class="card__icon"><svg><use href="#i-zap"/></svg></div>
+        <h3>Wake Word &amp; Klatschen</h3>
+        <p>„Hey Jarvis" aktiviert die Spracheingabe im Hintergrund. Alternativ zweimal klatschen — mit Kalibrierung auf deine Raumlautstärke.</p>
+        <div class="card__ex"><b>„Hey Jarvis …"</b></div>
+      </article>
+
+      <article class="card reveal card--amber">
+        <div class="card__icon"><svg><use href="#i-shield"/></svg></div>
+        <h3>Sicherheitssystem</h3>
+        <p>Kill-Switch, Risiko-Klassifizierung jeder Anfrage, Rückfrage bei riskanten Aktionen, Programm-Whitelist und verschlüsselte API-Keys.</p>
+        <div class="card__ex"><b><kbd>Strg</kbd> + <kbd>Alt</kbd> + <kbd>J</kbd></b></div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================= Installation -->
+<section class="section section--alt" id="installation">
+  <div class="wrap">
+    <div class="section__head reveal">
+      <span class="eyebrow">Installation</span>
+      <h2>In drei Minuten startklar</h2>
+      <p>Python installieren, Repository klonen, Installer ausführen. Der Rest passiert im Browser.</p>
+    </div>
+
+    <div class="grid grid--3 reveal" style="margin-bottom:36px">
+      <article class="card">
+        <div class="card__icon"><svg><use href="#i-cpu"/></svg></div>
+        <h3>Voraussetzungen</h3>
+        <ul>
+          <li>Python 3.10 oder neuer</li>
+          <li>Windows 10/11, macOS oder Linux</li>
+          <li>API-Key eines Anbieters — oder lokales Ollama</li>
+          <li>Mikrofon &amp; Lautsprecher (optional)</li>
+        </ul>
+      </article>
+      <article class="card">
+        <div class="card__icon"><svg><use href="#i-down"/></svg></div>
+        <h3>Was der Installer macht</h3>
+        <ul>
+          <li>prüft die Python-Installation</li>
+          <li>installiert alle Pakete aus <code class="inline">requirements.txt</code></li>
+          <li>installiert System-Pakete (Audio, TTS)</li>
+          <li>legt <code class="inline">~/.jarvis/</code> an</li>
+        </ul>
+      </article>
+      <article class="card">
+        <div class="card__icon"><svg><use href="#i-term"/></svg></div>
+        <h3>Danach</h3>
+        <ul>
+          <li><code class="inline">python jarvis.py</code> starten</li>
+          <li>Browser öffnet sich automatisch</li>
+          <li>Konfigurations-Dialog ausfüllen</li>
+          <li><b>START JARVIS</b> klicken</li>
+        </ul>
+      </article>
+    </div>
+
+    <!-- OS-Tabs -->
+    <div class="tabs" data-tabs="os" role="tablist" aria-label="Betriebssystem wählen">
+      <button role="tab" data-tab="windows" aria-selected="true" type="button">Windows</button>
+      <button role="tab" data-tab="mac" aria-selected="false" type="button">macOS</button>
+      <button role="tab" data-tab="linux" aria-selected="false" type="button">Linux</button>
+    </div>
+
+    <div class="tabpanel" data-tabgroup="os" data-tabpanel="windows">
+      <div class="code">
+        <div class="code__head"><span class="code__label">Windows · empfohlen</span><button class="copy" type="button">KOPIEREN</button></div>
+<pre><span class="c"># Repository klonen</span>
+<span class="p">git clone</span> https://github.com/aquaxs1/My-Jarvis.git jarvis
+<span class="p">cd</span> jarvis
+
+<span class="c"># Installer ausführen</span>
+install.bat</pre>
+      </div>
+      <div class="code">
+        <div class="code__head"><span class="code__label">Manuell, falls der Installer nicht durchläuft</span><button class="copy" type="button">KOPIEREN</button></div>
+<pre><span class="p">pip install</span> -r requirements.txt
+
+<span class="c"># Mikrofon-Unterstützung</span>
+<span class="p">pip install</span> pyaudio
+
+<span class="c"># falls das fehlschlägt:</span>
+<span class="p">pip install</span> pipwin
+pipwin install pyaudio</pre>
+      </div>
+    </div>
+
+    <div class="tabpanel" data-tabgroup="os" data-tabpanel="mac" hidden>
+      <div class="code">
+        <div class="code__head"><span class="code__label">macOS</span><button class="copy" type="button">KOPIEREN</button></div>
+<pre><span class="p">git clone</span> https://github.com/aquaxs1/My-Jarvis.git jarvis
+<span class="p">cd</span> jarvis
+
+<span class="c"># Audio-Bibliothek für das Mikrofon</span>
+<span class="p">brew install</span> portaudio
+
+<span class="p">pip3 install</span> -r requirements.txt</pre>
+      </div>
+      <div class="code">
+        <div class="code__head"><span class="code__label">Alternativ mit dem Installer</span><button class="copy" type="button">KOPIEREN</button></div>
+<pre><span class="p">chmod</span> +x install.sh
+./install.sh</pre>
+      </div>
+    </div>
+
+    <div class="tabpanel" data-tabgroup="os" data-tabpanel="linux" hidden>
+      <div class="code">
+        <div class="code__head"><span class="code__label">Linux · Debian / Ubuntu</span><button class="copy" type="button">KOPIEREN</button></div>
+<pre><span class="p">git clone</span> https://github.com/aquaxs1/My-Jarvis.git jarvis
+<span class="p">cd</span> jarvis
+
+<span class="c"># System-Pakete für Audio und Sprachausgabe</span>
+<span class="p">sudo apt-get install</span> -y portaudio19-dev python3-pyaudio espeak-ng flac
+
+<span class="p">pip3 install</span> -r requirements.txt</pre>
+      </div>
+      <div class="code">
+        <div class="code__head"><span class="code__label">Alternativ mit dem Installer</span><button class="copy" type="button">KOPIEREN</button></div>
+<pre><span class="p">chmod</span> +x install.sh
+./install.sh</pre>
+      </div>
+    </div>
+
+    <div class="callout callout--teal reveal" style="margin:8px 0 40px">
+      <svg><use href="#i-info"/></svg>
+      <div><b>Kein PyAudio? Kein Problem.</b> JARVIS nutzt <code class="inline">sounddevice</code> als Fallback für das Mikrofon und startet auch ganz ohne Audio-Pakete — dann eben per Texteingabe.</div>
+    </div>
+
+    <!-- Start -->
+    <h3 class="reveal" style="font-size:22px;margin-bottom:14px">JARVIS starten</h3>
+    <div class="code reveal">
+      <div class="code__head"><span class="code__label">Start</span><button class="copy" type="button">KOPIEREN</button></div>
+<pre><span class="c"># Windows</span>
+<span class="p">python</span> jarvis.py
+
+<span class="c"># macOS / Linux</span>
+<span class="p">python3</span> jarvis.py</pre>
+    </div>
+    <p class="reveal" style="color:var(--fg-2);margin:0 0 44px">
+      JARVIS startet einen lokalen Webserver und öffnet den Browser auf
+      <code class="inline">http://127.0.0.1:8765</code>. Ein Boot-Screen zeigt den Fortschritt der Initialisierung.
+      Ist der Port belegt, werden automatisch 8766, 8767 usw. probiert.
+    </p>
+
+    <!-- Ersteinrichtung -->
+    <h3 class="reveal" style="font-size:22px;margin-bottom:6px">Ersteinrichtung</h3>
+    <p class="reveal" style="color:var(--fg-2);margin-top:0">Beim ersten Start erscheint der Konfigurations-Dialog im Browser.</p>
+    <div class="steps reveal" style="margin-bottom:44px">
+      <div class="step"><div><h4>Anrede wählen</h4><p>Wie JARVIS dich anspricht: Sir, Boss, Bro, Ma'am, ohne Anrede — oder eine eigene Anrede über <b>+</b>.</p></div></div>
+      <div class="step"><div><h4>Sprachstil wählen</h4><p>Professionell (präzise, Fachbegriffe), Normal (freundlich) oder Locker (Slang).</p></div></div>
+      <div class="step"><div><h4>KI-Anbieter auswählen</h4><p>Kachel anklicken und den API-Key eintragen. Der Key wird verschlüsselt gespeichert, nie im Klartext.</p></div></div>
+      <div class="step"><div><h4>Standort eintragen</h4><p>Wird für Wetter, lokale News und ortsbezogene Informationen genutzt — JARVIS fragt danach nie wieder.</p></div></div>
+      <div class="step"><div><h4>START JARVIS klicken</h4><p>Die Konfiguration landet in <code class="inline">~/.jarvis/config.json</code>.</p></div></div>
+    </div>
+
+    <!-- Provider -->
+    <h3 class="reveal" style="font-size:22px;margin-bottom:14px">Unterstützte KI-Anbieter</h3>
+    <div class="table-wrap reveal" style="margin-bottom:44px">
+      <table>
+        <thead><tr><th>Anbieter</th><th>Modell</th><th>Key-Format</th></tr></thead>
+        <tbody>
+          <tr><td>Anthropic Claude</td><td class="muted">claude-sonnet-4-20250514</td><td><code>sk-ant-api03-…</code></td></tr>
+          <tr><td>OpenAI ChatGPT</td><td class="muted">gpt-4o-mini</td><td><code>sk-…</code></td></tr>
+          <tr><td>Google Gemini</td><td class="muted">gemini-1.5-flash</td><td><code>AIza…</code></td></tr>
+          <tr><td>NVIDIA NIM</td><td class="muted">llama-3.1-70b</td><td><code>nvapi-…</code></td></tr>
+          <tr><td>Mistral AI</td><td class="muted">mistral-large-latest</td><td><code>API-Key</code></td></tr>
+          <tr><td>Lokal (Ollama)</td><td class="muted">llama3, mistral, …</td><td class="muted">kein Key nötig</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Optionale Pakete -->
+    <h3 class="reveal" style="font-size:22px;margin-bottom:6px">Optionale Pakete</h3>
+    <p class="reveal" style="color:var(--fg-2);margin-top:0">
+      Diese Pakete schalten zusätzliche Funktionen frei. Fehlt eins, wird die jeweilige Funktion einfach übersprungen.
+    </p>
+    <div class="table-wrap reveal">
+      <table>
+        <thead><tr><th>Paket</th><th>Funktion</th><th>Installation</th></tr></thead>
+        <tbody>
+          <tr><td><code>black</code></td><td>Python-Code formatieren</td><td><code>pip install black</code></td></tr>
+          <tr><td><code>google-api-python-client</code></td><td>Google Calendar</td><td><code>pip install google-api-python-client google-auth-oauthlib</code></td></tr>
+          <tr><td><code>dateparser</code></td><td>Datumsangaben in natürlicher Sprache</td><td><code>pip install dateparser</code></td></tr>
+          <tr><td><code>todoist-api-python</code></td><td>Todoist</td><td><code>pip install todoist-api-python</code></td></tr>
+          <tr><td><code>notion-client</code></td><td>Notion</td><td><code>pip install notion-client</code></td></tr>
+          <tr><td><code>feedparser</code></td><td>RSS-News fürs Briefing</td><td><code>pip install feedparser</code></td></tr>
+          <tr><td><code>pdfplumber</code></td><td>PDF-Analyse</td><td><code>pip install pdfplumber</code></td></tr>
+          <tr><td><code>python-docx</code></td><td>Word-Dokumente lesen</td><td><code>pip install python-docx</code></td></tr>
+          <tr><td><code>youtube-transcript-api</code></td><td>YouTube-Zusammenfassungen</td><td><code>pip install youtube-transcript-api</code></td></tr>
+          <tr><td><code>pvporcupine</code></td><td>präzise Wake-Word-Erkennung</td><td><code>pip install pvporcupine</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================================== Nutzung -->
+<section class="section" id="nutzung">
+  <div class="wrap">
+    <div class="section__head reveal">
+      <span class="eyebrow">Nutzung</span>
+      <h2>So bedienst du JARVIS</h2>
+      <p>Das Interface besteht aus drei Bereichen. Alles ist per Sprache, Text oder Tastenkürzel erreichbar.</p>
+    </div>
+
+    <!-- Interface -->
+    <div class="ui-map reveal" style="margin-bottom:20px">
+      <div class="ui-map__col">
+        <h4>Sidebar · links</h4>
+        <ul>
+          <li><b>Denkprozess</b> — Arbeitsschritte in Echtzeit (Analyse, Planung, Ausführung)</li>
+          <li><b>Metriken</b> — Tokens, Sicherheitsstatus, Anzahl Erinnerungen und Routinen</li>
+          <li><b>NEUE SITZUNG</b> — startet einen frischen Chat</li>
+          <li><b>Account</b> — Einstellungen, Sprache, Hilfe</li>
+        </ul>
+      </div>
+      <div class="ui-map__col ui-map__col--mid">
+        <h4>Chatbereich · Mitte</h4>
+        <ul>
+          <li><b>Orb-Header</b> — Status, Uhrzeit, aktiver Anbieter, Kill-Switch</li>
+          <li><b>Nachrichten</b> — JARVIS links, du rechts; beim Hover Kopieren und Wiederholen</li>
+          <li><b>Codeblöcke</b> — getestet, formatiert, mit COPY-Button</li>
+          <li><b>Eingabeleiste</b> — Mikrofon, Live-Vision, Textfeld, Senden</li>
+        </ul>
+      </div>
+      <div class="ui-map__col">
+        <h4>Panel · rechts</h4>
+        <ul>
+          <li><b>TODO</b> — Aufgabenliste, die JARVIS selbst abarbeiten kann</li>
+          <li><b>MEMORY</b> — alle gespeicherten Erinnerungen, einzeln löschbar</li>
+          <li><b>SUGGESTIONS</b> — kontextbezogene Vorschläge zum Anklicken</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="orbs reveal" style="margin-bottom:44px">
+      <span class="orb-chip"><i class="teal"></i> Pulsierend türkis — bereit</span>
+      <span class="orb-chip"><i class="teal"></i> Leuchtend türkis — hört zu</span>
+      <span class="orb-chip"><i class="amber"></i> Rotierend orange — denkt nach</span>
+      <span class="orb-chip"><i class="red"></i> Rot — Fehler oder Kill-Switch</span>
+    </div>
+
+    <!-- Eingabeleiste -->
+    <h3 class="reveal" style="font-size:22px;margin-bottom:14px">Die Eingabeleiste</h3>
+    <div class="table-wrap reveal" style="margin-bottom:44px">
+      <table>
+        <thead><tr><th>Element</th><th>Funktion</th></tr></thead>
+        <tbody>
+          <tr><td><b>Mikrofon</b></td><td>Gedrückt halten und sprechen. Beim Loslassen wird der erkannte Text gesendet.</td></tr>
+          <tr><td><b>Auge (Live-Vision)</b></td><td>Schaltet die Live-Beobachtung des Bildschirms an und aus. Pulsiert türkis, solange sie aktiv ist.</td></tr>
+          <tr><td><b>Textfeld</b></td><td>Tippen und mit <kbd>Enter</kbd> senden. Maximal 2000 Zeichen.</td></tr>
+          <tr><td><b>Senden</b></td><td>Sendet die Nachricht. Färbt sich türkis, sobald Text eingegeben ist.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Beispielbefehle -->
+    <h3 class="reveal" style="font-size:22px;margin-bottom:6px">Beispielbefehle</h3>
+    <p class="reveal" style="color:var(--fg-2);margin-top:0;margin-bottom:20px">
+      Alles davon funktioniert genauso gesprochen wie getippt.
+    </p>
+    <div class="grid grid--3" style="margin-bottom:44px">
+      <article class="card reveal">
+        <h3>Alltag</h3>
+        <ul>
+          <li>„Gib mir mein Briefing"</li>
+          <li>„Was habe ich morgen?"</li>
+          <li>„Trag Freitag 14 Uhr ein: Team-Meeting"</li>
+          <li>„Fass meine E-Mails zusammen"</li>
+          <li>„Fass meinen Tag zusammen"</li>
+        </ul>
+      </article>
+      <article class="card reveal">
+        <h3>Am Rechner</h3>
+        <ul>
+          <li>„Sieh dir meinen Bildschirm an"</li>
+          <li>„Öffne Chrome und such nach dem Wetter"</li>
+          <li>„Schreib ein Python-Skript für CSV-Import"</li>
+          <li>„Fasse report.pdf zusammen"</li>
+          <li>„Fasse dieses Video zusammen: [Link]"</li>
+        </ul>
+      </article>
+      <article class="card reveal">
+        <h3>Persönlich</h3>
+        <ul>
+          <li>„Merk dir, dass ich Python bevorzuge"</li>
+          <li>„Ich habe 45 Euro für Lebensmittel ausgegeben"</li>
+          <li>„Setz mein Transport-Budget auf 100 Euro"</li>
+          <li>„Soll ich Python oder Rust lernen?"</li>
+          <li>„Mach das Licht an"</li>
+        </ul>
+      </article>
+    </div>
+
+    <!-- To-Do-Automatik -->
+    <h3 class="reveal" style="font-size:22px;margin-bottom:6px">To-Do-Liste automatisch abarbeiten</h3>
+    <p class="reveal" style="color:var(--fg-2);margin-top:0">
+      Die Liste im rechten Panel ist mehr als eine Checkliste — JARVIS arbeitet sie eigenständig ab.
+    </p>
+    <div class="steps reveal" style="margin-bottom:44px">
+      <div class="step"><div><h4>Aufgaben anlegen</h4><p>Über <b>+ Add task</b> im TODO-Tab.</p></div></div>
+      <div class="step"><div><h4>START TO-DO klicken</h4><p>JARVIS beginnt mit der ersten offenen Aufgabe.</p></div></div>
+      <div class="step"><div><h4>Abarbeiten lassen</h4><p>Jede erledigte Aufgabe wird automatisch abgehakt.</p></div></div>
+      <div class="step"><div><h4>Bei Problemen eingreifen</h4><p>JARVIS stoppt und zeigt den Fehler. Nach der Behebung geht es mit <b>PROBLEM SOLVED</b> weiter.</p></div></div>
+      <div class="step"><div><h4>Jederzeit abbrechen</h4><p><b>CANCEL</b> beendet die Ausführung sofort.</p></div></div>
+    </div>
+
+    <!-- Einstellungen -->
+    <h3 class="reveal" style="font-size:22px;margin-bottom:14px">Einstellungen</h3>
+    <div class="grid grid--2 reveal" style="margin-bottom:44px">
+      <article class="card">
+        <h3>Auftreten</h3>
+        <ul>
+          <li><b>Anrede</b> — Sir, Boss, Bro, Ma'am, eigene</li>
+          <li><b>Sprachstil</b> — professionell, normal, locker</li>
+          <li><b>Sprache</b> — Deutsch, Englisch, Französisch, Spanisch, Italienisch, Türkisch</li>
+          <li><b>Light Mode</b> — helles Theme, bleibt gespeichert</li>
+        </ul>
+      </article>
+      <article class="card">
+        <h3>Sprache &amp; Aktivierung</h3>
+        <ul>
+          <li><b>Sprachausgabe</b> — an/aus, Stimme frei wählbar</li>
+          <li><b>Wake Word</b> — „Hey Jarvis" im Hintergrund</li>
+          <li><b>Klatsch-Aktivierung</b> — 2× klatschen innerhalb einer Sekunde</li>
+          <li><b>KALIBRIEREN</b> — misst 3 Sekunden Raumgeräusch und setzt den Schwellwert</li>
+        </ul>
+      </article>
+    </div>
+
+    <!-- Shortcuts -->
+    <h3 class="reveal" style="font-size:22px;margin-bottom:14px">Tastenkürzel</h3>
+    <div class="table-wrap reveal">
+      <table>
+        <thead><tr><th>Kürzel</th><th>Funktion</th></tr></thead>
+        <tbody>
+          <tr><td><kbd>Strg</kbd> + <kbd>Alt</kbd> + <kbd>J</kbd></td><td>Kill-Switch aktivieren bzw. deaktivieren</td></tr>
+          <tr><td><kbd>Strg</kbd> + <kbd>K</kbd></td><td>Eingabefeld fokussieren</td></tr>
+          <tr><td><kbd>Strg</kbd> + <kbd>,</kbd></td><td>Einstellungen öffnen</td></tr>
+          <tr><td><kbd>Enter</kbd></td><td>Nachricht senden</td></tr>
+          <tr><td><kbd>Esc</kbd></td><td>Eingabefeld verlassen</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ Sicherheit -->
+<section class="section section--alt" id="sicherheit">
+  <div class="wrap">
+    <div class="section__head reveal">
+      <span class="eyebrow">Sicherheit &amp; Daten</span>
+      <h2>Kontrolle bleibt bei dir</h2>
+      <p>Ein Assistent, der deinen Rechner bedient, braucht eine Bremse. JARVIS hat mehrere.</p>
+    </div>
+
+    <div class="grid grid--3" style="margin-bottom:26px">
+      <article class="card reveal">
+        <div class="card__icon"><svg><use href="#i-shield"/></svg></div>
+        <h3>Kill-Switch</h3>
+        <p><kbd>Strg</kbd> + <kbd>Alt</kbd> + <kbd>J</kbd> stoppt sofort alles — Sprache, Befehle, Vision und laufende To-Dos. Ein rotes Overlay legt sich über das ganze Interface.</p>
+      </article>
+      <article class="card reveal">
+        <div class="card__icon"><svg><use href="#i-alert"/></svg></div>
+        <h3>Risikoprüfung</h3>
+        <p>Jede Anfrage bekommt eine Risikobewertung. Gefährliche Aktionen werden blockiert, riskante erst nach ausdrücklicher Freigabe ausgeführt.</p>
+      </article>
+      <article class="card reveal">
+        <div class="card__icon"><svg><use href="#i-db"/></svg></div>
+        <h3>Verschlüsselte Keys</h3>
+        <p>API-Keys liegen unter Windows in DPAPI/Credential Manager, sonst Fernet-verschlüsselt. In der <code class="inline">config.json</code> steht nie ein Klartext-Key.</p>
+      </article>
+      <article class="card reveal">
+        <div class="card__icon"><svg><use href="#i-term"/></svg></div>
+        <h3>Programm-Whitelist</h3>
+        <p>Nur freigegebene Programme lassen sich öffnen. Versuche, Shell-Befehle einzuschleusen, werden erkannt und blockiert.</p>
+      </article>
+      <article class="card reveal">
+        <div class="card__icon"><svg><use href="#i-mail"/></svg></div>
+        <h3>Keine E-Mail ohne dich</h3>
+        <p>Antworten werden immer nur als Entwurf angezeigt. Versendet wird erst nach ausdrücklicher Bestätigung.</p>
+      </article>
+      <article class="card reveal">
+        <div class="card__icon"><svg><use href="#i-cpu"/></svg></div>
+        <h3>Deine Daten, dein Rechner</h3>
+        <p>Konfiguration, Gedächtnis, Verlauf, Routinen und Finanzdaten liegen ausschließlich unter <code class="inline">~/.jarvis/</code> auf deinem eigenen System.</p>
+      </article>
+    </div>
+
+    <div class="callout reveal">
+      <svg><use href="#i-alert"/></svg>
+      <div><b>Zum Mitdenken:</b> An den gewählten KI-Anbieter gehen die Inhalte deiner Anfragen — inklusive Screenshots, wenn du die Vision-Funktionen nutzt. Wer das vollständig vermeiden will, betreibt JARVIS mit einem lokalen Ollama-Modell.</div>
+    </div>
+  </div>
+</section>
+
+<!-- =================================================================== FAQ -->
+<section class="section" id="faq">
+  <div class="wrap">
+    <div class="section__head reveal">
+      <span class="eyebrow">Hilfe</span>
+      <h2>Wenn etwas klemmt</h2>
+      <p>Die häufigsten Stolpersteine und ihre Lösung.</p>
+    </div>
+
+    <details class="faq reveal">
+      <summary>Es erscheint das Banner „API Key fehlt"</summary>
+      <div class="faq__body">
+        <p>Öffne die Einstellungen über das Zahnrad in der Sidebar oder mit <kbd>Strg</kbd> + <kbd>,</kbd>, wähle deinen KI-Anbieter und trage den API-Key ein. Unter dem Feld steht anschließend „API Key active" in Grün.</p>
+      </div>
+    </details>
+
+    <details class="faq reveal">
+      <summary>Das Mikrofon funktioniert nicht</summary>
+      <div class="faq__body">
+        <p>Installiere PyAudio nach. Klappt das unter Windows nicht, hilft der Umweg über pipwin. Ohne PyAudio nutzt JARVIS automatisch <code class="inline">sounddevice</code>.</p>
+        <div class="code">
+          <div class="code__head"><span class="code__label">Terminal</span><button class="copy" type="button">KOPIEREN</button></div>
+<pre><span class="p">pip install</span> pyaudio
+
+<span class="c"># Windows-Fallback</span>
+<span class="p">pip install</span> pipwin
+pipwin install pyaudio</pre>
+        </div>
+      </div>
+    </details>
+
+    <details class="faq reveal">
+      <summary>Keine Sprachausgabe zu hören</summary>
+      <div class="faq__body">
+        <p>Prüfe zuerst, ob TTS in den Einstellungen aktiviert ist. Unter Linux fehlt oft die Sprachsynthese im System:</p>
+        <div class="code">
+          <div class="code__head"><span class="code__label">Linux</span><button class="copy" type="button">KOPIEREN</button></div>
+<pre><span class="p">sudo apt-get install</span> espeak-ng</pre>
+        </div>
+      </div>
+    </details>
+
+    <details class="faq reveal">
+      <summary>Port 8765 ist belegt</summary>
+      <div class="faq__body">
+        <p>JARVIS probiert automatisch die nächsten Ports (8766, 8767 …). Bleibt das Problem bestehen, beende die andere Anwendung, die diese Ports belegt.</p>
+      </div>
+    </details>
+
+    <details class="faq reveal">
+      <summary>Google Calendar meldet „credentials missing"</summary>
+      <div class="faq__body">
+        <p>In der Google Cloud Console ein Projekt anlegen, die Calendar API aktivieren und eine OAuth-2.0-Client-ID (Desktop-Anwendung) erstellen. Die heruntergeladene JSON-Datei als <code class="inline">google_credentials.json</code> in <code class="inline">~/.jarvis/</code> ablegen und JARVIS neu starten — beim ersten Zugriff öffnet sich der Browser zur Anmeldung.</p>
+      </div>
+    </details>
+
+    <details class="faq reveal">
+      <summary>Das Wake Word reagiert nicht</summary>
+      <div class="faq__body">
+        <p>Prüfe, ob der Schalter in den Einstellungen unter „Aktivierung" an ist. Ohne <code class="inline">pvporcupine</code> läuft die Erkennung über Google Speech Recognition und braucht eine Internetverbindung. Außerdem: Blockiert eine andere Anwendung das Mikrofon?</p>
+      </div>
+    </details>
+
+    <details class="faq reveal">
+      <summary>Die Klatsch-Erkennung löst bei Hintergrundgeräuschen aus</summary>
+      <div class="faq__body">
+        <p>Drücke in den Einstellungen auf <b>KALIBRIEREN</b> und sei drei Sekunden still. Alternativ den Empfindlichkeits-Regler erhöhen — höhere Werte bedeuten unempfindlicher. Standardwert ist 0,30.</p>
+      </div>
+    </details>
+
+    <details class="faq reveal">
+      <summary>Muss ich alle optionalen Pakete installieren?</summary>
+      <div class="faq__body">
+        <p>Nein. JARVIS startet auch ohne sie — die jeweilige Funktion wird dann übersprungen. Installiere nur, was du wirklich nutzt.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- =================================================================== CTA -->
+<section class="section">
+  <div class="wrap">
+    <div class="cta reveal">
+      <h2>Bereit für deinen eigenen JARVIS?</h2>
+      <p>Repository klonen, Installer starten, API-Key eintragen — und du sprichst mit deinem Rechner.</p>
+      <div class="cta__actions">
+        <a class="btn btn--primary" href="#installation"><svg><use href="#i-down"/></svg> Zur Installation</a>
+        <a class="btn btn--ghost" href="https://github.com/aquaxs1/My-Jarvis" target="_blank" rel="noopener"><svg><use href="#i-gh"/></svg> Quellcode auf GitHub</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ================================================================ Footer -->
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <div>© <span id="year">2026</span> AquAxs · MIT-Lizenz · JARVIS v2.8</div>
+    <nav class="footer__links" aria-label="Fußzeile">
+      <a href="#funktionen">Funktionen</a>
+      <a href="#installation">Installation</a>
+      <a href="#nutzung">Nutzung</a>
+      <a href="#sicherheit">Sicherheit</a>
+      <a href="https://github.com/aquaxs1/My-Jarvis" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="assets/js/core.js" defer></script>
+<script src="assets/js/main.js" defer></script>
+</body>
+</html>
