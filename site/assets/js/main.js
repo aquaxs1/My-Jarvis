@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Seiten-Interaktionen: Navigation, Tabs, Copy-Buttons, Reveal, Terminal-Demo
+   Page interactions: navigation, tabs, copy buttons, reveal, terminal demo
    ========================================================================== */
 
 (function () {
@@ -34,7 +34,7 @@
     onScroll();
   }
 
-  /* Aktiven Abschnitt in der Navigation markieren */
+  /* Highlight the section currently in view */
   var navLinks = [].slice.call(document.querySelectorAll('.nav__links a[href^="#"]'));
   var sections = navLinks
     .map(function (a) { return document.querySelector(a.getAttribute("href")); })
@@ -52,7 +52,7 @@
     sections.forEach(function (s) { spy.observe(s); });
   }
 
-  /* ------------------------------------------------------------------- Tabs */
+  /* ------------------------------------------------------------------- tabs */
 
   [].forEach.call(document.querySelectorAll("[data-tabs]"), function (group) {
     var buttons = [].slice.call(group.querySelectorAll("[role=tab]"));
@@ -76,15 +76,15 @@
       });
     });
 
-    /* Betriebssystem erkennen und den passenden Reiter vorauswählen */
+    /* Detect the operating system and preselect the matching tab */
     if (group.dataset.tabs === "os") {
       var ua = navigator.userAgent || "";
-      var os = /Mac|iPhone|iPad/i.test(ua) ? "mac" : (/Linux|X11|Android/i.test(ua) && !/Windows/i.test(ua) ? "linux" : "windows");
+      var os = /Windows|Win32|Win64/i.test(ua) ? "windows" : "unix";
       if (buttons.some(function (b) { return b.dataset.tab === os; })) select(os);
     }
   });
 
-  /* --------------------------------------------------------- Copy-Buttons */
+  /* --------------------------------------------------------- copy buttons */
 
   [].forEach.call(document.querySelectorAll(".copy"), function (btn) {
     btn.addEventListener("click", function () {
@@ -92,7 +92,7 @@
       var text = pre.innerText.replace(/^\s*[\r\n]/gm, "\n").trim();
       var done = function () {
         var old = btn.textContent;
-        btn.textContent = "KOPIERT";
+        btn.textContent = "COPIED";
         btn.classList.add("is-done");
         setTimeout(function () { btn.textContent = old; btn.classList.remove("is-done"); }, 1600);
       };
@@ -134,19 +134,19 @@
     revealables.forEach(function (el) { ro.observe(el); });
   }
 
-  /* -------------------------------------------------------- Terminal-Demo */
+  /* -------------------------------------------------------- terminal demo */
 
   var term = document.getElementById("terminal-body");
   if (term) {
     var script = [
       { cls: "m", text: "$ python jarvis.py" },
-      { cls: "m", text: "  [OK] Server läuft auf http://127.0.0.1:8765", delay: 420 },
-      { cls: "u", text: "Sir: Sieh dir meinen Bildschirm an", type: true },
-      { cls: "j", text: "JARVIS: Ein Merge-Konflikt in core/brain.py, Zeile 214.", delay: 260 },
-      { cls: "u", text: "Sir: Merk dir, dass ich Python bevorzuge", type: true },
-      { cls: "j", text: "JARVIS: Gespeichert. Verschlüsselt in ~/.jarvis/memory.", delay: 260 },
-      { cls: "u", text: "Sir: Gib mir mein Briefing", type: true },
-      { cls: "j", text: "JARVIS: 18°C, 3 Termine, 2 offene Tasks, 5 ungelesene Mails.", delay: 260 }
+      { cls: "m", text: "  [OK] Server running on http://127.0.0.1:8765", delay: 420 },
+      { cls: "u", text: "Sir: Look at my screen", type: true },
+      { cls: "j", text: "JARVIS: A merge conflict in core/brain.py, line 214.", delay: 260 },
+      { cls: "u", text: "Sir: Remember that I prefer Python", type: true },
+      { cls: "j", text: "JARVIS: Stored, encrypted, in ~/.jarvis/memory.", delay: 260 },
+      { cls: "u", text: "Sir: Give me my briefing", type: true },
+      { cls: "j", text: "JARVIS: 18°C, 3 events, 2 open tasks, 5 unread emails.", delay: 260 }
     ];
 
     var caret = document.createElement("span");
@@ -186,7 +186,7 @@
     }
   }
 
-  /* ------------------------------------------------------------------ Jahr */
+  /* ------------------------------------------------------------------ year */
 
   var year = document.getElementById("year");
   if (year) year.textContent = String(new Date().getFullYear());

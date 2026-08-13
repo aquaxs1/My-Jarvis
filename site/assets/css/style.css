@@ -1,10 +1,10 @@
 /* ==========================================================================
-   J.A.R.V.I.S — Website Styles
-   Farbwelt übernommen aus dem GUI (gui/index.html)
+   J.A.R.V.I.S — website styles
+   Palette taken from the app GUI (gui/index.html)
    ========================================================================== */
 
 :root {
-  /* Basis */
+  /* Base */
   --bg: #04060a;
   --bg-2: #070a11;
   --panel: rgba(255, 255, 255, 0.028);
@@ -12,7 +12,7 @@
   --line: rgba(255, 255, 255, 0.09);
   --line-strong: rgba(77, 230, 224, 0.32);
 
-  /* Akzente */
+  /* Accents */
   --teal: #4de6e0;
   --teal-dim: #1fa8a3;
   --amber: #ffb347;
@@ -24,7 +24,7 @@
   --fg-2: #a7b3c4;
   --fg-3: #6b7889;
 
-  /* Maße */
+  /* Metrics */
   --wrap: 1160px;
   --radius: 16px;
   --radius-sm: 10px;
@@ -66,7 +66,7 @@ h1, h2, h3, h4 { line-height: 1.15; margin: 0; letter-spacing: -0.02em; font-wei
   border-radius: 4px;
 }
 
-/* Hintergrund-Textur für die ganze Seite */
+/* Page-wide background texture */
 body::before {
   content: "";
   position: fixed;
@@ -235,7 +235,8 @@ body::before {
 }
 #core-canvas.is-ready { opacity: 1; }
 
-/* Auf schmalen Layouts liegt der Kern hinter dem Text — dieser Verlauf hält ihn lesbar */
+/* On narrow layouts the core sits below the text — this scrim covers the text zone only
+   and fades out completely so the animation glows freely underneath. */
 .hero::after {
   content: "";
   position: absolute;
@@ -243,10 +244,10 @@ body::before {
   z-index: 1;
   pointer-events: none;
   display: none;
-  background: linear-gradient(180deg, rgba(4, 6, 10, 0.62) 0%, rgba(4, 6, 10, 0.32) 42%, rgba(4, 6, 10, 0.78) 100%);
+  background: linear-gradient(180deg, rgba(4, 6, 10, 0.78) 0%, rgba(4, 6, 10, 0.62) 30%, rgba(4, 6, 10, 0) 58%);
 }
 
-/* CSS-Fallback, falls WebGL fehlt */
+/* CSS fallback when WebGL is unavailable */
 .core-fallback {
   position: absolute;
   top: 50%; left: 68%;
@@ -281,7 +282,7 @@ body::before {
   max-width: 640px;
 }
 
-/* Scroll-Hinweis */
+/* Scroll hint */
 .hero__scroll {
   position: absolute;
   left: 50%;
@@ -308,7 +309,7 @@ body::before {
   55%      { transform: translateY(13px); opacity: 0.15; }
 }
 
-/* Terminal + Text im Überblick */
+/* Terminal and copy in the overview block */
 .overview {
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
@@ -316,9 +317,70 @@ body::before {
   align-items: center;
   margin-bottom: 32px;
 }
-.overview__text h3 { font-size: 21px; margin-bottom: 12px; }
-.overview__text p { color: var(--fg-2); font-size: 15.5px; margin: 0 0 14px; }
-.overview__text p:last-child { margin-bottom: 0; }
+.overview__list h2 { font-size: clamp(24px, 3.4vw, 32px); margin-bottom: 22px; }
+
+.mini {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+  padding: 13px 0;
+  border-top: 1px solid var(--line);
+}
+.mini__icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: rgba(77, 230, 224, 0.1);
+  border: 1px solid rgba(77, 230, 224, 0.22);
+  color: var(--teal);
+}
+.mini__icon svg { width: 18px; height: 18px; }
+.mini b { display: block; font-size: 15.5px; font-weight: 600; }
+.mini span { color: var(--fg-2); font-size: 14.5px; }
+
+/* Centred "read more" button */
+.more { display: flex; justify-content: center; margin-top: 28px; }
+
+/* Short prose under a code block */
+.note {
+  color: var(--fg-2);
+  font-size: 15.5px;
+  max-width: 62ch;
+  margin: 18px 0 32px;
+}
+
+/* Sub-heading inside a section */
+h3.sub { font-size: 21px; margin: 44px 0 18px; }
+.shortcuts { margin-top: 26px; }
+
+/* Sub-page header */
+.page-hero {
+  padding: 74px 0 12px;
+  position: relative;
+  z-index: 1;
+}
+.page-hero h1 {
+  font-size: clamp(34px, 6vw, 56px);
+  margin: 18px 0 12px;
+}
+.page-hero p { color: var(--fg-2); font-size: 17px; margin: 0; max-width: 56ch; }
+
+/* Numbered group heading */
+h2.group {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  font-size: clamp(22px, 3.2vw, 28px);
+  margin-bottom: 26px;
+}
+h2.group span {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--teal);
+  letter-spacing: 0.1em;
+}
 
 .eyebrow {
   display: inline-flex;
@@ -388,7 +450,7 @@ body::before {
 }
 .stat span { font-size: 12px; color: var(--fg-3); }
 
-/* Terminal-Karte im Hero */
+/* Terminal card */
 .terminal {
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -511,7 +573,7 @@ body::before {
 .card__ex b { color: var(--teal); font-weight: 500; }
 
 /* ==========================================================================
-   Tabs (Installation)
+   Tabs
    ========================================================================== */
 
 .tabs {
@@ -612,7 +674,7 @@ code.inline {
 }
 
 /* ==========================================================================
-   Tabellen
+   Tables
    ========================================================================== */
 
 .table-wrap {
@@ -681,7 +743,7 @@ td .muted { color: var(--fg-3); }
 .step p { margin: 0; color: var(--fg-2); font-size: 14.5px; }
 
 /* ==========================================================================
-   Interface-Diagramm
+   Interface map
    ========================================================================== */
 
 .ui-map {
@@ -712,7 +774,7 @@ td .muted { color: var(--fg-3); }
 .ui-map__col li { margin-bottom: 6px; }
 .ui-map__col li::marker { color: var(--fg-3); }
 
-/* Orb-Status-Legende */
+/* Orb status legend */
 .orbs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
 .orb-chip {
   display: inline-flex;
@@ -846,7 +908,7 @@ kbd {
 .footer__links a:hover { color: var(--teal); }
 
 /* ==========================================================================
-   Reveal-Animation
+   Reveal animation
    ========================================================================== */
 
 .js .reveal {
@@ -891,8 +953,16 @@ kbd {
   .section { padding: 64px 0; }
   .grid--3, .grid--2 { grid-template-columns: 1fr; }
   .hero__stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .hero { min-height: auto; padding: 48px 0 78px; }
+  .hero { min-height: auto; padding: 44px 0 330px; }
   .hero__scroll { display: none; }
+  /* The core glows right behind the hero here, so the cards need more opacity */
+  .stat {
+    background: rgba(6, 9, 15, 0.7);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+  }
+  .page-hero { padding-top: 52px; }
+  h3.sub { margin-top: 36px; }
   .step { grid-template-columns: 36px minmax(0, 1fr); gap: 12px; }
   .step::before { width: 36px; height: 36px; font-size: 12px; }
   .cta { padding: 42px 20px; }

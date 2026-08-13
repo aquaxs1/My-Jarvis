@@ -1,7 +1,7 @@
 /* ==========================================================================
-   JARVIS Core — 3D Reactor
-   Raymarching-Shader in purem WebGL. Keine Library, kein Build-Schritt.
-   Fällt automatisch auf eine CSS-Animation zurück, wenn WebGL fehlt.
+   JARVIS core — 3D reactor
+   Raymarching shader in plain WebGL. No library, no build step.
+   Falls back to a CSS animation when WebGL is unavailable.
    ========================================================================== */
 
 (function () {
@@ -25,7 +25,7 @@
   }
   if (!gl) { useFallback(); return; }
 
-  /* ---------------------------------------------------------------- Shader */
+  /* ---------------------------------------------------------------- shader */
 
   var VERT = [
     "attribute vec2 a_pos;",
@@ -37,7 +37,7 @@
     "uniform vec2  u_res;",
     "uniform float u_time;",
     "uniform vec2  u_mouse;",
-    "uniform vec2  u_shift;",
+    "uniform vec3  u_view;",
     "uniform float u_fade;",
 
     "mat2 rot(float a){ float s = sin(a), c = cos(a); return mat2(c, -s, s, c); }",
@@ -77,7 +77,7 @@
 
     "vec2 opU(vec2 a, vec2 b){ return (a.x < b.x) ? a : b; }",
 
-    /* x = Distanz, y = Material-ID */
+    /* x = distance, y = material id */
     "vec2 map(vec3 p){",
     "  float t = u_time;",
 
@@ -146,7 +146,7 @@
 
     "void main(){",
     "  vec2 uv = (gl_FragCoord.xy - 0.5 * u_res) / u_res.y;",
-    "  uv -= u_shift;",
+    "  uv = (uv - u_view.xy) * u_view.z;",
 
     "  vec3 ro = vec3(0.0, 0.62, 5.45);",
     "  ro.yz *= rot(-u_mouse.y * 0.26);",
@@ -194,15 +194,15 @@
 
     "  col += glow;",
 
-    /* Weiches Halo um den Kern herum */
+    /* Soft halo around the core */
     "  float halo = 1.0 / (1.0 + dot(uv, uv) * 26.0);",
     "  col += vec3(0.05, 0.26, 0.26) * halo * 0.55;",
 
-    /* Breite Ansicht: Textspalte links abdunkeln. Schmale Ansicht: alles dimmen. */
+    /* Wide: dim the left text column. Narrow: the core stands free below the text. */
     "  float sx = gl_FragCoord.x / u_res.x;",
-    "  float wide = step(0.01, u_shift.x);",
+    "  float wide = step(0.01, u_view.x);",
     "  float sideDim = mix(0.22, 1.0, smoothstep(0.14, 0.58, sx));",
-    "  col *= mix(0.30, sideDim, wide);",
+    "  col *= mix(0.85, sideDim, wide);",
 
     "  col *= u_fade;",
     "  col = col / (1.0 + col * 0.72);",
@@ -213,7 +213,7 @@
     "}"
   ].join("\n");
 
-  /* ------------------------------------------------------------- Kompilieren */
+  /* ------------------------------------------------------------- compile */
 
   function compile(type, src) {
     var sh = gl.createShader(type);
@@ -252,10 +252,10 @@
   var uRes = gl.getUniformLocation(prog, "u_res");
   var uTime = gl.getUniformLocation(prog, "u_time");
   var uMouse = gl.getUniformLocation(prog, "u_mouse");
-  var uShift = gl.getUniformLocation(prog, "u_shift");
+  var uView = gl.getUniformLocation(prog, "u_view");
   var uFade = gl.getUniformLocation(prog, "u_fade");
 
-  /* ------------------------------------------------------------------ State */
+  /* ------------------------------------------------------------------ state */
 
   var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var scale = Math.min(window.devicePixelRatio || 1, 1.5);
@@ -281,11 +281,12 @@
     return r;
   }
 
-  /* Auf breiten Layouts sitzt der Kern rechts neben der Textspalte,
-     auf schmalen zentriert er sich als gedämpfter Hintergrund. */
-  function shiftFor(width) {
-    if (width < 1000) return [0.0, 0.0];
-    return [0.36, 0.02];
+  /* Wide: the core sits to the right of the text column.
+     Narrow: it shrinks and drops below the text so nothing is covered.
+     x, y = offset in uv units, z = zoom (larger renders it smaller). */
+  function viewFor(width) {
+    if (width < 1000) return [0.0, -0.31, 1.14];
+    return [0.36, 0.02, 1.0];
   }
 
   function frame(now) {
@@ -299,8 +300,8 @@
     gl.uniform2f(uRes, canvas.width, canvas.height);
     gl.uniform1f(uTime, reduced ? 12.0 : (now - start) / 1000);
     gl.uniform2f(uMouse, mouse.x, mouse.y);
-    var sh = shiftFor(rect.width);
-    gl.uniform2f(uShift, sh[0], sh[1]);
+    var v = viewFor(rect.width);
+    gl.uniform3f(uView, v[0], v[1], v[2]);
     gl.uniform1f(uFade, fade);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
@@ -308,7 +309,7 @@
 
     if (reduced) { running = false; return; }
 
-    /* Adaptive Auflösung: bei schwacher GPU herunterskalieren */
+    /* Adaptive resolution: scale down on a struggling GPU */
     if (downgrades < 2) {
       accum += performance.now() - t0;
       samples++;
@@ -331,7 +332,7 @@
   }
   function pause() { running = false; }
 
-  /* ------------------------------------------------------------------ Events */
+  /* ------------------------------------------------------------------ events */
 
   window.addEventListener("resize", function () { resize(); if (!running) play(); }, { passive: true });
 
@@ -346,10 +347,13 @@
     target.y = Math.max(-1, Math.min(1, (e.beta - 45) / 40));
   }, { passive: true });
 
-  /* Ausblenden beim Scrollen — spart Rechenzeit und hält den Text lesbar */
+  /* Fade out as the hero scrolls away, measured against the hero's own height
+     so tall mobile heroes don't go dark too early. */
+  var heroEl = canvas.parentElement;
   window.addEventListener("scroll", function () {
-    var h = window.innerHeight || 1;
-    fade = Math.max(0, 1 - (window.scrollY / (h * 0.85)));
+    var r = heroEl.getBoundingClientRect();
+    var h = r.height || 1;
+    fade = Math.max(0, Math.min(1, r.bottom / (h * 0.75)));
   }, { passive: true });
 
   document.addEventListener("visibilitychange", function () {
@@ -369,6 +373,6 @@
   gl.clearColor(0, 0, 0, 0);
   play();
 
-  /* Kontextverlust sauber abfangen */
+  /* Handle context loss gracefully */
   canvas.addEventListener("webglcontextlost", function (e) { e.preventDefault(); pause(); useFallback(); });
 })();
