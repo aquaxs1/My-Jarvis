@@ -1,60 +1,63 @@
-# My Jarvis — Website
+# JARVIS — Website
 
-Statische Landingpage für JARVIS: Installation, Funktionen und Bedienung.
-Kein Build-Schritt, keine Abhängigkeiten, kein CDN — reines HTML, CSS und JavaScript.
+Static site for JARVIS: what it does, how to install it, how to use it.
+No build step, no dependencies, no CDN — plain HTML, CSS and JavaScript.
 
-## Inhalt
+## Contents
 
 ```
 site/
-  index.html              komplette Seite (Hero, Funktionen, Installation, Nutzung, Sicherheit, Hilfe)
+  index.html              landing page (hero, overview, install, usage, safety, help)
+  features.html           all 20 modules, integration requirements, optional packages
   favicon.svg
   robots.txt
-  vercel.json             Cache- und Security-Header
+  vercel.json             cache and security headers
   assets/
     css/style.css
-    js/core.js            3D-Kern: Raymarching-Shader in purem WebGL
-    js/main.js            Navigation, Tabs, Copy-Buttons, Reveal, Terminal-Demo
+    js/core.js            3D core: raymarching shader in plain WebGL
+    js/main.js            nav, tabs, copy buttons, reveal, terminal demo
 ```
 
-Die 3D-Grafik im Hero ist ein Distance-Field-Raymarcher, der direkt im Fragment-Shader läuft:
-ein pulsierender Energiekern mit drei rotierenden Ringen, Sternenfeld und Maus-Parallaxe.
-Er skaliert die Auflösung automatisch herunter, wenn die GPU nicht mitkommt, pausiert außerhalb
-des Sichtbereichs, respektiert `prefers-reduced-motion` und fällt ohne WebGL auf eine
-CSS-Animation zurück.
+The hero graphic is a distance-field raymarcher running entirely in a fragment shader:
+a pulsing energy core with three rotating rings, a starfield and mouse parallax.
+It scales its own resolution down when the GPU struggles, pauses when off-screen,
+honours `prefers-reduced-motion`, and falls back to a CSS animation without WebGL.
 
-## Lokal ansehen
+The icon sprite is inlined at the top of each page — keep the two copies in sync when
+adding icons.
+
+## Run locally
 
 ```bash
 cd site
 python3 -m http.server 4321
-# oder: npx http-server -p 4321
+# or: npx http-server -p 4321
 ```
 
-Dann `http://localhost:4321` öffnen.
+Then open `http://localhost:4321`.
 
-## Deployment auf Vercel
+## Deploy to Vercel
 
-Die Seite ist eine reine Static-Site — kein Framework, kein Build-Command.
+Pure static site — no framework, no build command.
 
-### Variante 1: Git-Integration (empfohlen)
+### Option 1: Git integration (recommended)
 
-1. [vercel.com/new](https://vercel.com/new) öffnen und das Repository `aquaxs1/My-Jarvis` importieren
-2. **Root Directory** auf `site` setzen — das ist der entscheidende Schritt,
-   sonst sucht Vercel im Repository-Root nach einem Projekt
-3. Framework Preset: **Other**, Build Command und Install Command leer lassen
-4. **Deploy** klicken
+1. Open [vercel.com/new](https://vercel.com/new) and import `aquaxs1/My-Jarvis`
+2. Set **Root Directory** to `site` — this is the step that matters,
+   otherwise Vercel looks for a project in the repository root
+3. Framework preset: **Other**. Leave build and install commands empty
+4. Click **Deploy**
 
-Jeder weitere Push auf den Branch löst automatisch ein neues Deployment aus.
+Every later push to the branch redeploys automatically.
 
-### Variante 2: CLI
+### Option 2: CLI
 
 ```bash
 npm i -g vercel
 cd site
-vercel          # Vorschau-Deployment
-vercel --prod   # Produktion
+vercel          # preview deployment
+vercel --prod   # production
 ```
 
-Bei der ersten Ausführung fragt die CLI nach Projektname und Einstellungen —
-Build Command und Output Directory bleiben leer.
+On the first run the CLI asks for a project name and settings — leave build command
+and output directory empty.
