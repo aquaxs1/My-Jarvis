@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terms &amp; Privacy — My Jarvis</title>
+<meta name="description" content="Licence, acceptable use, privacy and disclaimers for My Jarvis and this website.">
+<meta name="theme-color" content="#04060a">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/logo.svg">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Terms &amp; Privacy — My Jarvis">
+<meta property="og:description" content="Licence, acceptable use, privacy and disclaimers.">
+<meta property="og:image" content="assets/img/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<link rel="stylesheet" href="assets/css/style.css">
+<script>document.documentElement.className += " js";</script>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-gh" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.6 5.6.6 11.9c0 5 3.3 9.3 7.8 10.8.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.1.1 1.7 1.2 1.7 1.2 1 1.8 2.7 1.3 3.4 1 .1-.7.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.2-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.9 1.2 1.9 1.2 3.2 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6a11.4 11.4 0 0 0 7.8-10.8C23.4 5.6 18.3.5 12 .5z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+</svg>
+
+<header class="nav is-stuck">
+  <div class="wrap nav__inner">
+    <a class="brand" href="./">
+      <img class="brand__mark" src="assets/img/logo.svg" alt="" width="26" height="26">
+      My Jarvis
+      <span class="brand__ver">v2.8</span>
+    </a>
+
+    <nav class="nav__links" id="nav-links" aria-label="Main">
+      <a href="features.html">Features</a>
+      <a href="index.html#install">Install</a>
+      <a href="index.html#usage">Usage</a>
+      <a href="index.html#help">Help</a>
+    </nav>
+
+    <div class="nav__cta">
+      <a class="btn btn--ghost btn--sm" href="https://github.com/aquaxs1/My-Jarvis" target="_blank" rel="noopener">
+        <svg><use href="#i-gh"/></svg> GitHub
+      </a>
+      <a class="btn btn--primary btn--sm" href="index.html#install">Install</a>
+      <button class="nav__burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav-links">
+        <svg width="20" height="20"><use href="#i-menu"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="section">
+  <div class="wrap legal">
+    <div class="section__head">
+      <span class="eyebrow">Legal</span>
+      <h1>Terms &amp; Privacy</h1>
+      <p>Last updated: August 2026</p>
+    </div>
+
+    <h2 id="licence">Licence</h2>
+    <p>
+      My Jarvis is open source under the MIT licence. You may use, copy, modify
+      and redistribute it, including commercially, as long as the copyright
+      notice and the licence text travel with it. The full text is in
+      <a href="https://github.com/aquaxs1/My-Jarvis/blob/main/LICENSE" target="_blank" rel="noopener">LICENSE</a>.
+    </p>
+
+    <h2 id="use">Acceptable use</h2>
+    <p>
+      My Jarvis can read your screen, type, click and run commands. Do not point
+      it at systems you are not authorised to operate, and do not use it to
+      capture other people's data without their knowledge. You are responsible
+      for what it does on your behalf.
+    </p>
+
+    <h2 id="privacy">Privacy</h2>
+    <p>
+      There is no My Jarvis server, no account and no telemetry. Configuration,
+      memories and API keys live encrypted in <code class="inline">~/.jarvis/</code>
+      on your own machine.
+    </p>
+    <p>
+      <strong>Your AI provider is the exception.</strong> Whatever you send My
+      Jarvis — text, and screenshots when vision is on — is transmitted to the
+      provider you configured (Anthropic, OpenAI, Google, NVIDIA or Mistral) and
+      handled under that provider's terms and privacy policy, not these. Run a
+      local Ollama model if you want nothing to leave your machine.
+    </p>
+    <p>
+      Optional integrations reach the services you connect them to: Google
+      Calendar, Todoist, Notion, your mail provider, Home Assistant, Philips Hue.
+      Each is off until you set it up.
+    </p>
+
+    <h2 id="website">This website</h2>
+    <p>
+      Static pages, no cookies, no analytics, no third-party scripts or fonts.
+      Nothing about your visit is stored or shared.
+    </p>
+
+    <h2 id="warranty">No warranty</h2>
+    <p>
+      My Jarvis is provided “as is”, without warranty of any kind. It executes
+      commands and controls applications, so mistakes can cost you data or work.
+      Keep backups, use the kill switch
+      (<kbd>Ctrl</kbd>&nbsp;+&nbsp;<kbd>Alt</kbd>&nbsp;+&nbsp;<kbd>J</kbd>), and do
+      not run it unattended on anything that matters. No liability is accepted
+      for damage, data loss or costs incurred through use — including provider
+      API charges.
+    </p>
+
+    <h2 id="changes">Changes</h2>
+    <p>
+      These terms may change as the project does. The version in the repository
+      at the time you download is the one that applies to that copy.
+    </p>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <div>© <span id="year">2026</span> AquAxs · MIT · My Jarvis v2.8</div>
+    <nav class="footer__links" aria-label="Footer">
+      <a href="./">Home</a>
+      <a href="features.html">Features</a>
+      <a href="index.html#install">Install</a>
+      <a href="terms.html">Terms &amp; Privacy</a>
+      <a href="https://github.com/aquaxs1/My-Jarvis" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="assets/js/main.js" defer></script>
+</body>
+</html>

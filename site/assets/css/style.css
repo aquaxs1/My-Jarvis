@@ -1,5 +1,5 @@
 /* ==========================================================================
-   J.A.R.V.I.S — website styles
+   My Jarvis — website styles
    Palette taken from the app GUI (gui/index.html)
    ========================================================================== */
 
@@ -118,8 +118,8 @@ body::before {
   gap: 11px;
   color: var(--fg);
   font-weight: 650;
-  letter-spacing: 0.14em;
-  font-size: 14px;
+  letter-spacing: 0.02em;
+  font-size: 15px;
   margin-right: auto;
 }
 .brand:hover { color: var(--fg); }
@@ -403,7 +403,7 @@ h2.group span {
 
 .hero h1 {
   font-size: clamp(44px, 8vw, 86px);
-  letter-spacing: 0.06em;
+  letter-spacing: -0.005em;
   margin: 22px 0 6px;
   background: linear-gradient(180deg, #ffffff 8%, #b6e9e6 58%, #4de6e0 130%);
   -webkit-background-clip: text;
@@ -975,3 +975,40 @@ kbd {
   }
   .js .reveal { opacity: 1; transform: none; }
 }
+
+/* ---------------------------------------------------------------- Legal page */
+.legal { max-width: 68ch; }
+.legal h1 { font-size: clamp(30px, 5vw, 44px); letter-spacing: -0.01em; }
+.legal h2 {
+  font-size: 19px;
+  margin: 38px 0 10px;
+  color: var(--fg);
+  scroll-margin-top: 90px;
+}
+.legal h2:first-of-type { margin-top: 8px; }
+.legal p { color: var(--fg-2); margin: 0 0 14px; }
+.legal a { color: var(--teal); }
+
+
+/* ----------------------------------------------------------------- 404 page */
+.nf-wrap {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 3rem 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+.nf-inner { max-width: 46ch; }
+.nf-inner img { width: 76px; height: auto; margin: 0 auto 26px; }
+.nf-code {
+  font-size: clamp(4.5rem, 17vw, 8.5rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  margin: 0;
+  opacity: 0.13;
+}
+.nf-inner h1 { font-size: clamp(1.5rem, 4.5vw, 2.1rem); margin: -0.3em 0 0.6rem; }
+.nf-inner p { margin: 0 0 1.9rem; opacity: 0.75; }
