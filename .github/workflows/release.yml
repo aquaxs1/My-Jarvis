@@ -1,0 +1,143 @@
+name: Build & release binaries
+
+# Builds a double-click executable of My Jarvis and publishes it to a GitHub
+# Release.
+#
+# Windows only, deliberately. My Jarvis drives the machine it runs on --
+# global hotkeys through `keyboard`, mouse and keyboard control through
+# `pyautogui`, screen capture, SAPI speech. On macOS those need accessibility
+# and screen-recording permissions that an unsigned onefile binary cannot
+# request coherently, and on Linux `keyboard` needs root. Both platforms are
+# covered by install.sh, which is a single command and does not have these
+# problems.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (e.g. v2.8.0)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: windows-x64
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      # Voice input is the one dependency that is not in requirements.txt,
+      # because a source build of it fails on plenty of machines. The
+      # Windows wheel installs cleanly, so the packaged build gets it.
+      - name: Install PyAudio (best effort)
+        shell: bash
+        run: pip install pyaudio || echo "PyAudio unavailable; the build falls back to sounddevice"
+
+      - name: Build
+        run: pyinstaller packaging/jarvis.spec --noconfirm --clean
+
+      # A hidden import that silently resolved to nothing would ship a binary
+      # missing features the source install has. Fail loudly instead.
+      - name: Verify the optional integrations got bundled
+        shell: bash
+        run: |
+          MISSING=0
+          for mod in anthropic openai google.generativeai speech_recognition \
+                     pyautogui keyboard keyring pdfplumber feedparser notion_client; do
+            if ! python -c "import $mod" 2>/dev/null; then
+              echo "::warning::$mod is not installed on the runner, so it is not in the binary"
+              MISSING=$((MISSING+1))
+            fi
+          done
+          echo "$MISSING optional integrations missing from this build"
+
+      - name: Package
+        shell: bash
+        run: |
+          cd dist
+          7z a "../my-jarvis-windows-x64.zip" "jarvis.exe"
+
+      - name: Checksum
+        shell: bash
+        run: |
+          FILE="my-jarvis-windows-x64.zip"
+          certutil -hashfile "$FILE" SHA256 | sed -n '2p' | tr -d '\r' | awk -v f="$FILE" '{print $0"  "f}' > "$FILE.sha256"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: my-jarvis-windows-x64
+          path: |
+            my-jarvis-windows-x64.zip
+            my-jarvis-windows-x64.zip.sha256
+          if-no-files-found: error
+
+  release:
+    name: Publish release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve tag
+        id: version
+        run: |
+          if [ -n "${{ github.event.inputs.tag }}" ]; then
+            TAG="${{ github.event.inputs.tag }}"
+          else
+            TAG="${{ github.ref_name }}"
+          fi
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Combine checksums
+        run: cat artifacts/*.sha256 > artifacts/SHA256SUMS.txt
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: My Jarvis ${{ steps.version.outputs.version }}
+          generate_release_notes: true
+          files: |
+            artifacts/*.zip
+            artifacts/SHA256SUMS.txt
+          body: |
+            Windows build of My Jarvis ${{ steps.version.outputs.version }}.
+            No Python installation required — unpack and run `jarvis.exe`.
+
+            On macOS and Linux, use the one-line install from the
+            [README](https://github.com/${{ github.repository }}#readme)
+            instead. My Jarvis needs accessibility and input permissions that
+            an unsigned binary cannot request properly on those platforms.
+
+            This binary is **not code-signed**, so Windows SmartScreen will
+            warn on first launch — choose *More info → Run anyway*.
+
+            You still need an API key from one of the supported providers, or
+            a local Ollama model. Whatever you send My Jarvis — screenshots
+            included — goes to the provider you configure.
+
+            Verify a download against `SHA256SUMS.txt`:
+
+            ```
+            sha256sum -c SHA256SUMS.txt
+            ```

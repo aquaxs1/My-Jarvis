@@ -198,27 +198,33 @@
   <div class="wrap">
     <div class="section__head reveal">
       <span class="eyebrow">Install</span>
-      <h2>One command</h2>
-      <p>Clones the repo, installs everything and starts My Jarvis. Needs Python 3.10+ and git.</p>
+      <h2>One download, or one command</h2>
+      <p>Windows gets a ready-made binary. Everywhere else, one line — needs Python 3.10+ and git.</p>
     </div>
 
     <div class="tabs reveal" data-tabs="os" role="tablist" aria-label="Choose your system">
-      <button role="tab" data-tab="unix" aria-selected="true" type="button">macOS &amp; Linux</button>
-      <button role="tab" data-tab="windows" aria-selected="false" type="button">Windows</button>
+      <button role="tab" data-tab="windows" aria-selected="true" type="button">Windows</button>
+      <button role="tab" data-tab="unix" aria-selected="false" type="button">macOS &amp; Linux</button>
     </div>
 
-    <div class="tabpanel" data-tabgroup="os" data-tabpanel="unix">
+    <div class="tabpanel" data-tabgroup="os" data-tabpanel="windows">
+      <div class="more" style="justify-content:flex-start">
+        <a class="btn btn--primary" href="https://github.com/aquaxs1/My-Jarvis/releases/latest/download/my-jarvis-windows-x64.zip">
+          <svg><use href="#i-down"/></svg> Download for Windows
+        </a>
+      </div>
+      <p class="note">Unpack and run <code class="inline">jarvis.exe</code> — no Python required.
+        Unsigned, so SmartScreen warns once: <b>More info → Run anyway</b>. Prefer the
+        source install? It is the same command as the other tab.</p>
+    </div>
+
+    <div class="tabpanel" data-tabgroup="os" data-tabpanel="unix" hidden>
       <div class="code">
         <div class="code__head"><span class="code__label">Terminal</span><button class="copy" type="button">COPY</button></div>
 <pre><span class="p">git clone</span> https://github.com/aquaxs1/My-Jarvis.git jarvis &amp;&amp; <span class="p">cd</span> jarvis &amp;&amp; <span class="p">chmod</span> +x install.sh &amp;&amp; ./install.sh &amp;&amp; <span class="p">python3</span> jarvis.py</pre>
       </div>
-    </div>
-
-    <div class="tabpanel" data-tabgroup="os" data-tabpanel="windows" hidden>
-      <div class="code">
-        <div class="code__head"><span class="code__label">Command Prompt</span><button class="copy" type="button">COPY</button></div>
-<pre><span class="p">git clone</span> https://github.com/aquaxs1/My-Jarvis.git jarvis &amp;&amp; <span class="p">cd</span> jarvis &amp;&amp; install.bat &amp;&amp; <span class="p">python</span> jarvis.py</pre>
-      </div>
+      <p class="note">On Windows the same works with <code class="inline">install.bat</code> instead
+        of <code class="inline">./install.sh</code>.</p>
     </div>
 
     <p class="note reveal">
