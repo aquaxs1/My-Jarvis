@@ -126,14 +126,12 @@ body::before {
 .brand__mark {
   width: 26px;
   height: 26px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 32%, #bffcf9, var(--teal) 42%, var(--teal-dim) 72%, #0b4d4b);
-  box-shadow: 0 0 16px rgba(77, 230, 224, 0.55), inset 0 0 6px rgba(255, 255, 255, 0.45);
+  flex: none;
   animation: brandPulse 3.4s ease-in-out infinite;
 }
 @keyframes brandPulse {
-  0%, 100% { box-shadow: 0 0 12px rgba(77, 230, 224, 0.4), inset 0 0 6px rgba(255, 255, 255, 0.4); }
-  50%      { box-shadow: 0 0 22px rgba(77, 230, 224, 0.8), inset 0 0 8px rgba(255, 255, 255, 0.6); }
+  0%, 100% { filter: drop-shadow(0 0 5px rgba(77, 230, 224, 0.4)); }
+  50%      { filter: drop-shadow(0 0 11px rgba(77, 230, 224, 0.75)); }
 }
 .brand__ver {
   font-family: var(--mono);
