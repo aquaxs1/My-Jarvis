@@ -1,9 +1,9 @@
 """
 JARVIS Brain v2.8 – synchron
-- Denkschritte (thinking_step Events)
-- Standort wird verwendet, nicht erfragt
-- Memory: nur Key=Value extrahieren
-- To-Do Ausführung
+- Thinking steps (thinking_step events)
+- The location is used, never asked for
+- Memory: extract Key=Value only
+- To-do execution
 - v2.0: Specific exceptions, timeouts, response validation,
         configurable models, constants
 """
@@ -18,58 +18,58 @@ CLASSIFIER_MAX_TOKENS = 400
 MEMORY_EXTRACT_MAX_TOKENS = 60
 
 SYSTEM_PROMPTS = {
-    "professionell": "Du bist JARVIS, ein hochentwickelter KI-Assistent. Antworte präzise auf Deutsch. Fachbegriffe sind erwünscht.",
-    "normal":        "Du bist JARVIS, ein freundlicher KI-Assistent. Antworte klar und verständlich auf Deutsch.",
-    "jugendlich":    "Du bist JARVIS, ein cooler KI-Assistent. Jugendslang (bro, gng, wallah, no cap). Antworte auf Deutsch.",
+    "professionell": "You are My Jarvis, a highly capable AI assistant. Answer precisely in English. Technical terms are welcome.",
+    "normal":        "You are My Jarvis, a friendly AI assistant. Answer clearly and understandably in English.",
+    "jugendlich":    "You are My Jarvis, a laid-back AI assistant. Use casual slang. Answer in English.",
 }
 
 # Language display names – could be externalized to a config file or JSON resource (Bug 1.17)
 LANG_NAMES = {
-    "de-DE":"Deutsch","en-US":"English","fr-FR":"Französisch",
-    "es-ES":"Spanisch","it-IT":"Italienisch","tr-TR":"Türkisch",
+    "de-DE":"German","en-US":"English","fr-FR":"French",
+    "es-ES":"Spanish","it-IT":"Italian","tr-TR":"Turkish",
 }
 
-CLASSIFIER = """Analysiere die Benutzeranfrage. Antworte NUR mit JSON (keine Backticks, kein Markdown):
+CLASSIFIER = """Analyse the user request. Answer with JSON ONLY (no backticks, no markdown):
 {
   "agent": "conversation|computer_control|web_search|coding|analysis|planning|memory|system|screen_vision|calendar|tasks|email|briefing|document|smarthome|youtube|social_media|decision|finance|research",
   "komplex": false,
-  "sicherheitsrisiko": "keine",
+  "sicherheitsrisiko": "none",
   "braucht_erlaubnis": false,
   "erlaubnis_grund": "",
-  "denkschritte": ["kurzer Schritt 1", "kurzer Schritt 2"],
-  "zusammenfassung": "kurze Beschreibung"
+  "denkschritte": ["short step 1", "short step 2"],
+  "zusammenfassung": "short description"
 }
-Agenten-Zuordnung:
-- calendar: Termine, Kalender, "was habe ich morgen", Termin erstellen
-- tasks: Aufgaben, To-Do, Todoist, Notion Tasks
-- email: E-Mail, Posteingang, Antwort schreiben
-- briefing: Briefing, Tagesüberblick, "gib mir mein Briefing"
-- document: PDF lesen, Dokument analysieren, Datei zusammenfassen
-- smarthome: Licht, Temperatur, Musik, Smart Home
-- youtube: YouTube-Link, Video zusammenfassen
-- social_media: LinkedIn-Post, Twitter-Thread, Newsletter schreiben
-- decision: "soll ich", "was ist besser", "hilf mir entscheiden", Pro/Kontra
-- finance: Ausgaben, Budget, "ich habe X Euro ausgegeben"
-- research: Recherche, Paper, arXiv, Hacker News, Forschung
-Die denkschritte sollen 2-4 kurze Stichpunkte sein wie du vorgehst.
-Anfrage: """
+Agent routing:
+- calendar: appointments, calendar, "what do I have tomorrow", create an event
+- tasks: tasks, to-dos, Todoist, Notion tasks
+- email: email, inbox, writing a reply
+- briefing: briefing, daily overview, "give me my briefing"
+- document: read a PDF, analyse a document, summarise a file
+- smarthome: lights, temperature, music, smart home
+- youtube: YouTube link, summarise a video
+- social_media: LinkedIn post, Twitter thread, newsletter
+- decision: "should I", "which is better", "help me decide", pros and cons
+- finance: spending, budget, "I spent X euros"
+- research: research, papers, arXiv, Hacker News, studies
+The denkschritte should be 2-4 short bullet points on how you will proceed.
+Request: """
 
-# Prompt um Key-Infos für Memory zu extrahieren
-MEMORY_EXTRACT = """Extrahiere aus dieser Nutzer-Nachricht die wichtigste zu merkende Information als kurzes Key=Value Paar.
-Beispiele:
-"Merk dir dass ich Sebastian heiße" -> Name=Sebastian
-"Denk daran dass mein Hund Rex heißt" -> Hund=Rex
-"Ich wohne in Berlin" -> Wohnort=Berlin
-"Merke dir mein Lieblingsessen ist Pizza" -> Lieblingsessen=Pizza
-Antworte NUR mit dem Key=Value Paar, nichts anderes. Nachricht: """
+# Prompt for extracting key facts worth remembering
+MEMORY_EXTRACT = """Extract the single most important fact worth remembering from this user message, as a short Key=Value pair.
+Examples:
+"Remember that my name is Sebastian" -> Name=Sebastian
+"Keep in mind my dog is called Rex" -> Dog=Rex
+"I live in Berlin" -> Location=Berlin
+"Remember my favourite food is pizza" -> FavouriteFood=Pizza
+Answer with the Key=Value pair ONLY, nothing else. Message: """
 
 
 def _json_from_text(raw):
-    """Extrahiert das erste JSON-Objekt aus einer Modell-Antwort – tolerant ggü.
-    Markdown-Fences und Text drumherum. Gibt dict oder None zurück.
+    """Extracts the first JSON object from a model reply — tolerant of markdown
+    fences and prose around it. Returns a dict or None.
 
-    v3.0: nötig, damit die Klassifizierung auch mit Providern funktioniert, die
-    (anders als Anthropic-Haiku) gern Prosa um das JSON herum schreiben.
+    v3.0: needed so classification also works with providers that (unlike
+    Anthropic Haiku) like to write prose around the JSON.
     """
     if not raw or not isinstance(raw, str):
         return None
@@ -121,49 +121,49 @@ def _json_from_text(raw):
 
 
 # ── v3.0 Speed: Konversations-Schnellpfad (KEIN API-Call) ─────────────────────
-# Stichwörter, die einen Spezial-Agenten andeuten. Fehlt JEDES davon, ist die
-# Anfrage mit sehr hoher Wahrscheinlichkeit normale Konversation und wir sparen
-# uns den kompletten Klassifizierungs-Roundtrip (spürbar schnellere Antworten –
-# auf NVIDIA/OpenAI besonders, weil dort der Classifier sonst das große
-# Hauptmodell bemühen müsste). Konservativ: im Zweifel wird klassifiziert.
+# Keywords that hint at a specialist agent. If NONE of them appear, the request
+# is almost certainly ordinary conversation and we skip the whole classification
+# round trip (noticeably faster answers — especially on NVIDIA/OpenAI, where the
+# classifier would otherwise have to bother the large main model). Conservative:
+# when in doubt, classify.
 _AGENT_KEYWORDS = (
     # calendar
-    "termin", "kalender", "meeting", "calendar", "verabred",
+    "appointment", "calendar", "meeting", "schedule", "event",
     # tasks
-    "aufgabe", "to-do", "todo", "to do", "todoist", "notion", "task",
+    "task", "to-do", "todo", "to do", "todoist", "notion",
     # email
-    "e-mail", "email", "mail", "posteingang", "inbox", "postfach",
+    "e-mail", "email", "mail", "inbox", "mailbox",
     # briefing
-    "briefing", "tagesüberblick", "überblick", "tagesablauf",
+    "briefing", "daily overview", "overview", "rundown",
     # document
-    "pdf", "dokument", "datei", ".docx", ".txt", "zusammenfass",
+    "pdf", "document", "file", ".docx", ".txt", "summari",
     # smarthome
-    "licht", "lampe", "temperatur", "heizung", "thermostat", "smart home",
-    "smarthome", "steckdose", "rollladen", "rollo",
+    "light", "lamp", "temperature", "heating", "thermostat", "smart home",
+    "smarthome", "socket", "blinds", "shutter",
     # media / youtube
-    "youtube", "spotify", "musik", "video", "playlist", "abspielen",
+    "youtube", "spotify", "music", "video", "playlist", "play ",
     # social media
     "linkedin", "twitter", "tweet", "thread", "newsletter", "instagram",
     # decision
-    "soll ich", "was ist besser", "pro und kontra", "pro/kontra",
-    "hilf mir entscheiden", "entscheidung", "entscheiden",
+    "should i", "which is better", "pros and cons", "pro/con",
+    "help me decide", "decision", "decide",
     # finance
-    "ausgegeben", "ausgabe", "budget", "finanzen", "bezahlt", "gekostet",
-    "kosten", "euro", "€", "rechnung", "aktie", "kurs",
+    "spent", "spending", "budget", "finances", "paid", "cost",
+    "costs", "euro", "€", "invoice", "stock", "share price",
     # research
-    "recherche", "paper", "arxiv", "hacker news", "forschung", "studie",
-    # web search / aktuelle Infos
-    "google", "suche", "such ", "search", "im internet", "nachschlagen",
-    "wikipedia", "wetter", "nachrichten",
+    "research", "paper", "arxiv", "hacker news", "study", "studies",
+    # web search / current info
+    "google", "search", "look up", "on the internet", "wikipedia",
+    "weather", "news",
     # screen / computer control
-    "bildschirm", "screenshot", "screen", "klick", "öffne", "starte",
-    "computer", "steuere",
+    "screen", "screenshot", "click", "open ", "launch", "start ",
+    "computer", "control",
 )
 
 
 def _is_simple_conversation(query: str) -> bool:
-    """True, wenn die Anfrage KEIN Spezial-Agenten-Stichwort enthält und damit
-    sehr wahrscheinlich normale Konversation ist (→ Classifier-Call überspringen)."""
+    """True when the request contains NO specialist-agent keyword and is
+    therefore almost certainly ordinary conversation (skip the classifier)."""
     t = (query or "").lower()
     if not t.strip():
         return True
@@ -171,8 +171,8 @@ def _is_simple_conversation(query: str) -> bool:
 
 
 def default_classification(query: str) -> dict:
-    """Standard-Klassifizierung 'conversation' ohne API-Call (Schnellpfad)."""
-    return {"agent": "conversation", "komplex": False, "sicherheitsrisiko": "keine",
+    """The default 'conversation' classification, with no API call (fast path)."""
+    return {"agent": "conversation", "komplex": False, "sicherheitsrisiko": "none",
             "braucht_erlaubnis": False, "erlaubnis_grund": "", "denkschritte": [],
             "zusammenfassung": query}
 
@@ -295,26 +295,26 @@ class Brain:
             try:
                 self.gui_cb(event, data)
             except (TypeError, AttributeError) as e:
-                logger.warning("[Brain] emit-Fehler (callback issue): %s", e)
+                logger.warning("[Brain] emit error (callback issue): %s", e)
             except RuntimeError as e:
-                logger.warning("[Brain] emit-Fehler (runtime): %s", e)
+                logger.warning("[Brain] emit error (runtime): %s", e)
             except Exception as e:  # noqa: BLE001 – last-resort guard for GUI stability
-                logger.error("[Brain] emit-Fehler (unexpected): %s", e)
+                logger.error("[Brain] emit error (unexpected): %s", e)
 
     def _step(self, label, text):
-        """Sendet einen Denkschritt ans GUI."""
+        """Sends one thinking step to the GUI."""
         self._emit("thinking_step", {"label": label, "text": text})
 
     # ── Klassifizierung ───────────────────────────────────────────────────
     def classify(self, query):
-        default = {"agent":"conversation","komplex":False,"sicherheitsrisiko":"keine",
+        default = {"agent":"conversation","komplex":False,"sicherheitsrisiko":"none",
                    "braucht_erlaubnis":False,"erlaubnis_grund":"","denkschritte":[],"zusammenfassung":query}
         provider = self.config.get("api_provider", "anthropic")
         api_key = self.config.get("api_key", "")
-        # v3.0: Klassifizierung provider-übergreifend. Früher lief sie NUR über den
-        # Anthropic-Client (self.client) – auf NVIDIA/OpenAI/Gemini/Local fiel das
-        # gesamte Agenten-Routing aus (alles wurde "conversation"). Jetzt nutzt
-        # Anthropic weiterhin das günstige+schnelle Haiku-Classifier-Modell, alle
+        # v3.0: classification works across providers. It used to run ONLY through
+        # the Anthropic client (self.client), so on NVIDIA/OpenAI/Gemini/local the
+        # whole agent routing collapsed (everything became "conversation"). Now
+        # Anthropic still uses the cheap, fast Haiku classifier model and all
         # anderen Provider ihr Hauptmodell via decide_text().
         try:
             if provider == "anthropic" and self.client:
@@ -325,51 +325,51 @@ class Brain:
                 raw = r.content[0].text
             elif api_key or provider == "local":
                 raw = self.decide_text(
-                    "Du bist ein Anfragen-Klassifikator. Antworte AUSSCHLIESSLICH mit "
+                    "You are a request classifier. Answer EXCLUSIVELY with "
                     "einem einzigen validen JSON-Objekt – kein Markdown, kein Text drumherum.",
                     CLASSIFIER + query, max_tokens=CLASSIFIER_MAX_TOKENS)
             else:
                 return default
-            # Bug 1.5 / v3.0: robustes JSON-Parsing (toleriert Prosa um das JSON)
+            # Bug 1.5 / v3.0: robust JSON parsing (tolerates prose around the JSON)
             parsed = _json_from_text(raw)
             if isinstance(parsed, dict) and parsed.get("agent"):
-                merged = dict(default)   # fehlende Felder mit Defaults auffüllen
+                merged = dict(default)   # fill missing fields from the defaults
                 merged.update(parsed)
                 return merged
-            logger.warning("[Brain] Classify: kein gültiges JSON | raw: %s", str(raw)[:200])
+            logger.warning("[Brain] Classify: no valid JSON | raw: %s", str(raw)[:200])
             return default
         except anthropic.APIError as e:
-            logger.error("[Brain] Classify API-Fehler: %s", e)
+            logger.error("[Brain] Classify API error: %s", e)
             return default
         except (httpx.HTTPError, ConnectionError) as e:
-            logger.error("[Brain] Classify Netzwerk-Fehler: %s", e)
+            logger.error("[Brain] Classify network error: %s", e)
             return default
-        except Exception as e:  # noqa: BLE001 – Klassifizierung darf nie den Flow stoppen
-            logger.error("[Brain] Classify unerwarteter Fehler: %s", e)
+        except Exception as e:  # noqa: BLE001 - classification must never stop the flow
+            logger.error("[Brain] Classify unexpected error: %s", e)
             return default
 
     def _build_system(self):
         system = SYSTEM_PROMPTS.get(self.config.get("redeart","normal"), SYSTEM_PROMPTS["normal"])
         anrede = self.config.get("anrede","")
-        if anrede: system += f" Sprich den Nutzer mit '{anrede}' an."
+        if anrede: system += f" Address the user as '{anrede}'."
 
         # Sprache
         lang = self.config.get("sprache","de-DE")
         if lang != "de-DE":
-            system += f" Antworte ab jetzt auf {LANG_NAMES.get(lang,'Deutsch')}."
+            system += f" From now on, answer in {LANG_NAMES.get(lang,'English')}."
 
-        # Standort – WICHTIG: verwenden, nicht fragen
+        # Location - IMPORTANT: use it, never ask for it
         wohnort = self.config.get("wohnort","")
         if wohnort:
-            system += (f"\n\nWICHTIG: Der Standort des Nutzers ist '{wohnort}'. "
-                       f"Verwende diesen Standort IMMER direkt für Wetter, lokale Infos etc. "
-                       f"Frage NIEMALS nach dem Standort – du kennst ihn bereits: {wohnort}.")
+            system += (f"\n\nIMPORTANT: the user's location is '{wohnort}'. "
+                       f"ALWAYS use this location directly for weather, local info and so on. "
+                       f"NEVER ask for the location - you already know it: {wohnort}.")
 
         ctx = self.memory.get_relevant_context("")
-        if ctx: system += f"\n\nGespeicherte Infos über den Nutzer:\n{ctx}"
+        if ctx: system += f"\n\nStored facts about the user:\n{ctx}"
         scr = self.screen.get_description()
         if scr: system += f"\n\nBildschirm: {scr}"
-        system += f"\n\nWenn du Code schreibst, nutze immer Markdown-Codeblöcke mit Sprachangabe (```python etc.). Formatiere Code sauber mit korrekter Einrückung. Teste die Logik mental bevor du antwortest."
+        system += f"\n\nWhen you write code, always use markdown code blocks with a language tag (```python etc.). Format code cleanly with correct indentation. Check the logic mentally before you answer."
         system += f"\n\nAktuelle Zeit: {datetime.now().strftime('%d.%m.%Y %H:%M')}"
         return system
 
@@ -378,14 +378,14 @@ class Brain:
         if self.kill_event.is_set(): return None
 
         if not self._rate_limiter.check():
-            msg = "⚠️ Zu viele Anfragen – bitte kurz warten."
+            msg = "⚠️ Too many requests - please wait a moment."
             self._emit("message", {"role":"jarvis","text": msg})
             return None
 
         provider = self.config.get("api_provider","anthropic")
         api_key  = self.config.get("api_key","")
         if not api_key and provider != "local":
-            msg = "Bitte zuerst einen API-Key in den Einstellungen (⚙) eingeben."
+            msg = "Please enter an API key in the settings (⚙) first."
             self._emit("message", {"role":"jarvis","text": msg})
             self._emit("needs_setup", {"reason":"Kein API-Key"})
             return None
@@ -406,8 +406,8 @@ class Brain:
 
         # Schnelle Bildschirm-Erkennung (vor Klassifizierung)
         screen_kw = ["schau auf meinen bildschirm","screenshot","bildschirm anschauen",
-                      "was siehst du","schau dir meinen bildschirm","hilf mir ich komme hier nicht weiter",
-                      "was muss ich hier drücken","schau mal","was ist auf meinem bildschirm",
+                      "what do you see","look at my screen","help me i am stuck here",
+                      "what do i click here","take a look","what is on my screen",
                       "kannst du meinen bildschirm sehen","zeig mir was ich sehe","screen"]
         if any(kw in query.lower() for kw in screen_kw):
             self._step("VISION", "Bildschirm-Anfrage erkannt – starte Countdown...")
@@ -415,9 +415,9 @@ class Brain:
             return None
 
         # ── v3.0 Speed: Konversations-Schnellpfad ────────────────────────────
-        # Enthält die Anfrage KEIN Spezial-Agenten-Stichwort, ist es fast sicher
-        # normale Konversation → den kompletten Classifier-Roundtrip überspringen
-        # und direkt antworten. Spart bei jedem Chat-Turn einen ganzen LLM-Call.
+        # If the request holds NO specialist-agent keyword it is almost certainly
+        # ordinary conversation, so skip the whole classifier round trip and
+        # answer directly. Saves a whole LLM call on every chat turn.
         if _is_simple_conversation(query):
             cl = dict(default_classification(query))
             agent = "conversation"
@@ -425,12 +425,12 @@ class Brain:
         else:
             # Klassifizierung
             self._emit("status", {"text":"🧠 Analysiere..."})
-            self._step("ANALYSE", "Verstehe die Anfrage und wähle den passenden Agenten...")
+            self._step("ANALYSIS", "Understanding the request and picking the right agent...")
             cl = self.classify(query)
             agent = cl.get("agent","conversation")
             self._emit("agent_selected", {"agent": agent})
 
-        # Denkschritte ans GUI
+        # Thinking steps to the GUI
         for s in cl.get("denkschritte", []):
             self._step("PLANUNG", s)
 
@@ -446,11 +446,11 @@ class Brain:
 
         # Screen Vision: Countdown → Screenshot → Analyse
         if agent == "screen_vision":
-            self._step("VISION", "Starte Bildschirm-Aufnahme mit Countdown...")
+            self._step("VISION", "Starting screen capture with a countdown...")
             self._emit("screenshot_countdown", {"query": query})
             return None
 
-        # ── Spezial-Agenten mit eigener Logik ────────────────────────────
+        # ── Specialist agents with their own logic ───────────────────────
         special_result = self._handle_special_agent(agent, query)
         if special_result is not None:
             reply = special_result
@@ -459,14 +459,14 @@ class Brain:
             self.memory.add_to_history("user", query)
             self.memory.add_to_history("assistant", reply)
             self._step("FERTIG", "Antwort gesendet.")
-            if any(kw in query.lower() for kw in ["merk dir","merke","denk daran","vergiss nicht"]):
+            if any(kw in query.lower() for kw in ["remember that","remember","keep in mind","do not forget"]):
                 self._save_key_memory(query)
             self._emit("status", {"text":"✅ BEREIT"})
             if todo_mode:
                 return {"status":"ok","reply":reply}
             return reply
 
-        self._step("AUSFÜHRUNG", f"Agent [{agent}] generiert die Antwort...")
+        self._step("EXECUTION", f"Agent [{agent}] is generating the answer...")
 
         system = self._build_system()
         hist = self.memory.get_conversation_history(8)
@@ -479,19 +479,19 @@ class Brain:
         try:
             reply = self._call(provider, api_key, system, messages)
         except anthropic.AuthenticationError:
-            reply = "⚠️ API-Key ungültig (401). Bitte in den Einstellungen (⚙) neuen Key eingeben."
+            reply = "⚠️ API key invalid (401). Enter a new key in the settings (⚙)."
             self._emit("needs_setup", {"reason":"401"})
         except requests.exceptions.HTTPError as e:
             code = e.response.status_code if e.response else "?"
-            if code == 401: reply = "⚠️ API-Key ungültig. Einstellungen (⚙) öffnen."; self._emit("needs_setup",{"reason":"401"})
+            if code == 401: reply = "⚠️ API key invalid. Open the settings (⚙)."; self._emit("needs_setup",{"reason":"401"})
             elif code == 429: reply = "⚠️ Rate-Limit – kurz warten."
-            else: reply = f"⚠️ HTTP-Fehler {code}."
+            else: reply = f"⚠️ HTTP error {code}."
         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
             reply = f"⚠️ Verbindungsfehler: {str(e)[:120]}"
             logger.error("[Brain] Verbindungsfehler: %s", e)
         except Exception as e:
-            reply = f"⚠️ Fehler: {str(e)[:150]}"
-            logger.error("[Brain] Fehler: %s", e)
+            reply = f"⚠️ Error: {str(e)[:150]}"
+            logger.error("[Brain] Error: %s", e)
 
         if reply:
             reply = self._process_code_in_reply(reply, provider, api_key, system, messages)
@@ -501,7 +501,7 @@ class Brain:
             self._step("FERTIG", "Antwort gesendet.")
 
         # Memory: nur Key=Value extrahieren
-        if any(kw in query.lower() for kw in ["merk dir","merke","denk daran","vergiss nicht"]):
+        if any(kw in query.lower() for kw in ["remember that","remember","keep in mind","do not forget"]):
             self._save_key_memory(query)
 
         self._emit("status", {"text":"✅ BEREIT"})
@@ -511,7 +511,7 @@ class Brain:
 
     # ── Spezial-Agenten Handler ─────────────────────────────────────────
     def _handle_special_agent(self, agent, query):
-        """Verarbeitet Agenten mit eigener Logik. Gibt Text zurück oder None für Standard-Verarbeitung."""
+        """Handles agents with their own logic. Returns text, or None for default handling."""
 
         if agent == "briefing":
             return self._agent_briefing(query)
@@ -532,7 +532,7 @@ class Brain:
         elif agent == "smarthome":
             return self._agent_smarthome(query)
 
-        # social_media, decision → Standard-Verarbeitung mit angepasstem System-Prompt
+        # social_media, decision -> default handling with an adjusted system prompt
         if agent == "social_media":
             return self._agent_social_media(query)
         if agent == "decision":
@@ -541,31 +541,31 @@ class Brain:
         return None
 
     def _agent_briefing(self, query):
-        self._step("BRIEFING", "Sammle Daten für das Briefing...")
+        self._step("BRIEFING", "Collecting data for the briefing...")
         if not self.briefing:
-            return "Briefing-Modul nicht verfügbar."
+            return "Briefing module unavailable."
         sections = self.briefing.generate_briefing()
         text = self.briefing.format_briefing(sections)
         # Zur sprachlichen Aufbereitung ans Modell senden
-        return self._enrich_with_model(text, "Formuliere dieses Briefing natürlich und ansprechend auf Deutsch. Behalte alle Informationen bei:")
+        return self._enrich_with_model(text, "Phrase this briefing naturally and engagingly in English. Keep every piece of information:")
 
     def _agent_youtube(self, query):
         self._step("YOUTUBE", "Suche YouTube-Transkript...")
         if not self.youtube or not self.youtube.is_available:
-            return "YouTube-Modul nicht verfügbar. Bitte `pip install youtube-transcript-api` installieren."
+            return "YouTube module unavailable. Install it with `pip install youtube-transcript-api`."
         video_id = self.youtube.extract_video_id(query)
         if not video_id:
-            return "Kein YouTube-Link in der Nachricht gefunden."
+            return "No YouTube link found in the message."
         prompt = self.youtube.get_video_summary_prompt(video_id)
         if not prompt:
-            return "Für dieses Video ist kein Transkript verfügbar."
-        self._step("YOUTUBE", "Erstelle Zusammenfassung...")
+            return "No transcript is available for that video."
+        self._step("YOUTUBE", "Writing the summary...")
         return self._enrich_with_model(prompt, None)
 
     def _agent_finance(self, query):
         self._step("FINANZEN", "Verarbeite Finanz-Anfrage...")
         if not self.finance:
-            return "Finanz-Modul nicht verfügbar."
+            return "Finance module unavailable."
         q = query.lower()
         if any(kw in q for kw in ["ausgegeben", "bezahlt", "gekauft", "gekostet"]):
             import re
@@ -573,10 +573,10 @@ class Brain:
             if amount_match:
                 amount = float(amount_match.group(1).replace(",", "."))
                 self.finance.add_expense(amount, "", query)
-                return f"Ausgabe von {amount:.2f}€ gespeichert.\n\n{self.finance.format_summary_text(30)}"
+                return f"Recorded a {amount:.2f}€ expense.\n\n{self.finance.format_summary_text(30)}"
         if any(kw in q for kw in ["budget", "setze", "limit"]):
-            return "Bitte nenne die Kategorie und den Betrag, z.B.: 'Setze Budget für Lebensmittel auf 300 Euro'."
-        if any(kw in q for kw in ["übersicht", "zusammenfassung", "ausgaben", "wie viel"]):
+            return "Name a category and an amount, e.g. 'Set the groceries budget to 300 euros'."
+        if any(kw in q for kw in ["overview", "summary", "spending", "how much"]):
             days = 7 if "woche" in q else 30
             return self.finance.format_summary_text(days)
         return self.finance.format_summary_text(30)
@@ -584,7 +584,7 @@ class Brain:
     def _agent_research(self, query):
         self._step("RECHERCHE", "Sammle aktuelle Artikel...")
         if not self.research:
-            return "Research-Modul nicht verfügbar."
+            return "Research module unavailable."
         q = query.lower()
         import re
         detail_match = re.search(r'(?:mehr zu|details zu|artikel)\s*(\d+)', q)
@@ -593,18 +593,18 @@ class Brain:
             article = self.research.get_article_detail(idx)
             if article:
                 return f"**{article['title']}**\n\n{article.get('summary', '')}\n\nLink: {article.get('link', '')}"
-            return f"Artikel {idx} nicht gefunden."
+            return f"Article {idx} not found."
         articles = self.research.fetch_articles()
         text = self.research.format_research_text(articles)
         return f"**Research-Briefing:**\n\n{text}"
 
     def _agent_calendar(self, query):
-        self._step("KALENDER", "Prüfe Kalender...")
+        self._step("CALENDAR", "Checking the calendar...")
         if not self.calendar or not self.calendar.is_configured:
-            return ("Google Calendar nicht konfiguriert. Bitte `google_credentials.json` "
-                    "in `~/.jarvis/` ablegen und JARVIS neu starten.")
+            return ("Google Calendar is not configured. Put `google_credentials.json` "
+                    "into `~/.jarvis/` and restart My Jarvis.")
         q = query.lower()
-        if any(kw in q for kw in ["erstelle", "anlegen", "neuer termin", "termin für"]):
+        if any(kw in q for kw in ["create", "add", "new appointment", "appointment for"]):
             return self._calendar_create(query)
         days = 1
         if "woche" in q:
@@ -618,17 +618,17 @@ class Brain:
 
     def _calendar_create(self, query):
         from core.calendar_integration import parse_datetime_natural
-        # Ans Modell senden, um Titel und Zeit zu extrahieren
+        # Send it to the model to extract the title and time
         extract_prompt = (
-            f"Extrahiere aus dieser Anfrage den Termintitel und die Uhrzeit/Datum. "
-            f"Antworte NUR mit JSON: {{\"title\": \"...\", \"datetime\": \"YYYY-MM-DDTHH:MM\", \"duration\": 60}}\n"
+            f"Extract the appointment title and the time/date from this request. "
+            f"Answer with JSON ONLY: {{\"title\": \"...\", \"datetime\": \"YYYY-MM-DDTHH:MM\", \"duration\": 60}}\n"
             f"Anfrage: {query}"
         )
         try:
             result = self._call_sync(
                 self.config.get("api_provider", "anthropic"),
                 self.config.get("api_key", ""),
-                "Du bist ein JSON-Extractor. Antworte NUR mit validem JSON.",
+                "You are a JSON extractor. Answer with valid JSON ONLY.",
                 [{"role": "user", "content": extract_prompt}]
             )
             if result:
@@ -651,36 +651,36 @@ class Brain:
             event = self.calendar.create_event(query[:50], dt)
             if event:
                 return f"Termin erstellt: **{event['title']}** am {event['start']}"
-        return "Konnte den Termin nicht erstellen. Bitte nenne Titel und Datum/Uhrzeit."
+        return "Could not create the appointment. Give me a title and a date/time."
 
     def _agent_tasks(self, query):
-        self._step("AUFGABEN", "Prüfe Tasks...")
+        self._step("TASKS", "Checking tasks...")
         if not self.tasks or not self.tasks.is_configured:
-            return "Aufgabenverwaltung nicht konfiguriert. Bitte Todoist/Notion API-Key in den Einstellungen eintragen."
+            return "Task management is not configured. Add a Todoist or Notion API key in the settings."
         q = query.lower()
-        if any(kw in q for kw in ["füge hinzu", "neue aufgabe", "hinzufügen", "erstelle task"]):
+        if any(kw in q for kw in ["add", "new task", "create task"]):
             content = query
-            for prefix in ["füge zur todoist hinzu:", "füge hinzu:", "neue aufgabe:", "erstelle task:"]:
+            for prefix in ["add to todoist:", "add:", "new task:", "create task:"]:
                 if prefix in q:
                     content = query[q.index(prefix) + len(prefix):].strip()
                     break
             result = self.tasks.add_task(content)
             if result:
                 return f"Aufgabe erstellt: **{result['content']}** [{result['source']}]"
-            return "Konnte Aufgabe nicht erstellen."
+            return "Could not create the task."
         task_list = self.tasks.get_all_tasks()
         return f"**Offene Aufgaben ({self.tasks.get_provider_name()}):**\n\n{self.tasks.format_tasks_text(task_list)}"
 
     def _agent_email(self, query):
-        self._step("E-MAIL", "Prüfe E-Mails...")
+        self._step("EMAIL", "Checking email...")
         if not self.email or not self.email.is_configured:
-            return "E-Mail nicht konfiguriert. Bitte IMAP-Server, E-Mail-Adresse und App-Passwort in den Einstellungen eintragen."
+            return "Email is not configured. Add the IMAP server, address and app password in the settings."
         q = query.lower()
-        if any(kw in q for kw in ["sende", "schicke", "absenden", "bestätige"]):
+        if any(kw in q for kw in ["send", "send it", "confirm"]):
             if self.email.get_pending_draft():
                 if self.email.send_pending_draft():
-                    return "E-Mail wurde gesendet."
-                return "Fehler beim Senden der E-Mail."
+                    return "The email was sent."
+                return "Failed to send the email."
         if any(kw in q for kw in ["zusammenfas", "ungelesen", "posteingang", "mails"]):
             emails = self.email.get_unread(5)
             text = self.email.format_emails_text(emails)
@@ -688,42 +688,42 @@ class Brain:
                 return text
             return self._enrich_with_model(
                 f"Fasse diese ungelesenen E-Mails zusammen:\n\n{text}",
-                "Erstelle eine kompakte Zusammenfassung der E-Mails auf Deutsch:"
+                "Write a compact summary of these emails in English:"
             )
-        return "Was möchtest du mit deinen E-Mails machen? (zusammenfassen, Antwort schreiben...)"
+        return "What would you like to do with your email? (summarise, write a reply...)"
 
     def _agent_document(self, query):
         self._step("DOKUMENT", "Analysiere Dokument...")
         if not self.doc_reader:
-            return "Dokumenten-Modul nicht verfügbar."
+            return "Document module unavailable."
         import re
         path_match = re.search(r'[A-Za-z]:[/\\][^\s]+|/[^\s]+|~[/\\][^\s]+', query)
         if not path_match:
-            return "Bitte nenne den Dateipfad, z.B.: 'Fasse C:\\Dokumente\\report.pdf zusammen'"
+            return "Give me the file path, e.g. 'Summarise C:\\Documents\\report.pdf'"
         filepath = path_match.group(0)
         text = self.doc_reader.read(filepath)
         if not text:
-            return f"Konnte '{filepath}' nicht lesen. Unterstützte Formate: {', '.join(self.doc_reader.get_supported_extensions())}"
+            return f"Could not read '{filepath}'. Supported formats: {', '.join(self.doc_reader.get_supported_extensions())}"
         from core.document_reader import DocumentReader
         chunks = DocumentReader.chunk_text(text)
         if len(chunks) == 1:
             return self._enrich_with_model(
                 f"Fasse dieses Dokument zusammen:\n\n{chunks[0][:6000]}",
-                "Erstelle eine strukturierte Zusammenfassung auf Deutsch:"
+                "Write a structured summary in English:"
             )
         chunk_text = "\n\n---\n\n".join(f"Abschnitt {i+1}:\n{c[:2000]}" for i, c in enumerate(chunks[:5]))
         return self._enrich_with_model(
             f"Fasse dieses Dokument zusammen ({len(chunks)} Abschnitte):\n\n{chunk_text}",
-            "Erstelle eine Gesamtzusammenfassung auf Deutsch:"
+            "Write an overall summary in English:"
         )
 
     def _agent_smarthome(self, query):
-        self._step("SMART HOME", "Steuere Geräte...")
+        self._step("SMART HOME", "Controlling devices...")
         if not self.smarthome or not self.smarthome.is_configured:
-            return self.smarthome.get_status_text() if self.smarthome else "Smart-Home-Modul nicht verfügbar."
+            return self.smarthome.get_status_text() if self.smarthome else "Smart home module unavailable."
         # Einfache Keyword-Erkennung, komplexere via Modell
         q = query.lower()
-        if any(kw in q for kw in ["licht an", "licht ein"]):
+        if any(kw in q for kw in ["lights on", "light on"]):
             lights = self.smarthome.get_entities("light")
             if lights:
                 self.smarthome.light_on(lights[0]["entity_id"])
@@ -752,36 +752,36 @@ class Brain:
     def _agent_social_media(self, query):
         q = query.lower()
         if "linkedin" in q:
-            platform_prompt = ("Erstelle einen professionellen LinkedIn-Post zum genannten Thema. "
-                              "150-300 Wörter, 3-5 relevante Hashtags, Emojis sparsam. "
+            platform_prompt = ("Write a professional LinkedIn post on the given topic. "
+                              "150-300 words, 3-5 relevant hashtags, emojis sparingly. "
                               "Professioneller, inspirierender Ton.")
         elif "twitter" in q or "thread" in q:
-            platform_prompt = ("Erstelle einen Twitter/X-Thread zum genannten Thema. "
-                              "Max. 280 Zeichen pro Tweet. Thread mit 5-8 Tweets, nummeriert (1/N). "
-                              "Prägnant und engaging.")
+            platform_prompt = ("Write a Twitter/X thread on the given topic. "
+                              "Max 280 characters per tweet. 5-8 tweets, numbered (1/N). "
+                              "Punchy and engaging.")
         elif "newsletter" in q:
-            platform_prompt = ("Erstelle einen Newsletter-Entwurf zum genannten Thema. "
-                              "Strukturiert mit Intro, Hauptteil, Call-to-Action. Max. 500 Wörter.")
+            platform_prompt = ("Draft a newsletter on the given topic. "
+                              "Structured with an intro, a main part and a call to action. Max 500 words.")
         else:
-            platform_prompt = ("Erstelle einen Social-Media-Post zum genannten Thema. "
-                              "Passend für die Plattform, professioneller Ton.")
+            platform_prompt = ("Write a social media post on the given topic. "
+                              "Suited to the platform, professional tone.")
         return self._enrich_with_model(query, platform_prompt)
 
     def _agent_decision(self, query):
         ctx = self.memory.get_relevant_context("")
         decision_prompt = (
-            "Hilf bei dieser Entscheidung mit einer strukturierten Pro/Kontra-Analyse. "
+            "Help with this decision through a structured pros-and-cons analysis. "
             "Format:\n"
             "1. Optionen identifizieren\n"
-            "2. Pro/Kontra für jede Option (Tabelle oder Liste)\n"
-            "3. Klare Empfehlung mit Begründung\n"
+            "2. Pros and cons for each option (table or list)\n"
+            "3. A clear recommendation with reasoning\n"
         )
         if ctx:
-            decision_prompt += f"\nKontext über den Nutzer:\n{ctx}"
+            decision_prompt += f"\nContext about the user:\n{ctx}"
         return self._enrich_with_model(query, decision_prompt)
 
     def _enrich_with_model(self, content, instruction):
-        """Sendet Content ans Modell zur sprachlichen Aufbereitung."""
+        """Sends content to the model to be phrased naturally."""
         provider = self.config.get("api_provider", "anthropic")
         api_key = self.config.get("api_key", "")
         if not api_key and provider != "local":
@@ -798,8 +798,8 @@ class Brain:
 
     # ── Memory: Key=Value Extraktion ──────────────────────────────────────
     def _save_key_memory(self, query):
-        # v3.0: provider-übergreifend. Früher nur Anthropic (self.client) – auf
-        # NVIDIA/OpenAI/Gemini/Local wurde "merk dir ..." komplett ignoriert.
+        # v3.0: works across providers. It used to be Anthropic only (self.client),
+        # so on NVIDIA/OpenAI/Gemini/local "remember that ..." was ignored entirely.
         provider = self.config.get("api_provider", "anthropic")
         api_key = self.config.get("api_key", "")
         kv = None
@@ -812,16 +812,16 @@ class Brain:
                 kv = r.content[0].text.strip().split("\n")[0]
             elif api_key or provider == "local":
                 raw = self.decide_text(
-                    "Du extrahierst die wichtigste zu merkende Information als kurzes "
-                    "Key=Value-Paar. Antworte NUR mit dem Key=Value-Paar, nichts anderes.",
+                    "You extract the single most important fact worth remembering as a "
+                    "short Key=Value pair. Answer with the Key=Value pair ONLY.",
                     MEMORY_EXTRACT + query, max_tokens=MEMORY_EXTRACT_MAX_TOKENS)
                 kv = (raw or "").strip().split("\n")[0] if raw else None
         except anthropic.APIError as e:
-            logger.error("[Brain] Memory-Extract API-Fehler: %s", e)
+            logger.error("[Brain] Memory extract API error: %s", e)
         except (httpx.HTTPError, ConnectionError) as e:
-            logger.error("[Brain] Memory-Extract Netzwerk-Fehler: %s", e)
+            logger.error("[Brain] Memory extract network error: %s", e)
         except Exception as e:  # noqa: BLE001
-            logger.error("[Brain] Memory-Extract Fehler: %s", e)
+            logger.error("[Brain] Memory extract error: %s", e)
         if kv and "=" in kv:
             self.memory.save_memory_kv(kv)
             self._emit("memory_saved", {"query": kv})
@@ -834,17 +834,17 @@ class Brain:
         provider = self.config.get("api_provider", "anthropic")
         api_key = self.config.get("api_key", "")
         if not api_key and provider != "local":
-            return "Kein API-Key verfügbar. Bitte in den Einstellungen eingeben."
+            return "No API key available. Enter one in the settings."
 
-        self._step("VISION", "Analysiere den Screenshot...")
+        self._step("VISION", "Analysing the screenshot...")
 
         anrede = self.config.get("anrede", "")
-        anrede_str = f" Sprich den Nutzer mit '{anrede}' an." if anrede else ""
+        anrede_str = f" Address the user as '{anrede}'." if anrede else ""
         system = (
-            f"Du bist JARVIS, ein KI-Assistent der den Bildschirm des Nutzers sieht.{anrede_str} "
-            "Beschreibe GENAU was du siehst und gib spezifische Anweisungen mit Positionsangaben "
-            "(z.B. 'oben links', 'in der Mitte', 'unten rechts'). "
-            "Sei präzise: nenne Button-Texte, Menüpunkte, Fenster-Titel etc."
+            f"You are My Jarvis, an AI assistant that can see the user's screen.{anrede_str} "
+            "Describe EXACTLY what you see and give specific instructions with positions "
+            "(e.g. 'top left', 'in the middle', 'bottom right'). "
+            "Be precise: name button labels, menu items, window titles and so on."
         )
         user_text = query if query else "Was siehst du auf meinem Bildschirm? Beschreibe was du siehst."
 
@@ -886,10 +886,10 @@ class Brain:
                 data = r.json()
                 # Bug 1.4: validate response structure
                 if not data.get("choices") or not isinstance(data["choices"], list) or len(data["choices"]) == 0:
-                    return "Fehler: API-Antwort enthält keine 'choices'."
+                    return "Error: the API response contains no 'choices'."
                 choice = data["choices"][0]
                 if not isinstance(choice, dict) or "message" not in choice or "content" not in choice.get("message", {}):
-                    return "Fehler: Unerwartetes Format in API-Antwort."
+                    return "Error: unexpected format in the API response."
                 reply = choice["message"]["content"]
 
             elif provider == "gemini":
@@ -905,12 +905,12 @@ class Brain:
                 data = r.json()
                 # Bug 1.4: validate response structure
                 if not data.get("candidates") or not isinstance(data["candidates"], list) or len(data["candidates"]) == 0:
-                    return "Fehler: Gemini-Antwort enthält keine 'candidates'."
+                    return "Error: the Gemini response contains no 'candidates'."
                 try:
                     reply = data["candidates"][0]["content"]["parts"][0]["text"]
                 except (KeyError, IndexError, TypeError) as e:
                     logger.error("[Brain] Gemini Vision response parse error: %s", e)
-                    return "Fehler: Unerwartetes Gemini-Antwortformat."
+                    return "Error: unexpected Gemini response format."
 
             elif provider == "local":
                 url = self.config.get("local_url", "http://localhost:11434") + "/api/chat"
@@ -924,37 +924,37 @@ class Brain:
                 data = r.json()
                 # Bug 1.4: validate response structure
                 if not isinstance(data, dict) or "message" not in data or "content" not in data.get("message", {}):
-                    return "Fehler: Ollama-Antwort enthält kein 'message.content'."
+                    return "Error: the Ollama response contains no 'message.content'."
                 reply = data["message"]["content"]
             else:
-                reply = "Unbekannter Provider für Bildschirm-Analyse."
+                reply = "Unknown provider for screen analysis."
 
             self._step("FERTIG", "Screenshot analysiert.")
             self.memory.add_to_history("user", f"[Screenshot] {user_text}")
             self.memory.add_to_history("assistant", reply)
             return reply
         except anthropic.APIError as e:
-            logger.error("[Brain] Vision API-Fehler: %s", e)
-            return f"API-Fehler bei der Bildschirm-Analyse: {str(e)[:150]}"
+            logger.error("[Brain] Vision API error: %s", e)
+            return f"API error during screen analysis: {str(e)[:150]}"
         except requests.exceptions.Timeout:
             logger.error("[Brain] Vision Timeout")
-            return "Fehler: Zeitüberschreitung bei der Bildschirm-Analyse."
+            return "Error: screen analysis timed out."
         except requests.exceptions.ConnectionError as e:
             logger.error("[Brain] Vision Verbindungsfehler: %s", e)
-            return f"Verbindungsfehler bei der Bildschirm-Analyse: {str(e)[:150]}"
+            return f"Connection error during screen analysis: {str(e)[:150]}"
         except Exception as e:
-            logger.error("[Brain] Vision-Fehler: %s", e)
-            return f"Fehler bei der Bildschirm-Analyse: {str(e)[:150]}"
+            logger.error("[Brain] Vision error: %s", e)
+            return f"Error during screen analysis: {str(e)[:150]}"
 
     # ── Vision-Entscheidung (Copilot) ──────────────────────────────────────
     def vision_decide(self, screenshot_b64: str, system: str, user_text: str,
                       max_tokens: int = 700) -> str:
-        """Schlanker Multi-Provider Vision-Call für den Copilot.
+        """A lean multi-provider vision call for the copilot.
 
-        Gibt den ROHTEXT der Modell-Antwort zurück (typischerweise JSON).
-        Keine Memory-/Step-Seiteneffekte – der Copilot parst selbst.
-        Wirft KEINE Exceptions nach außen für Netz-/API-Fehler; liefert dann
-        einen leeren String, damit der Copilot-Loop sauber reagieren kann.
+        Returns the RAW TEXT of the model reply (typically JSON).
+        No memory or step side effects — the copilot parses it itself.
+        Raises NO exceptions for network or API errors; returns an empty string
+        instead, so the copilot loop can react cleanly.
         """
         provider = self.config.get("api_provider", "anthropic")
         api_key = self.config.get("api_key", "")
@@ -985,9 +985,9 @@ class Brain:
                 }
                 vision_models = {
                     "openai": self.config.get("openai_model", "gpt-4o-mini"),
-                    # v2.9: das alte llama-3.2-90b-vision verweigert PC-Steuerung und
-                    # liefert kein JSON. llama-4-maverick ist multimodal, robust und
-                    # befolgt die JSON-Vorgabe. Über nvidia_vision_model übersteuerbar.
+                    # v2.9: the old llama-3.2-90b-vision refuses PC control and returns
+                    # no JSON. llama-4-maverick is multimodal, robust and follows the
+                    # JSON instruction. Overridable through nvidia_vision_model.
                     "nvidia": self.config.get("nvidia_vision_model",
                                               "meta/llama-4-maverick-17b-128e-instruct"),
                     "mistral": "pixtral-large-latest",
@@ -1040,22 +1040,22 @@ class Brain:
 
             return ""
         except anthropic.APIError as e:
-            logger.error("[Brain] vision_decide API-Fehler: %s", e)
+            logger.error("[Brain] vision_decide API error: %s", e)
             return ""
         except (requests.exceptions.RequestException, httpx.HTTPError) as e:
-            logger.error("[Brain] vision_decide Netzwerk-Fehler: %s", e)
+            logger.error("[Brain] vision_decide network error: %s", e)
             return ""
         except (KeyError, IndexError, TypeError) as e:
-            logger.error("[Brain] vision_decide Parse-Fehler: %s", e)
+            logger.error("[Brain] vision_decide parse error: %s", e)
             return ""
 
     def decide_text(self, system: str, user_text: str,
                     max_tokens: int = 300) -> str:
-        """v2.9: Schlanker Multi-Provider TEXT-Call (ohne Bild) für den Copilot.
+        """v2.9: a lean multi-provider TEXT call (no image) for the copilot.
 
-        Wird z.B. genutzt um aus einer Prozess-/App-Liste den passenden Eintrag
-        wählen zu lassen (Spec 1a) oder für die Selbstreflexion ohne Screenshot.
-        Gibt den ROHTEXT zurück; bei Fehlern einen leeren String (nie Exception).
+        Used for example to pick the right entry from a process or app list
+        (spec 1a), or for self-reflection without a screenshot.
+        Returns the RAW TEXT; on errors an empty string, never an exception.
         """
         provider = self.config.get("api_provider", "anthropic")
         api_key = self.config.get("api_key", "")
@@ -1124,18 +1124,18 @@ class Brain:
 
             return ""
         except anthropic.APIError as e:
-            logger.error("[Brain] decide_text API-Fehler: %s", e)
+            logger.error("[Brain] decide_text API error: %s", e)
             return ""
         except (requests.exceptions.RequestException, httpx.HTTPError) as e:
-            logger.error("[Brain] decide_text Netzwerk-Fehler: %s", e)
+            logger.error("[Brain] decide_text network error: %s", e)
             return ""
         except (KeyError, IndexError, TypeError) as e:
-            logger.error("[Brain] decide_text Parse-Fehler: %s", e)
+            logger.error("[Brain] decide_text parse error: %s", e)
             return ""
 
-    # ── To-Do Ausführung ──────────────────────────────────────────────────
+    # ── To-do execution ───────────────────────────────────────────────────
     def run_todo_item(self, item_text):
-        """Führt eine einzelne To-Do Aufgabe aus. Gibt dict zurück."""
+        """Runs a single to-do task. Returns a dict."""
         if self.kill_event.is_set():
             return {"status":"error","message":"Kill-Switch aktiv."}
         result = self.process(item_text, todo_mode=True)
@@ -1159,7 +1159,7 @@ class Brain:
 
     def _anthropic(self, system, messages):
         if not self.client: self._init_client()
-        if not self.client: return "Anthropic-Client nicht initialisiert."
+        if not self.client: return "Anthropic client not initialised."
         anthropic_model = self.config.get("anthropic_model", "claude-sonnet-4-6")  # Bug 1.16
         full = ""
         with self.client.messages.stream(
@@ -1180,13 +1180,13 @@ class Brain:
         data = r.json()
         # Bug 1.4: validate response structure
         if not data.get("choices") or not isinstance(data["choices"], list) or len(data["choices"]) == 0:
-            return "Fehler: API-Antwort enthält keine gültigen 'choices'."
+            return "Error: the API response contains no valid 'choices'."
         choice = data["choices"][0]
         if not isinstance(choice, dict) or "message" not in choice:
-            return "Fehler: Unerwartetes Antwortformat (kein 'message' in choice)."
+            return "Error: unexpected response format (no 'message' in choice)."
         msg = choice["message"]
         if not isinstance(msg, dict) or "content" not in msg:
-            return "Fehler: Unerwartetes Antwortformat (kein 'content' in message)."
+            return "Error: unexpected response format (no 'content' in message)."
         return msg["content"]
 
     def _gemini(self, api_key, system, messages):
@@ -1199,12 +1199,12 @@ class Brain:
         data = r.json()
         # Bug 1.4: validate response structure
         if not data.get("candidates") or not isinstance(data["candidates"], list) or len(data["candidates"]) == 0:
-            return "Fehler: Gemini-Antwort enthält keine 'candidates'."
+            return "Error: the Gemini response contains no 'candidates'."
         try:
             return data["candidates"][0]["content"]["parts"][0]["text"]
         except (KeyError, IndexError, TypeError) as e:
             logger.error("[Brain] Gemini response parse error: %s", e)
-            return "Fehler: Unerwartetes Gemini-Antwortformat."
+            return "Error: unexpected Gemini response format."
 
     # ── Code-Block Processing ────────────────────────────────────────────
     def _process_code_in_reply(self, reply, provider, api_key, system, messages):
@@ -1244,16 +1244,16 @@ class Brain:
             self._step("CODE-FIX", f"Syntaxfehler in {lang} erkannt – korrigiere (Versuch {attempt + 1}/3)...")
 
             fix_prompt = (
-                f"Dieser {lang}-Code hat einen Syntaxfehler:\n"
+                f"This {lang} code has a syntax error:\n"
                 f"```{lang}\n{code}```\n"
-                f"Fehler: {error_msg}\n"
-                f"Gib NUR den korrigierten Code zurück in einem ```{lang} Code-Block."
+                f"Error: {error_msg}\n"
+                f"Return ONLY the corrected code, in a ```{lang} code block."
             )
 
             try:
                 fix_reply = self._call_sync(
                     provider, api_key,
-                    "Du bist ein Code-Korrektur-Assistent. Gib NUR korrigierten Code zurück.",
+                    "You are a code-fixing assistant. Return ONLY corrected code.",
                     [{"role": "user", "content": fix_prompt}]
                 )
             except Exception as e:
@@ -1301,8 +1301,8 @@ class Brain:
         data = r.json()
         # Bug 1.4: validate response structure
         if not isinstance(data, dict) or "message" not in data:
-            return "Fehler: Ollama-Antwort enthält kein 'message'-Feld."
+            return "Error: the Ollama response has no 'message' field."
         msg = data["message"]
         if not isinstance(msg, dict) or "content" not in msg:
-            return "Fehler: Ollama-Antwort enthält kein 'content' in 'message'."
+            return "Error: the Ollama response has no 'content' in 'message'."
         return msg["content"]

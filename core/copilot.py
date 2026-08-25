@@ -1,21 +1,20 @@
 """
-JARVIS Copilot — PC-Steuerung per KI
-=====================================
-See → Think → Act → Repeat.
+My Jarvis Copilot — AI-driven PC control
+========================================
+See -> Think -> Act -> Repeat.
 
-Der Copilot bekommt eine Aufgabe in natürlicher Sprache, macht einen Screenshot,
-schickt ihn an das Vision-Modell, bekommt EINE strukturierte Aktion als JSON
-zurück, führt sie über den Executor aus und macht weiter — bis das Modell
-"done" meldet oder der Nutzer stoppt.
+The copilot takes a task in natural language, captures a screenshot, sends it to
+the vision model, gets back ONE structured action as JSON, runs it through the
+executor and carries on — until the model reports "done" or the user stops it.
 
-Sicherheit:
-- Destruktive Aktionen (löschen, senden, kaufen, Shell-Befehle) brauchen
-  Bestätigung – außer der Nutzer hat "immer erlauben" gewählt.
-- Passwortfelder werden NIEMALS automatisch befüllt (harte Regel, nicht
-  überschreibbar). Der Copilot pausiert und bittet den Nutzer.
-- Nach MAX_STEPS Schritten pausiert der Copilot und fragt nach ("immer
-  erlauben" hebt das auf). HARD_MAX ist die absolute Obergrenze.
-- Stop-Button und Kill-Switch unterbrechen jederzeit.
+Safety:
+- Destructive actions (deleting, sending, buying, shell commands) need
+  confirmation, unless the user chose "always allow".
+- Password fields are NEVER filled automatically (a hard rule, not
+  overridable). The copilot pauses and asks the user.
+- After MAX_STEPS steps the copilot pauses and asks ("always allow" lifts
+  that). HARD_MAX is the absolute ceiling.
+- The stop button and the kill switch interrupt at any time.
 """
 
 import asyncio
@@ -149,85 +148,86 @@ _AUTH_PREAMBLE = (
 # ── v2.7 #2 / v2.9 2a: Plan-Call Prompt (jetzt mit 3 alternativen Wegen) ───────
 _PLAN_SYSTEM = (
     _AUTH_PREAMBLE +
-    "Du bist JARVIS und planst die Steuerung eines PCs. Du bekommst einen Auftrag "
-    "und einen Screenshot des aktuellen Bildschirms. Erstelle einen detaillierten "
-    "Schritt-für-Schritt-Plan, wie der Auftrag am PC umgesetzt wird. Für jeden Schritt: "
-    "was genau wird geklickt/getippt/geöffnet.\n"
-    "Erstelle ZUSÄTZLICH 3 verschiedene Wege, die Aufgabe zu lösen, von einfach nach "
-    "komplex (\"ways\"). Wenn Weg 1 scheitert, kann Weg 2, dann Weg 3 versucht werden.\n"
-    "Beispiel für \"Öffne Spotify\":\n"
-    "  Weg 1: Taskleiste -> Spotify-Icon anklicken\n"
-    "  Weg 2: Windows-Suche -> 'Spotify' tippen -> Enter\n"
-    "  Weg 3: Explorer/Direktstart der Spotify.exe aus dem Installationspfad\n"
-    "Prüfe, ob IRGENDEIN Schritt destruktiv ist (Dateien löschen, E-Mails/Nachrichten "
-    "senden, Käufe/Bezahlungen, Passwörter, Deinstallation, System-Befehle).\n"
-    "Nenne außerdem die Haupt-App, um die es geht (\"target_app\", z.B. \"Spotify\", "
-    "\"Chrome\"; leer lassen wenn keine bestimmte App).\n"
-    "Antworte NUR mit einem einzigen validen JSON-Objekt – kein Text davor oder danach, "
-    "kein Markdown:\n"
+    "You are My Jarvis, planning how to drive a PC. You are given a task and a "
+    "screenshot of the current screen. Produce a detailed step-by-step plan for "
+    "carrying the task out on the PC. For every step: exactly what gets "
+    "clicked, typed or opened.\n"
+    "ALSO produce 3 different ways to solve the task, from simple to complex "
+    "(\"ways\"). If way 1 fails, way 2 and then way 3 can be tried.\n"
+    "Example for \"open Spotify\":\n"
+    "  Way 1: taskbar -> click the Spotify icon\n"
+    "  Way 2: Windows search -> type 'Spotify' -> Enter\n"
+    "  Way 3: Explorer / launch Spotify.exe directly from the install path\n"
+    "Check whether ANY step is destructive (deleting files, sending emails or "
+    "messages, purchases or payments, passwords, uninstalling, system commands).\n"
+    "Also name the main app involved (\"target_app\", e.g. \"Spotify\", "
+    "\"Chrome\"; leave empty if no particular app).\n"
+    "Answer with a single valid JSON object ONLY — no text before or after, "
+    "no markdown:\n"
     "{\n"
-    '  "steps": ["Schritt 1...", "Schritt 2...", "..."],\n'
-    '  "ways": ["Weg 1: ...", "Weg 2: ...", "Weg 3: ..."],\n'
+    '  "steps": ["step 1...", "step 2...", "..."],\n'
+    '  "ways": ["Way 1: ...", "Way 2: ...", "Way 3: ..."],\n'
     '  "destructive": false,\n'
-    '  "destructive_reason": "kurze Begründung oder leer",\n'
+    '  "destructive_reason": "short reason, or empty",\n'
     '  "target_app": "Spotify"\n'
     "}"
 )
 
-# ── v2.9 2c: Bekannte Hindernisse und ihre Standard-Lösungen ───────────────────
+# ── v2.9 2c: known obstacles and their standard solutions ─────────────────────
 OBSTACLE_SOLUTIONS = {
-    "popup_dialog":       "Dialog schließen (ESC oder X-Button) dann weitermachen",
-    "login_screen":      ("Benutzer informieren: Login erforderlich. Mit action "
-                          "\"need_user\" auf die Eingabe warten."),
-    "loading_spinner":    "Warten (action \"wait\", ~2s) und danach erneut prüfen",
-    "app_not_responding": "Fenster schließen (Alt+F4), dann das Programm neu starten",
-    "wrong_window_focus": "Alt+Tab oder Taskleisten-Icon anklicken, um das richtige Fenster zu wählen",
-    "element_not_visible":"Scrollen, oder Fenster maximieren, dann das Element erneut suchen",
-    "search_no_results":  "Suchbegriff vereinfachen oder einen alternativen Begriff versuchen",
-    "permission_dialog":  "Benutzer fragen, BEVOR 'Ja/Zulassen' geklickt wird",
-    "app_not_found":      "Anderen Weg zum Öffnen versuchen (launch_app mit Pfad / Desktop-Icon / Alternative vorschlagen)",
+    "popup_dialog":       "Close the dialog (ESC or the X button), then carry on",
+    "login_screen":      ("Tell the user a login is required. Wait for their input "
+                          "with action \"need_user\"."),
+    "loading_spinner":    "Wait (action \"wait\", ~2s), then check again",
+    "app_not_responding": "Close the window (Alt+F4), then restart the program",
+    "wrong_window_focus": "Alt+Tab or click the taskbar icon to pick the right window",
+    "element_not_visible":"Scroll, or maximise the window, then look for the element again",
+    "search_no_results":  "Simplify the search term, or try an alternative one",
+    "permission_dialog":  "Ask the user BEFORE clicking 'Yes/Allow'",
+    "app_not_found":      "Try another way to open it (launch_app with a path / desktop icon / suggest an alternative)",
 }
 
-# ── v2.9 2e: Kreative Fallbacks pro Szenario ───────────────────────────────────
+# ── v2.9 2e: creative fallbacks per scenario ──────────────────────────────────
 CREATIVE_FALLBACKS = {
     "cant_open_app": [
-        "Desktop nach dem Icon absuchen (Screenshot analysieren) und doppelklicken",
-        "Taskleiste durchsuchen",
-        "launch_app mit dem exakten .exe/.lnk-Pfad nutzen (Pfad steht ggf. im Hinweis)",
-        "Datei-Explorer öffnen und die .exe direkt starten",
+        "Scan the desktop for the icon (analyse the screenshot) and double-click it",
+        "Search the taskbar",
+        "Use launch_app with the exact .exe/.lnk path (the hint may contain it)",
+        "Open File Explorer and start the .exe directly",
     ],
     "cant_click_button": [
-        "Fenster maximieren, dann nochmal versuchen",
-        "Tab-Taste nutzen um zum Button zu navigieren, dann Enter",
-        "Rechtsklick auf das Element -> passende Kontextmenü-Option",
-        "Tastenkürzel statt Klick (z.B. Strg+P statt Drucken-Button)",
+        "Maximise the window, then try again",
+        "Use Tab to navigate to the button, then Enter",
+        "Right-click the element -> the matching context menu option",
+        "A keyboard shortcut instead of a click (e.g. Ctrl+P instead of the Print button)",
     ],
     "cant_type_text": [
-        "Erst in das Feld klicken, dann tippen",
-        "Doppelklick auf das Textfeld",
-        "Mit Tab-Taste in das Feld fokussieren",
-        "Strg+A zum Selektieren des alten Inhalts, dann neu tippen",
+        "Click into the field first, then type",
+        "Double-click the text field",
+        "Focus the field with the Tab key",
+        "Ctrl+A to select the old content, then retype",
     ],
     "website_not_loading": [
-        "F5 drücken (neu laden)",
-        "Adressleiste fokussieren (Strg+L) und die URL erneut eingeben",
-        "Einen anderen Browser versuchen",
-        "Strg+Shift+Entf -> Cache leeren -> erneut versuchen",
+        "Press F5 (reload)",
+        "Focus the address bar (Ctrl+L) and re-enter the URL",
+        "Try a different browser",
+        "Ctrl+Shift+Del -> clear the cache -> try again",
     ],
 }
 
-# ── v2.9 2d: Selbstreflexion nach mehreren Fehlversuchen ───────────────────────
-REFLECT_AFTER   = 3   # nach so vielen wirkungslosen Schritten am Stück: reflektieren
-MAX_REFLECTIONS = 2   # so oft reflektieren, danach ehrlich abbrechen
+# ── v2.9 2d: self-reflection after several failed attempts ────────────────────
+REFLECT_AFTER   = 3   # reflect after this many ineffective steps in a row
+MAX_REFLECTIONS = 2   # reflect this often, then stop honestly
 _REFLECT_SYSTEM = (
-    "Du bist JARVIS und steckst bei einer PC-Aufgabe fest. Mehrere Versuche haben "
-    "nichts bewirkt. Denke GRUNDLEGEND ANDERS und finde einen völlig neuen Ansatz.\n"
-    "Analysiere ehrlich:\n"
-    "1. Was könnte der Grund sein, warum es bisher nicht klappt?\n"
-    "2. Welchen KOMPLETT anderen Ansatz gibt es (anderes Werkzeug/Menü/Tastenkürzel)?\n"
-    "3. Was würde ein erfahrener Mensch in dieser Situation tun?\n"
-    "Antworte als JSON: {\"reason\": \"...\", \"new_approach\": \"konkret, "
-    "unterscheidet sich klar von den bisherigen Versuchen\"}"
+    "You are My Jarvis and you are stuck on a PC task. Several attempts have "
+    "achieved nothing. Think FUNDAMENTALLY DIFFERENTLY and find a completely new "
+    "approach.\n"
+    "Analyse honestly:\n"
+    "1. What could be the reason it has not worked so far?\n"
+    "2. What COMPLETELY different approach exists (another tool/menu/shortcut)?\n"
+    "3. What would an experienced person do in this situation?\n"
+    "Answer as JSON: {\"reason\": \"...\", \"new_approach\": \"concrete, and "
+    "clearly different from the previous attempts\"}"
 )
 
 
