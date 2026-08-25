@@ -72,7 +72,7 @@ class EmailManager:
             return emails
 
         except imaplib.IMAP4.error as e:
-            logger.error("[Email] IMAP Fehler: %s", e)
+            logger.error("[Email] IMAP error: %s", e)
             return []
         except Exception as e:
             logger.error("[Email] Error fetching mail: %s", e)
@@ -105,10 +105,10 @@ class EmailManager:
             logger.info("[Email] Antwort gesendet an %s", to)
             return True
         except smtplib.SMTPAuthenticationError as e:
-            logger.error("[Email] SMTP Auth-Fehler: %s", e)
+            logger.error("[Email] SMTP auth error: %s", e)
             return False
         except Exception as e:
-            logger.error("[Email] Senden fehlgeschlagen: %s", e)
+            logger.error("[Email] sending failed: %s", e)
             return False
 
     def set_pending_draft(self, to: str, subject: str, body: str):
@@ -134,7 +134,7 @@ class EmailManager:
 
     def format_emails_text(self, emails: list) -> str:
         if not emails:
-            return "Keine ungelesenen E-Mails."
+            return "No unread emails."
         lines = []
         for i, em in enumerate(emails, 1):
             lines.append(f"**{i}.** Von: {em['from']}\n   Betreff: {em['subject']}\n   {em['body_preview'][:100]}...")

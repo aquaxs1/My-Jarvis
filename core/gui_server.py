@@ -79,7 +79,7 @@ class GUIServer:
     async def _handle_client(self, websocket, path="/"):
         self.clients.add(websocket)
         print("[GUI] Browser verbunden")
-        # Bug 7: Queue atomar leeren (swap), damit parallele send_event-Appends
+        # bug 7: drain the queue atomically (a swap), so concurrent send_event appends
         # are not lost between the iteration and clear().
         with self._queue_lock:
             pending = self.event_queue
@@ -101,7 +101,7 @@ class GUIServer:
                 "data": {},
             }))
         except Exception as e:
-            print(f"[GUI] Kill-State-Sync fehlgeschlagen: {e}")
+            print(f"[GUI] syncing the kill state failed: {e}")
         if self.on_client_connect:
             try:
                 self.on_client_connect()
@@ -147,7 +147,7 @@ class GUIServer:
                     target=self.jarvis.handle_text,
                     args=(text,), daemon=True).start()
 
-        # ── Vorschlag akzeptiert (KEIN user_input Echo – Frontend zeigt selbst) ──
+        # ── suggestion accepted (NO user_input echo – the frontend shows it) ──
         elif t == "suggestion_accepted":
             text = data.get("suggestion","").strip()
             if text:
@@ -204,7 +204,7 @@ class GUIServer:
             Config.save(cfg)
             self.jarvis.config.update(cfg)
             self.jarvis.brain.reload_config(cfg)
-            print(f"[Config] Gespeichert. Provider: {cfg.get('api_provider')} | Key: {'ja' if cfg.get('api_key') else 'nein'}")
+            print(f"[Config] Saved. Provider: {cfg.get('api_provider')} | key: {'yes' if cfg.get('api_key') else 'no'}")
             await self._broadcast(json.dumps({
                 "type": "config_saved",
                 "data": {
@@ -263,7 +263,7 @@ class GUIServer:
             decision = (data.get("decision") or "").strip().lower()
             self.jarvis.copilot.resolve(decision)
 
-        # ── To-Do abbrechen ──────────────────────────────────────────────
+        # ── cancel the to-do run ─────────────────────────────────────────
         elif t == "todo_cancel":
             self._todo_cancel.set()
 
@@ -435,7 +435,7 @@ class GUIServer:
             self.jarvis.speech.speak(reply[:300])
         except Exception as e:
             self.send_event("message", {"role": "jarvis",
-                "text": f"Screenshot-Analyse fehlgeschlagen: {str(e)[:120]}"})
+                "text": f"the screenshot analysis failed: {str(e)[:120]}"})
             print(f"[Screenshot] Error: {e}")
         finally:
             self.send_event("thinking", {"status": False})
@@ -555,7 +555,7 @@ class GUIServer:
             print("[GUI] ERROR: the HTTP server could not be started.")
             return
         if not WS_AVAILABLE:
-            print("[GUI] websockets fehlt -> python -m pip install websockets")
+            print("[GUI] websockets is missing -> python -m pip install websockets")
             return
         self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.loop)

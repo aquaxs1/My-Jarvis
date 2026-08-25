@@ -23,7 +23,7 @@ class YouTubeManager:
             self._api = YouTubeTranscriptApi
             self._available = True
         except ImportError:
-            logger.info("[YouTube] youtube-transcript-api nicht installiert")
+            logger.info("[YouTube] youtube-transcript-api is not installed")
 
     @property
     def is_available(self) -> bool:
@@ -61,7 +61,7 @@ class YouTubeManager:
                 return transcript.fetch()
 
         except Exception as e:
-            logger.error("[YouTube] Transkript abrufen fehlgeschlagen: %s", e)
+            logger.error("[YouTube] fetching the transcript failed: %s", e)
             return None
 
     def transcript_to_text(self, transcript: list) -> str:

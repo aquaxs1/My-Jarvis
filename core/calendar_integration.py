@@ -34,7 +34,7 @@ class CalendarManager:
             from googleapiclient.discovery import build
             self._available = True
         except ImportError:
-            logger.info("[Calendar] google-api-python-client nicht installiert")
+            logger.info("[Calendar] google-api-python-client is not installed")
             return
 
         self._authenticate()
@@ -59,19 +59,19 @@ class CalendarManager:
             try:
                 creds.refresh(Request())
             except Exception as e:
-                logger.warning("[Calendar] Token refresh fehlgeschlagen: %s", e)
+                logger.warning("[Calendar] refreshing the token failed: %s", e)
                 creds = None
 
         if not creds or not creds.valid:
             if not CREDENTIALS_PATH.exists():
-                logger.info("[Calendar] google_credentials.json fehlt in %s", JARVIS_DIR)
+                logger.info("[Calendar] google_credentials.json is missing in %s", JARVIS_DIR)
                 return
             try:
                 flow = InstalledAppFlow.from_client_secrets_file(
                     str(CREDENTIALS_PATH), SCOPES)
                 creds = flow.run_local_server(port=0)
             except Exception as e:
-                logger.error("[Calendar] OAuth fehlgeschlagen: %s", e)
+                logger.error("[Calendar] OAuth failed: %s", e)
                 return
 
         JARVIS_DIR.mkdir(parents=True, exist_ok=True)
@@ -81,7 +81,7 @@ class CalendarManager:
             self._service = build("calendar", "v3", credentials=creds)
             logger.info("[Calendar] Google Calendar verbunden")
         except Exception as e:
-            logger.error("[Calendar] Service-Erstellung fehlgeschlagen: %s", e)
+            logger.error("[Calendar] building the service failed: %s", e)
 
     @property
     def is_configured(self) -> bool:
@@ -119,7 +119,7 @@ class CalendarManager:
                 })
             return events
         except Exception as e:
-            logger.error("[Calendar] Events abrufen fehlgeschlagen: %s", e)
+            logger.error("[Calendar] fetching the events failed: %s", e)
             return []
 
     def create_event(self, title: str, start_dt: datetime,
@@ -141,7 +141,7 @@ class CalendarManager:
             event = self._service.events().insert(
                 calendarId="primary", body=event_body
             ).execute()
-            logger.info("[Calendar] Termin erstellt: %s", title)
+            logger.info("[Calendar] Appointment created: %s", title)
             return {
                 "id": event.get("id"),
                 "title": title,
@@ -154,7 +154,7 @@ class CalendarManager:
 
     def format_events_text(self, events: list) -> str:
         if not events:
-            return "Keine Termine gefunden."
+            return "No appointments found."
         lines = []
         for ev in events:
             start = ev["start"]

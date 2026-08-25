@@ -50,7 +50,7 @@ class CopilotOverlay:
         self._thread     = None
         self._root       = None
         self._status_var = None
-        self._logo_ref   = None          # PhotoImage-Referenz halten (sonst GC)
+        self._logo_ref   = None          # keep the PhotoImage reference (or the GC takes it)
         self._close      = threading.Event()
         self._visible    = False
 
@@ -104,7 +104,7 @@ class CopilotOverlay:
             root.configure(bg=_BG)
 
             sw = root.winfo_screenwidth()
-            x = max(0, (sw - _WIN_W) // 2)         # oben zentriert (nicht in der Ecke!)
+            x = max(0, (sw - _WIN_W) // 2)         # centred at the top (not in a corner!)
             root.geometry(f"{_WIN_W}x{_WIN_H}+{x}+24")
 
             frame = tk.Frame(root, bg=_BG, highlightbackground=_ACCENT,

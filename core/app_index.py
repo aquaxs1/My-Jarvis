@@ -88,7 +88,7 @@ def _cache_path() -> str:
     return os.path.join(_jarvis_dir(), "installed_apps.json")
 
 
-# ── Quelle 1: Windows-Registry (Uninstall-Keys) ──────────────────────────────
+# ── source 1: the Windows registry (uninstall keys) ──────────────────────────
 def _clean_icon_path(raw: str) -> str:
     """DisplayIcon → echter .exe-Pfad. Format oft 'C:\\...\\app.exe,0'."""
     if not raw:
@@ -104,7 +104,7 @@ def _clean_icon_path(raw: str) -> str:
 
 def _scan_registry() -> list:
     """Reads installed programs from the uninstall keys (HKLM + HKCU,
-    32- und 64-Bit-View). Liefert [{name, path, source}]."""
+    both the 32- and 64-bit views). Returns [{name, path, source}]."""
     if platform.system() != "Windows":
         return []
     try:
@@ -308,7 +308,7 @@ def _dedup(apps: list) -> list:
         if cur is None:
             best[key] = a
             continue
-        # bevorzuge Eintrag mit startbarem Pfad (.exe/.lnk)
+        # prefer the entry with a launchable path (.exe/.lnk)
         if _is_launchable(a.get("path")) and not _is_launchable(cur.get("path")):
             best[key] = a
     return sorted(best.values(), key=lambda x: x["name"].lower())
@@ -328,11 +328,11 @@ def scan_installed_apps() -> list:
                _scan_windows_builtins):
         try:
             apps.extend(fn())
-        except Exception as e:  # noqa: BLE001 – einzelne Quelle darf nie alles kippen
-            logger.warning("[AppIndex] Scan-Quelle %s fehlgeschlagen: %s",
+        except Exception as e:  # noqa: BLE001 – one source must never sink the rest
+            logger.warning("[AppIndex] scan source %s failed: %s",
                            fn.__name__, e)
     result = _dedup(apps)
-    logger.info("[AppIndex] %d installierte Programme gefunden.", len(result))
+    logger.info("[AppIndex] %d installed programs found.", len(result))
     return result
 
 
@@ -348,7 +348,7 @@ def _load_cache() -> tuple[list | None, float]:
         if isinstance(data, dict) and isinstance(data.get("apps"), list):
             return data["apps"], mtime
     except (OSError, ValueError, json.JSONDecodeError) as e:
-        logger.debug("[AppIndex] Cache nicht lesbar: %s", e)
+        logger.debug("[AppIndex] Cache is not readable: %s", e)
     return None, 0.0
 
 
@@ -405,7 +405,7 @@ def prewarm(background: bool = True) -> None:
         try:
             get_installed_apps()
         except Exception as e:  # noqa: BLE001
-            logger.debug("[AppIndex] Prewarm fehlgeschlagen: %s", e)
+            logger.debug("[AppIndex] the prewarm failed: %s", e)
 
     threading.Thread(target=_run, name="appindex-prewarm", daemon=True).start()
 
@@ -490,7 +490,7 @@ def list_running_processes() -> list:
                 out[key] = {"name": name, "exe": info.get("exe") or "",
                             "pid": info.get("pid")}
     except Exception as e:  # noqa: BLE001
-        logger.debug("[AppIndex] process_iter fehlgeschlagen: %s", e)
+        logger.debug("[AppIndex] process_iter failed: %s", e)
     return list(out.values())
 
 
@@ -575,7 +575,7 @@ def find_running_browser() -> dict | None:
                     return {"name": label, "exe": p.info.get("exe") or "",
                             "pid": p.info.get("pid"), "running": True}
     except Exception as e:  # noqa: BLE001
-        logger.debug("[AppIndex] Browser-Prozess-Scan fehlgeschlagen: %s", e)
+        logger.debug("[AppIndex] the browser process scan failed: %s", e)
     return None
 
 

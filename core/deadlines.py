@@ -53,7 +53,7 @@ class DeadlineTracker:
                     except (ValueError, KeyError):
                         pass
             except Exception as e:
-                logger.debug("[Deadlines] Kalender-Fehler: %s", e)
+                logger.debug("[Deadlines] calendar error: %s", e)
 
         if self.tasks and self.tasks.is_configured:
             try:
@@ -70,7 +70,7 @@ class DeadlineTracker:
                         except (ValueError, KeyError):
                             pass
             except Exception as e:
-                logger.debug("[Deadlines] Tasks-Fehler: %s", e)
+                logger.debug("[Deadlines] tasks error: %s", e)
 
         return sorted(deadlines, key=lambda d: d["deadline"])
 
@@ -119,7 +119,7 @@ class DeadlineTracker:
         self._thread = threading.Thread(
             target=self._checker_loop, args=(callback,), daemon=True)
         self._thread.start()
-        logger.info("[Deadlines] Checker gestartet")
+        logger.info("[Deadlines] checker started")
 
     def stop_checker(self):
         self._stop_event.set()
@@ -131,7 +131,7 @@ class DeadlineTracker:
                 for w in warnings:
                     callback(w)
             except Exception as e:
-                logger.error("[Deadlines] Checker-Fehler: %s", e)
+                logger.error("[Deadlines] checker error: %s", e)
             self._stop_event.wait(60)
 
     @staticmethod

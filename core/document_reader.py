@@ -47,7 +47,7 @@ class DocumentReader:
         except ImportError:
             logger.debug("[DocReader] pdfplumber is not installed, trying pypdf")
         except Exception as e:
-            logger.debug("[DocReader] pdfplumber Fehler: %s", e)
+            logger.debug("[DocReader] pdfplumber error: %s", e)
 
         try:
             from pypdf import PdfReader
@@ -62,7 +62,7 @@ class DocumentReader:
             logger.warning("[DocReader] Weder pdfplumber noch pypdf installiert")
             return None
         except Exception as e:
-            logger.error("[DocReader] pypdf Fehler: %s", e)
+            logger.error("[DocReader] pypdf error: %s", e)
             return None
 
     def _read_docx(self, path: Path) -> Optional[str]:
@@ -72,10 +72,10 @@ class DocumentReader:
             paragraphs = [p.text for p in doc.paragraphs if p.text.strip()]
             return "\n\n".join(paragraphs) if paragraphs else None
         except ImportError:
-            logger.warning("[DocReader] python-docx nicht installiert")
+            logger.warning("[DocReader] python-docx is not installed")
             return None
         except Exception as e:
-            logger.error("[DocReader] DOCX Fehler: %s", e)
+            logger.error("[DocReader] DOCX error: %s", e)
             return None
 
     def _read_text(self, path: Path) -> Optional[str]:

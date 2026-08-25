@@ -27,7 +27,7 @@ class GUILogger:
                 if _gui_ref:
                     try: _gui_ref.send_event("log", {"text": msg.strip()})
                     except (AttributeError, TypeError, RuntimeError) as _e:
-                        self._orig.write(f"[GUILogger] Fehler: {_e}\n")
+                        self._orig.write(f"[GUILogger] Error: {_e}\n")
     def flush(self): self._orig.flush()
 
 sys.stdout = GUILogger(sys.stdout)

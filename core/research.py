@@ -55,7 +55,7 @@ class ResearchAssistant:
                         "source": "RSS",
                     })
             except Exception as e:
-                logger.debug("[Research] RSS %s fehlgeschlagen: %s", url, e)
+                logger.debug("[Research] RSS %s failed: %s", url, e)
 
         return articles
 
@@ -89,7 +89,7 @@ class ResearchAssistant:
                 except Exception:
                     continue
         except Exception as e:
-            logger.debug("[Research] HN fehlgeschlagen: %s", e)
+            logger.debug("[Research] Hacker News failed: %s", e)
 
         return articles
 
@@ -127,7 +127,7 @@ class ResearchAssistant:
                         "source": "arXiv",
                     })
         except Exception as e:
-            logger.debug("[Research] arXiv fehlgeschlagen: %s", e)
+            logger.debug("[Research] arXiv failed: %s", e)
 
         return articles
 
@@ -135,7 +135,7 @@ class ResearchAssistant:
         if articles is None:
             articles = self._last_articles
         if not articles:
-            return "Keine Artikel gefunden."
+            return "No articles found."
 
         lines = []
         for i, a in enumerate(articles[:10], 1):
@@ -173,6 +173,6 @@ class ResearchAssistant:
                     text = self.format_research_text(articles)
                     callback(f"**Research-Briefing:**\n\n{text}")
                 except Exception as e:
-                    logger.error("[Research] Scheduler-Fehler: %s", e)
+                    logger.error("[Research] scheduler error: %s", e)
 
             self._stop_event.wait(30)

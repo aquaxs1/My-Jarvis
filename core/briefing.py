@@ -79,14 +79,14 @@ class BriefingManager:
             if r.status_code == 200:
                 return r.text.strip()
         except Exception as e:
-            logger.debug("[Briefing] Wetter fehlgeschlagen: %s", e)
+            logger.debug("[Briefing] the weather failed: %s", e)
         return None
 
     def _get_news(self) -> Optional[str]:
         try:
             import feedparser
         except ImportError:
-            logger.debug("[Briefing] feedparser nicht installiert")
+            logger.debug("[Briefing] feedparser is not installed")
             return None
 
         feeds = [
@@ -105,7 +105,7 @@ class BriefingManager:
                             "link": entry.get("link", ""),
                         })
             except Exception as e:
-                logger.debug("[Briefing] Feed %s fehlgeschlagen: %s", url, e)
+                logger.debug("[Briefing] feed %s failed: %s", url, e)
 
         if not articles:
             return None
@@ -121,7 +121,7 @@ class BriefingManager:
             if events:
                 return self.calendar.format_events_text(events)
         except Exception as e:
-            logger.debug("[Briefing] Kalender fehlgeschlagen: %s", e)
+            logger.debug("[Briefing] the calendar failed: %s", e)
         return None
 
     def _get_tasks(self) -> Optional[str]:
@@ -132,7 +132,7 @@ class BriefingManager:
             if task_list:
                 return self.tasks.format_tasks_text(task_list[:5])
         except Exception as e:
-            logger.debug("[Briefing] Tasks fehlgeschlagen: %s", e)
+            logger.debug("[Briefing] the tasks failed: %s", e)
         return None
 
     def start_scheduler(self, callback):
@@ -162,6 +162,6 @@ class BriefingManager:
                     text = self.format_briefing(sections)
                     callback(text)
                 except Exception as e:
-                    logger.error("[Briefing] Scheduler-Fehler: %s", e)
+                    logger.error("[Briefing] scheduler error: %s", e)
 
             self._stop_event.wait(30)

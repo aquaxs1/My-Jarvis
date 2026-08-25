@@ -43,18 +43,18 @@ class ScreenWatcher:
             if w > max_width:
                 ratio = max_width / w
                 screenshot = screenshot.resize((max_width, int(h * ratio)))
-            if screenshot.mode != "RGB":          # JPEG kennt keinen Alphakanal
+            if screenshot.mode != "RGB":          # JPEG has no alpha channel
                 screenshot = screenshot.convert("RGB")
             import io
             buffer = io.BytesIO()
             screenshot.save(buffer, format="JPEG", quality=VISION_JPEG_QUALITY)
             return base64.b64encode(buffer.getvalue()).decode()
         except Exception as e:
-            print(f"[Screen] Screenshot-Fehler: {e}")
+            print(f"[Screen] screenshot error: {e}")
             return None
 
     def get_description(self) -> str:
-        """Kurzbeschreibung des aktuellen Bildschirminhalts"""
+        """A short description of what is currently on screen."""
         if not self.available:
             return ""
         try:
@@ -74,7 +74,7 @@ class ScreenWatcher:
                 )
                 return f"Aktive App: {result.stdout.strip()}"
         except (OSError, ImportError, subprocess.SubprocessError) as e:
-            print(f"[Screen] Fenstererkennung fehlgeschlagen: {e}")
+            print(f"[Screen] window detection failed: {e}")
         except Exception as e:
             print(f"[Screen] Unexpected error detecting the window: {e}")
         return ""
@@ -113,7 +113,7 @@ class ScreenWatcher:
             else:
                 vision_w, vision_h = orig_w, orig_h
 
-            if screenshot.mode != "RGB":          # JPEG kennt keinen Alphakanal
+            if screenshot.mode != "RGB":          # JPEG has no alpha channel
                 screenshot = screenshot.convert("RGB")
             buffer = io.BytesIO()
             screenshot.save(buffer, format="JPEG", quality=VISION_JPEG_QUALITY)
@@ -126,5 +126,5 @@ class ScreenWatcher:
 
             return (b64, vision_w, vision_h, int(real_w), int(real_h))
         except Exception as e:
-            print(f"[Screen] capture_for_vision Fehler: {e}")
+            print(f"[Screen] capture_for_vision error: {e}")
             return None

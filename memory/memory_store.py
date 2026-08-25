@@ -70,6 +70,18 @@ def _get_fernet() -> Fernet:
     return _fernet_instance
 
 
+
+def _is_active(entry: dict) -> bool:
+    """True unless the entry was flagged inactive.
+
+    v3.0 renamed the flag from "aktiv" to "active". Files written by an older
+    version still carry the old key, so both are honoured here.
+    """
+    if "active" in entry:
+        return bool(entry["active"])
+    return bool(entry.get("aktiv", True))
+
+
 class MemoryStore:
     def __init__(self):
         MEMORY_DIR.mkdir(parents=True, exist_ok=True)
@@ -153,7 +165,7 @@ class MemoryStore:
                     "id": len(self.memories) + int(datetime.now().timestamp()),
                     "timestamp": datetime.now().isoformat(),
                     "kv": line,
-                    "aktiv": True,
+                    "active": True,
                 }
                 self.memories.append(entry)
             self._save_json(self.memories_file, self.memories)
@@ -166,14 +178,14 @@ class MemoryStore:
             "trigger": trigger,
             "content": content,
             "category": category,
-            "aktiv": True,
+            "active": True,
         }
         with self._lock:
             self.memories.append(entry)
             self._save_json(self.memories_file, self.memories)
 
     def get_relevant_context(self, query: str) -> str:
-        active = [m for m in self.memories if m.get("aktiv", True)]
+        active = [m for m in self.memories if _is_active(m)]
         if not active:
             return ""
         lines = []
@@ -185,50 +197,51 @@ class MemoryStore:
         return "\n".join(lines[:20]) if lines else ""
 
     def get_all_memories(self) -> list:
-        return [m for m in self.memories if m.get("aktiv", True)]
+        return [m for m in self.memories if _is_active(m)]
 
     def delete_memory(self, memory_id):
         with self._lock:
             self.memories = [m for m in self.memories if m.get("id") != memory_id]
             self._save_json(self.memories_file, self.memories)
 
-    # ── Routinen ──────────────────────────────────────────────────────────
-    def add_routine(self, name, beschreibung, zeitplan):
+    # ── routines ──────────────────────────────────────────────────────────
+    def add_routine(self, name, description, schedule):
         with self._lock:
             self.routines.append({
                 "id": len(self.routines),
                 "name": name,
-                "beschreibung": beschreibung,
-                "zeitplan": zeitplan,
-                "erstellt": datetime.now().isoformat(),
-                "aktiv": True,
+                "description": description,
+                "schedule": schedule,
+                "created": datetime.now().isoformat(),
+                "active": True,
             })
             self._save_json(self.routines_file, self.routines)
 
     def get_routines(self) -> list:
-        return [r for r in self.routines if r.get("aktiv", True)]
+        return [r for r in self.routines if _is_active(r)]
 
     def delete_routine(self, rid):
         with self._lock:
             for r in self.routines:
                 if r["id"] == rid:
-                    r["aktiv"] = False
+                    r["active"] = False
+                    r.pop("aktiv", None)
             self._save_json(self.routines_file, self.routines)
 
-    # ── Projekte ──────────────────────────────────────────────────────────
-    def add_project(self, name, beschreibung):
+    # ── projects ──────────────────────────────────────────────────────────
+    def add_project(self, name, description):
         with self._lock:
             self.projects.append({
                 "id": len(self.projects),
                 "name": name,
-                "beschreibung": beschreibung,
-                "erstellt": datetime.now().isoformat(),
-                "status": "aktiv",
+                "description": description,
+                "created": datetime.now().isoformat(),
+                "status": "active",
             })
             self._save_json(self.projects_file, self.projects)
 
     def get_active_projects(self) -> list:
-        return [p for p in self.projects if p.get("status") == "aktiv"]
+        return [p for p in self.projects if p.get("status") in ("active", "aktiv")]
 
     # ── Historie ──────────────────────────────────────────────────────────
     def add_to_history(self, role: str, content: str):

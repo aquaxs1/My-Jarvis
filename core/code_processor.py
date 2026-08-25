@@ -63,7 +63,7 @@ def _test_python(code: str) -> tuple:
         return False, f"The Python interpreter is not available: {e}"
     except OSError as e:
         logger.error("[CodeProcessor] OS error during the Python check: %s", e)
-        return False, f"Python-Syntax-Check fehlgeschlagen: {e}"
+        return False, f"the Python syntax check failed: {e}"
     finally:
         try:
             os.unlink(path)
@@ -90,11 +90,11 @@ def _test_javascript(code: str) -> tuple:
     except subprocess.TimeoutExpired:
         return False, "Syntax-Check Timeout"
     except FileNotFoundError as e:
-        logger.error("[CodeProcessor] node nicht aufrufbar: %s", e)
+        logger.error("[CodeProcessor] node cannot be called: %s", e)
         return False, f"node is not available: {e}"
     except OSError as e:
         logger.error("[CodeProcessor] OS error during the JS check: %s", e)
-        return False, f"JS-Syntax-Check fehlgeschlagen: {e}"
+        return False, f"the JS syntax check failed: {e}"
     finally:
         try:
             os.unlink(path)
@@ -124,11 +124,11 @@ def _format_python(code: str) -> str:
             if result.returncode == 0 and result.stdout:
                 return result.stdout
             if result.stderr:
-                logger.warning("[CodeProcessor] %s liefert Fehler: %s", tool, result.stderr.strip())
+                logger.warning("[CodeProcessor] %s returned an error: %s", tool, result.stderr.strip())
         except subprocess.TimeoutExpired:
             logger.warning("[CodeProcessor] %s Timeout – Original-Code beibehalten.", tool)
         except (OSError, FileNotFoundError) as e:
-            logger.warning("[CodeProcessor] %s nicht aufrufbar: %s", tool, e)
+            logger.warning("[CodeProcessor] %s cannot be called: %s", tool, e)
     return code
 
 
@@ -148,9 +148,9 @@ def _format_prettier(code: str, language: str) -> str:
         if result.returncode == 0 and result.stdout:
             return result.stdout
         if result.stderr:
-            logger.warning("[CodeProcessor] prettier liefert Fehler: %s", result.stderr.strip())
+            logger.warning("[CodeProcessor] prettier returned an error: %s", result.stderr.strip())
     except subprocess.TimeoutExpired:
         logger.warning("[CodeProcessor] prettier Timeout – Original-Code beibehalten.")
     except (OSError, FileNotFoundError) as e:
-        logger.warning("[CodeProcessor] prettier nicht aufrufbar: %s", e)
+        logger.warning("[CodeProcessor] prettier cannot be called: %s", e)
     return code

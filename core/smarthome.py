@@ -48,7 +48,7 @@ class SmartHomeManager:
                 "name": e.get("attributes", {}).get("friendly_name", e["entity_id"]),
             } for e in entities]
         except Exception as e:
-            logger.error("[SmartHome] Entities abrufen fehlgeschlagen: %s", e)
+            logger.error("[SmartHome] fetching the entities failed: %s", e)
             return []
 
     def call_service(self, domain: str, service: str,
@@ -67,7 +67,7 @@ class SmartHomeManager:
             logger.info("[SmartHome] %s.%s -> %s", domain, service, entity_id)
             return True
         except Exception as e:
-            logger.error("[SmartHome] Service-Call fehlgeschlagen: %s", e)
+            logger.error("[SmartHome] the service call failed: %s", e)
             return False
 
     def light_on(self, entity_id: str, brightness: int = 255) -> bool:
@@ -89,7 +89,7 @@ class SmartHomeManager:
     def get_status_text(self) -> str:
         if not self.is_configured:
             return ("Smart home is not configured. Please add the Home Assistant URL and token "
-                    "in den Einstellungen eintragen.")
+                    "in the settings.")
         lights = self.get_entities("light")
         climate = self.get_entities("climate")
         media = self.get_entities("media_player")
@@ -104,7 +104,7 @@ class SmartHomeManager:
         if media:
             playing = [m for m in media if m["state"] == "playing"]
             if playing:
-                lines.append(f"**Medien:** {len(playing)} aktiv")
+                lines.append(f"**Media:** {len(playing)} playing")
 
         return "\n".join(lines) if lines else "No smart home devices found."
 
@@ -127,7 +127,7 @@ class HueBridge:
             self._bridge.connect()
             logger.info("[Hue] Bridge verbunden: %s", bridge_ip)
         except ImportError:
-            logger.debug("[Hue] phue nicht installiert")
+            logger.debug("[Hue] phue is not installed")
         except Exception as e:
             logger.error("[Hue] The connection failed: %s", e)
 
@@ -143,7 +143,7 @@ class HueBridge:
             self._bridge.set_light(light_name, "bri", brightness)
             return True
         except Exception as e:
-            logger.error("[Hue] Light on fehlgeschlagen: %s", e)
+            logger.error("[Hue] turning the light on failed: %s", e)
             return False
 
     def light_off(self, light_name: str):
@@ -153,5 +153,5 @@ class HueBridge:
             self._bridge.set_light(light_name, "on", False)
             return True
         except Exception as e:
-            logger.error("[Hue] Light off fehlgeschlagen: %s", e)
+            logger.error("[Hue] turning the light off failed: %s", e)
             return False

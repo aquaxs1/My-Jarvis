@@ -1490,7 +1490,7 @@ document.getElementById('setup-done-btn').addEventListener('click',()=>{
   const p=document.querySelector('#setup-api-grid .ap.on')?.dataset.p||'anthropic';
   const keyMap={anthropic:'sk-anthropic',openai:'sk-openai',gemini:'sk-gemini',nvidia:'sk-nvidia',mistral:'sk-mistral'};
   const key=p!=='local'?(document.getElementById(keyMap[p])?.value.trim()||''):'';
-  if(!key&&p!=='local'){notify('Bitte API key eingeben.','err');return;}
+  if(!key&&p!=='local'){notify('Please enter an API key.','err');return;}
   const salutation=document.querySelector('#setup-modal .chip[data-f="salutation"].on')?.dataset.v||'Sir';
   const tone=document.querySelector('#setup-modal .chip[data-f="tone"].on')?.dataset.v||'professional';
   const extra={};
@@ -1689,7 +1689,7 @@ document.getElementById('sm-save-btn').addEventListener('click',()=>{
   const tts_enabled=document.getElementById('tgl-tts').classList.contains('on')?true:false;
   const suggestions_enabled=document.getElementById('tgl-sug').classList.contains('on')?true:false;
   const tts_voice=document.getElementById('voice-select')?.value||'';
-  if(!key&&p!=='local'&&!(S.cfg?.api_key)){notify('API key eingeben.','err');return;}
+  if(!key&&p!=='local'&&!(S.cfg?.api_key)){notify('Enter an API key.','err');return;}
   const extra={};
   if(p==='nvidia')extra.nvidia_model=document.getElementById('m-nvidia')?.value.trim()||'meta/llama-3.1-70b-instruct';
   if(p==='local'){extra.local_url=document.getElementById('u-local')?.value.trim()||'http://localhost:11434';extra.local_model=document.getElementById('m-local')?.value.trim()||'llama3';}
@@ -1779,7 +1779,7 @@ function handleMsg(m){
     startup_suggestions:()=>renderSug(data.suggestions),
     kill_switch:()=>activateKill(),
     kill_deactivated:()=>deactivateKill(),
-    memory_saved:()=>{notify('Gespeichert');sendWS('get_memories',{});},
+    memory_saved:()=>{notify('Saved');sendWS('get_memories',{});},
     memories_data:()=>renderMem(data.memories),
     routines_data:()=>{},
     needs_setup:()=>{document.getElementById('banner-txt').textContent=(data.reason||'The API key is missing')+'  — open the settings.';document.getElementById('setup-banner').classList.add('show');},
@@ -1817,7 +1817,7 @@ function addThinkStep(label,text){
   const empty=c.querySelector('.think-empty');if(empty)empty.remove();
   c.querySelectorAll('.think-step.active').forEach(s=>s.classList.remove('active'));
   const d=document.createElement('div');d.className='think-step active';
-  d.innerHTML=`<span class="ts-label">${esc(label||'SCHRITT')}</span>${esc(text)}`;
+  d.innerHTML=`<span class="ts-label">${esc(label||'STEP')}</span>${esc(text)}`;
   c.appendChild(d);c.scrollTop=9999;
 }
 function resetThinkPanel(){
@@ -1856,7 +1856,7 @@ function renderContent(text){
 function copyCode(id,btn){
   const el=document.getElementById(id);if(!el)return;
   navigator.clipboard.writeText(el.textContent).then(()=>{
-    btn.textContent='KOPIERT';btn.classList.add('copied');
+    btn.textContent='COPIED';btn.classList.add('copied');
     setTimeout(()=>{btn.textContent='COPY';btn.classList.remove('copied');},1500);
   });
 }
@@ -1889,7 +1889,7 @@ function addMsg(role,text){
   const retryIcon='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12a9 9 0 1 1 9 9"/><path d="M3 21v-5h5"/></svg>';
   const actions=`<div class="msg-actions"><button class="msg-act" onclick="copyMsg(this)" title="Copy">${copyIcon}</button>${!isJ?`<button class="msg-act" onclick="retryMsg(this)" title="Retry">${retryIcon}</button>`:''}</div>`;
   const avatar=isJ?'<div class="mav"><div class="mav-orb"></div><div class="mav-orb-inner"></div><div class="mav-orb-core"></div></div>':'<div class="mav">U</div>';
-  div.innerHTML=`${avatar}<div class="mc"><div class="ml">${isJ?'<span class="j-tag">JARVIS</span>':'NUTZER'} · ${t}</div><div class="mb">${body}</div>${actions}</div>`;
+  div.innerHTML=`${avatar}<div class="mc"><div class="ml">${isJ?'<span class="j-tag">MY JARVIS</span>':'USER'} · ${t}</div><div class="mb">${body}</div>${actions}</div>`;
   chat.appendChild(div);chat.scrollTop=9999;
   S.tokenCount=(S.tokenCount||0)+Math.ceil(text.length/4);
 }
@@ -1917,7 +1917,7 @@ function showTyping(){
   if(S.typingEl)return;
   const chat=document.getElementById('chat');
   const div=document.createElement('div');div.className='msg';div.id='typing-indicator';
-  div.innerHTML=`<div class="mav"><div class="mav-orb"></div><div class="mav-orb-inner"></div><div class="mav-orb-core"></div></div><div class="mc"><div class="ml"><span class="j-tag">JARVIS</span></div><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
+  div.innerHTML=`<div class="mav"><div class="mav-orb"></div><div class="mav-orb-inner"></div><div class="mav-orb-core"></div></div><div class="mc"><div class="ml"><span class="j-tag">MY JARVIS</span></div><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
   chat.appendChild(div);S.typingEl=div;chat.scrollTop=9999;
 }
 function removeTyping(){if(S.typingEl){S.typingEl.remove();S.typingEl=null;}const el=document.getElementById('typing-indicator');if(el)el.remove();}
@@ -1927,7 +1927,7 @@ function handleStream(text){
   if(!bub){
     const div=document.createElement('div');div.className='msg';
     const t=new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
-    div.innerHTML=`<div class="mav"><div class="mav-orb"></div><div class="mav-orb-inner"></div><div class="mav-orb-core"></div></div><div class="mc"><div class="ml"><span class="j-tag">JARVIS</span> · ${t}</div><div class="mb" id="sbub" data-raw=""></div></div>`;
+    div.innerHTML=`<div class="mav"><div class="mav-orb"></div><div class="mav-orb-inner"></div><div class="mav-orb-core"></div></div><div class="mc"><div class="ml"><span class="j-tag">MY JARVIS</span> · ${t}</div><div class="mb" id="sbub" data-raw=""></div></div>`;
     chat.appendChild(div);bub=document.getElementById('sbub');
   }
   const raw=(bub.dataset.raw||'')+text;bub.dataset.raw=raw;
@@ -2336,7 +2336,7 @@ function addCopilotStep(d){
   const id='cp-line-'+(d.step!==undefined?d.step:0);
   let el=document.getElementById(id);
   const res=(d.result||'').toString();
-  const isErr=res.toLowerCase().startsWith('fehler')||res.toLowerCase().includes('abgelehnt')||res.toLowerCase().includes('notbremse');
+  const isErr=res.toLowerCase().startsWith('error')||res.toLowerCase().includes('rejected')||res.toLowerCase().includes('failsafe');
   const stepLabel=(d.step!==undefined&&d.step!==null)?('#'+d.step):'';
   const status=esc(d.status||d.action||'');
   const resHtml=res?` <span class="cp-log-res">→ ${esc(res)}</span>`:'';
@@ -2356,7 +2356,7 @@ function copilotAsk(kind,d){
     body='The copilot has run <strong>'+esc(String(d.step||''))+'</strong> steps. Should it carry on?';
     btns=[['CONTINUE','primary','continue'],['ALWAYS ALLOW','warn','always'],['STOP','danger','stop']];
   }else{
-    title='DEINE EINGABE';
+    title='YOUR INPUT';
     body=esc(d.message||'Please enter what is needed manually, then click "Continue".');
     btns=[['WEITER','primary','user_done'],['STOP','danger','stop']];
   }

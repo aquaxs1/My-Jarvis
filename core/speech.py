@@ -82,7 +82,7 @@ class SpeechEngine:
                 self.tts_engine.setProperty('rate', SPEECH_RATE)
                 self.tts_engine.setProperty('volume', SPEECH_VOLUME)
             except Exception as e:
-                print(f"[TTS] Re-Init fehlgeschlagen: {e}")
+                print(f"[TTS] re-init failed: {e}")
 
     # ── Sprechen ──────────────────────────────────────────────────────────
     def speak(self, text: str, priority: bool = False):
@@ -131,7 +131,7 @@ class SpeechEngine:
                 self.tts_engine.say(text)
                 self.tts_engine.runAndWait()
             except Exception as e:
-                print(f"[TTS] Fehler: {e}")
+                print(f"[TTS] Error: {e}")
         else:
             print(f"[JARVIS] {text}")
 
@@ -160,9 +160,9 @@ class SpeechEngine:
                 print("[STT] PyAudio initialisiert")
                 return
             except ImportError:
-                print("[STT] PyAudio nicht installiert")
+                print("[STT] PyAudio is not installed")
             except Exception as e:
-                print(f"[STT] PyAudio init fehlgeschlagen: {e}")
+                print(f"[STT] PyAudio init failed: {e}")
             try:
                 import sounddevice, numpy
                 self.sd = sounddevice; self.np = numpy
@@ -170,12 +170,12 @@ class SpeechEngine:
                 print("[STT] sounddevice initialisiert")
                 return
             except ImportError:
-                print("[STT] sounddevice nicht installiert")
+                print("[STT] sounddevice is not installed")
             except Exception as e:
-                print(f"[STT] sounddevice init fehlgeschlagen: {e}")
+                print(f"[STT] sounddevice init failed: {e}")
             print("[STT] Kein Audio-Backend. pip install pyaudio")
         except ImportError:
-            print("[STT] SpeechRecognition fehlt")
+            print("[STT] SpeechRecognition is missing")
 
     def stop(self):
         """Bricht Aufnahme ab."""
@@ -207,7 +207,7 @@ class SpeechEngine:
         except Exception as e:
             name = type(e).__name__
             if "WaitTimeoutError" not in name and "UnknownValueError" not in name:
-                print(f"[STT] Fehler: {e}")
+                print(f"[STT] Error: {e}")
             return None
 
     def _listen_sounddevice(self, lang, stop_event) -> Optional[str]:
@@ -230,4 +230,4 @@ class SpeechEngine:
                 data = self.recognizer.record(src)
             return self.recognizer.recognize_google(data, language=lang)
         except Exception as e:
-            print(f"[STT] Fehler: {e}"); return None
+            print(f"[STT] Error: {e}"); return None

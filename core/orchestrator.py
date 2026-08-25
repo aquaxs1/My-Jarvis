@@ -42,7 +42,7 @@ class CalendarAgent(SubAgent):
     def run(self, task: str, context: dict = None) -> dict:
         try:
             if not self.calendar or not self.calendar.is_configured:
-                return {"status": "skip", "result": "Kalender nicht konfiguriert", "agent": self.name}
+                return {"status": "skip", "result": "Kalender is not configured", "agent": self.name}
             events = self.calendar.get_events(days=7)
             text = self.calendar.format_events_text(events)
             return {"status": "ok", "result": text, "agent": self.name}
@@ -52,7 +52,7 @@ class CalendarAgent(SubAgent):
 
 class FileAgent(SubAgent):
     def __init__(self, doc_reader):
-        super().__init__("FileAgent", "Dateien lesen und organisieren")
+        super().__init__("FileAgent", "Reads and organises files")
         self.reader = doc_reader
 
     def run(self, task: str, context: dict = None) -> dict:
@@ -95,7 +95,7 @@ class Orchestrator:
         if any(kw in task_lower for kw in ["termin", "kalender", "meeting", "woche"]):
             plan.append({"agent": "CalendarAgent", "task": task, "context": {}})
 
-        if any(kw in task_lower for kw in ["datei", "dokument", "pdf", "lesen"]):
+        if any(kw in task_lower for kw in ["file", "document", "pdf", "read"]):
             plan.append({"agent": "FileAgent", "task": task, "context": {}})
 
         if not plan:
@@ -147,7 +147,7 @@ class Orchestrator:
             if result.get("status") == "ok" and result.get("result"):
                 parts.append(f"**[{agent_name}]**\n{result['result']}")
             elif result.get("status") == "error":
-                parts.append(f"**[{agent_name}]** Fehler: {result.get('result', 'Unbekannt')}")
+                parts.append(f"**[{agent_name}]** Error: {result.get('result', 'Unknown')}")
 
         return {
             "task": task,

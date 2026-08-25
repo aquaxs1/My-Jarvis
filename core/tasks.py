@@ -29,9 +29,9 @@ class TaskManager:
                 self._todoist = TodoistAPI(todoist_key)
                 logger.info("[Tasks] Todoist verbunden")
             except ImportError:
-                logger.info("[Tasks] todoist-api-python nicht installiert")
+                logger.info("[Tasks] todoist-api-python is not installed")
             except Exception as e:
-                logger.error("[Tasks] Todoist Init fehlgeschlagen: %s", e)
+                logger.error("[Tasks] Todoist init failed: %s", e)
 
         if notion_key and notion_db and provider in ("notion", "both"):
             try:
@@ -40,9 +40,9 @@ class TaskManager:
                 self._notion_db = notion_db
                 logger.info("[Tasks] Notion verbunden")
             except ImportError:
-                logger.info("[Tasks] notion-client nicht installiert")
+                logger.info("[Tasks] notion-client is not installed")
             except Exception as e:
-                logger.error("[Tasks] Notion Init fehlgeschlagen: %s", e)
+                logger.error("[Tasks] Notion init failed: %s", e)
 
     @property
     def is_configured(self) -> bool:
@@ -54,7 +54,7 @@ class TaskManager:
             parts.append("Todoist")
         if self._notion:
             parts.append("Notion")
-        return " + ".join(parts) if parts else "Nicht konfiguriert"
+        return " + ".join(parts) if parts else "Not configured"
 
     # ── Todoist ──────────────────────────────────────────────────────────
     def get_todoist_tasks(self, filter_str: str = "today") -> list:
@@ -67,7 +67,7 @@ class TaskManager:
                      "priority": t.priority, "source": "todoist"}
                     for t in tasks]
         except Exception as e:
-            logger.error("[Tasks] Todoist get_tasks fehlgeschlagen: %s", e)
+            logger.error("[Tasks] Todoist get_tasks failed: %s", e)
             return []
 
     def add_todoist_task(self, content: str, due_string: str = "") -> Optional[dict]:
@@ -78,10 +78,10 @@ class TaskManager:
             if due_string:
                 kwargs["due_string"] = due_string
             task = self._todoist.add_task(**kwargs)
-            logger.info("[Tasks] Todoist Task erstellt: %s", content)
+            logger.info("[Tasks] Todoist task created: %s", content)
             return {"id": task.id, "content": task.content, "source": "todoist"}
         except Exception as e:
-            logger.error("[Tasks] Todoist add_task fehlgeschlagen: %s", e)
+            logger.error("[Tasks] Todoist add_task failed: %s", e)
             return None
 
     def complete_todoist_task(self, task_id: str) -> bool:
@@ -92,7 +92,7 @@ class TaskManager:
             logger.info("[Tasks] Todoist Task erledigt: %s", task_id)
             return True
         except Exception as e:
-            logger.error("[Tasks] Todoist complete fehlgeschlagen: %s", e)
+            logger.error("[Tasks] Todoist completing it failed: %s", e)
             return False
 
     # ── Notion ───────────────────────────────────────────────────────────
@@ -120,7 +120,7 @@ class TaskManager:
                 })
             return tasks
         except Exception as e:
-            logger.error("[Tasks] Notion get_tasks fehlgeschlagen: %s", e)
+            logger.error("[Tasks] Notion get_tasks failed: %s", e)
             return []
 
     def add_notion_task(self, title: str, due_date: str = "") -> Optional[dict]:
@@ -136,10 +136,10 @@ class TaskManager:
                 parent={"database_id": self._notion_db},
                 properties=properties
             )
-            logger.info("[Tasks] Notion Task erstellt: %s", title)
+            logger.info("[Tasks] Notion task created: %s", title)
             return {"id": page["id"], "content": title, "source": "notion"}
         except Exception as e:
-            logger.error("[Tasks] Notion add_task fehlgeschlagen: %s", e)
+            logger.error("[Tasks] Notion add_task failed: %s", e)
             return None
 
     # ── Unified Interface ────────────────────────────────────────────────

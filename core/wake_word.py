@@ -55,7 +55,7 @@ class WakeWordListener:
         self._stop_event.clear()
         self._thread = threading.Thread(target=self._run, daemon=True)
         self._thread.start()
-        logger.info("[WakeWord] Listener gestartet (wake=%s, clap=%s)",
+        logger.info("[WakeWord] listener started (wake=%s, clap=%s)",
                     self.wake_word_enabled, self.clap_enabled)
 
     def stop(self):
@@ -69,7 +69,7 @@ class WakeWordListener:
             except Exception:
                 pass
             self._porcupine = None
-        logger.info("[WakeWord] Listener gestoppt")
+        logger.info("[WakeWord] listener stopped")
 
     def _run(self):
         try:
@@ -144,7 +144,7 @@ class WakeWordListener:
         try:
             import speech_recognition as sr
         except ImportError:
-            logger.error("[WakeWord] speech_recognition nicht installiert")
+            logger.error("[WakeWord] speech_recognition is not installed")
             return
 
         recognizer = sr.Recognizer()
@@ -152,7 +152,7 @@ class WakeWordListener:
         recognizer.dynamic_energy_threshold = True
         recognizer.pause_threshold = 0.5
 
-        logger.info("[WakeWord] Fallback-Modus (speech_recognition) aktiv")
+        logger.info("[WakeWord] Fallback mode (speech_recognition) active")
 
         while not self._stop_event.is_set():
             if not self.wake_word_enabled and not self.clap_enabled:
@@ -269,5 +269,5 @@ class WakeWordListener:
             logger.info("[WakeWord] Ambient RMS=%.4f → Threshold=%.3f", rms, threshold)
             return threshold
         except Exception as e:
-            logger.error("[WakeWord] Kalibrierung fehlgeschlagen: %s", e)
+            logger.error("[WakeWord] calibration failed: %s", e)
             return CLAP_THRESHOLD_DEFAULT

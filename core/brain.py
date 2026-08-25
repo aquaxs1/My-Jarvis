@@ -642,7 +642,7 @@ class Brain:
                 dt = datetime.fromisoformat(data["title"] if "T" in data.get("title", "") else data["datetime"])
                 event = self.calendar.create_event(data["title"], dt, data.get("duration", 60))
                 if event:
-                    return f"Termin erstellt: **{event['title']}** am {event['start']}"
+                    return f"Appointment created: **{event['title']}** am {event['start']}"
         except Exception as e:
             logger.debug("[Brain] Calendar create parse error: %s", e)
 
@@ -650,7 +650,7 @@ class Brain:
         if dt:
             event = self.calendar.create_event(query[:50], dt)
             if event:
-                return f"Termin erstellt: **{event['title']}** am {event['start']}"
+                return f"Appointment created: **{event['title']}** am {event['start']}"
         return "Could not create the appointment. Give me a title and a date/time."
 
     def _agent_tasks(self, query):
@@ -708,12 +708,12 @@ class Brain:
         chunks = DocumentReader.chunk_text(text)
         if len(chunks) == 1:
             return self._enrich_with_model(
-                f"Fasse dieses Dokument zusammen:\n\n{chunks[0][:6000]}",
+                f"Summarise this document:\n\n{chunks[0][:6000]}",
                 "Write a structured summary in English:"
             )
-        chunk_text = "\n\n---\n\n".join(f"Abschnitt {i+1}:\n{c[:2000]}" for i, c in enumerate(chunks[:5]))
+        chunk_text = "\n\n---\n\n".join(f"Section {i+1}:\n{c[:2000]}" for i, c in enumerate(chunks[:5]))
         return self._enrich_with_model(
-            f"Fasse dieses Dokument zusammen ({len(chunks)} Abschnitte):\n\n{chunk_text}",
+            f"Summarise this document ({len(chunks)} sections):\n\n{chunk_text}",
             "Write an overall summary in English:"
         )
 
@@ -741,12 +741,12 @@ class Brain:
                 climate = self.smarthome.get_entities("climate")
                 if climate:
                     self.smarthome.set_temperature(climate[0]["entity_id"], temp)
-                    return f"Temperatur auf {temp}°C gesetzt: {climate[0]['name']}"
+                    return f"Temperature set to {temp}°C: {climate[0]['name']}"
         elif any(kw in q for kw in ["musik", "spotify", "spiele"]):
             media = self.smarthome.get_entities("media_player")
             if media:
                 self.smarthome.play_media(media[0]["entity_id"])
-                return f"Wiedergabe gestartet: {media[0]['name']}"
+                return f"Playback started: {media[0]['name']}"
         return self.smarthome.get_status_text()
 
     def _agent_social_media(self, query):
@@ -793,7 +793,7 @@ class Brain:
         try:
             return self._call(provider, api_key, system, messages)
         except Exception as e:
-            logger.warning("[Brain] Enrich fehlgeschlagen: %s", e)
+            logger.warning("[Brain] enrichment failed: %s", e)
             return content
 
     # ── Memory: Key=Value Extraktion ──────────────────────────────────────
@@ -825,7 +825,7 @@ class Brain:
         if kv and "=" in kv:
             self.memory.save_memory_kv(kv)
             self._emit("memory_saved", {"query": kv})
-            logger.info("[Memory] Key-Info gespeichert: %s", kv)
+            logger.info("[Memory] key info stored: %s", kv)
         else:
             logger.debug("[Memory] Konnte kein Key=Value extrahieren: %s", query[:60])
 
@@ -1137,7 +1137,7 @@ class Brain:
     def run_todo_item(self, item_text):
         """Runs a single to-do task. Returns a dict."""
         if self.kill_event.is_set():
-            return {"status":"error","message":"Kill-Switch aktiv."}
+            return {"status":"error","message":"The kill switch is active."}
         result = self.process(item_text, todo_mode=True)
         return result or {"status":"ok","reply":""}
 
