@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>JARVIS v2.8</title>
+<title>My Jarvis v2.8</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 @font-face{font-family:'Butler Stencil';src:url('fonts/Butler-Free-Bd-St.woff') format('woff');font-weight:700;font-style:normal;font-display:swap;}
@@ -161,7 +161,7 @@ body::after{content:'';position:fixed;inset:0;background-image:
 .st-btn-danger{background:transparent;color:var(--jv-pulse);border:1px solid rgba(255,77,122,0.5);padding:8px 14px;border-radius:2px;cursor:pointer;font-family:var(--fm);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;font-weight:500;transition:all var(--jv-dur-2);}
 .st-btn-danger:hover{background:var(--jv-pulse);color:#fff;box-shadow:0 0 16px rgba(255,77,122,0.4);}
 
-/* Stat cards (Nutzung) */
+/* Stat cards (Usage) */
 .st-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px;}
 .st-stat{padding:14px 16px;border:1px solid var(--jv-line);border-radius:var(--jv-r-2);background:var(--jv-graphite);}
 .st-stat-label{font-family:var(--fm);font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--jv-ink-3);margin-bottom:8px;}
@@ -177,7 +177,7 @@ body::after{content:'';position:fixed;inset:0;background-image:
 .st-chart-bar-fill.empty{background:var(--jv-slate);box-shadow:none;}
 .st-chart-bar-label{font-family:var(--fm);font-size:9px;color:var(--jv-ink-3);letter-spacing:0.06em;}
 
-/* Connector cards (Konnektoren) */
+/* Connector cards (Connectors) */
 .st-conn{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid var(--jv-line);border-radius:var(--jv-r-2);background:var(--jv-graphite);margin-bottom:8px;transition:all var(--jv-dur-2);}
 .st-conn:hover{border-color:var(--jv-line-strong);}
 .st-conn.connected{border-color:var(--jv-line-ion);}
@@ -199,7 +199,7 @@ body::after{content:'';position:fixed;inset:0;background-image:
 .st-conn-form-row{display:flex;gap:8px;align-items:center;margin-top:10px;}
 .st-conn-form-row .st-btn-primary,.st-conn-form-row .st-btn-ghost{padding:7px 12px;font-size:9px;}
 
-/* Danger zone (Datenschutz) */
+/* Danger zone (Privacy) */
 .st-danger{margin-top:24px;padding:16px;border:1px solid rgba(255,77,122,0.3);border-radius:var(--jv-r-2);background:rgba(255,77,122,0.04);}
 .st-danger-title{font-family:var(--fm);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--jv-pulse);margin-bottom:6px;}
 .st-danger-text{font-size:13px;color:var(--jv-ink-2);line-height:1.5;margin-bottom:12px;}
@@ -529,14 +529,14 @@ body.light .st-btn-primary{color:#FFFFFF;}
   </div>
   <div class="boot-sub">JUST A RATHER VERY INTELLIGENT SYSTEM · v2.8</div>
   <div class="bpw">
-    <div class="bpl"><span id="bstep">SYSTEM INITIALISIERUNG</span><span id="bpct">0%</span></div>
+    <div class="bpl"><span id="bstep">SYSTEM INITIALISATION</span><span id="bpct">0%</span></div>
     <div class="bpb"><div class="bpf" id="bfill"></div></div>
   </div>
   <div class="blog" id="blog"></div>
 </div>
 
 <!-- KILL OVERLAY -->
-<div id="kill-ov"><div class="kill-content"><div class="km" data-text="KILL-SWITCH AKTIVIERT">KILL-SWITCH AKTIVIERT</div><div class="ks-line"></div><div class="ks2">ALLE SYSTEME GESTOPPT</div><div class="ks-line" style="width:100px;margin:12px auto;"></div><div class="ks2" style="font-size:14px;opacity:1;color:rgba(255,77,122,.95);letter-spacing:0.12em;margin-top:0">STRG+ALT+J ZUM DEAKTIVIEREN</div><button onclick="toggleKill()" style="margin-top:20px;padding:11px 36px;background:transparent;border:1.5px solid rgba(255,77,122,0.7);color:rgba(255,77,122,0.95);font-family:var(--fm);font-size:12px;letter-spacing:0.18em;text-transform:uppercase;cursor:pointer;border-radius:4px;transition:all 0.2s;display:block;margin-left:auto;margin-right:auto" onmouseover="this.style.background='rgba(255,77,122,0.12)';this.style.borderColor='rgba(255,77,122,0.95)'" onmouseout="this.style.background='transparent';this.style.borderColor='rgba(255,77,122,0.7)'">KILL-SWITCH DEAKTIVIEREN</button></div></div>
+<div id="kill-ov"><div class="kill-content"><div class="km" data-text="KILL SWITCH ACTIVATED">KILL SWITCH ACTIVATED</div><div class="ks-line"></div><div class="ks2">ALL SYSTEMS STOPED</div><div class="ks-line" style="width:100px;margin:12px auto;"></div><div class="ks2" style="font-size:14px;opacity:1;color:rgba(255,77,122,.95);letter-spacing:0.12em;margin-top:0">CTRL+ALT+J TO DEACTIVATE</div><button onclick="toggleKill()" style="margin-top:20px;padding:11px 36px;background:transparent;border:1.5px solid rgba(255,77,122,0.7);color:rgba(255,77,122,0.95);font-family:var(--fm);font-size:12px;letter-spacing:0.18em;text-transform:uppercase;cursor:pointer;border-radius:4px;transition:all 0.2s;display:block;margin-left:auto;margin-right:auto" onmouseover="this.style.background='rgba(255,77,122,0.12)';this.style.borderColor='rgba(255,77,122,0.95)'" onmouseout="this.style.background='transparent';this.style.borderColor='rgba(255,77,122,0.7)'">DEACTIVATE THE KILL SWITCH</button></div></div>
 
 <!-- SETTINGS MODAL — Full-screen categorized -->
 <div id="settings-modal" class="modal">
@@ -544,7 +544,7 @@ body.light .st-btn-primary{color:#FFFFFF;}
     <!-- Top bar -->
     <div class="st-bar">
       <span class="st-bar-dot"></span>
-      <span class="st-bar-label">SYS · KONFIG</span>
+      <span class="st-bar-label">SYS · CONFIG</span>
       <div class="st-bar-line"></div>
       <span class="st-bar-email">SEBI.ZUPANC@GMAIL.COM</span>
       <button class="st-bar-close" onclick="closeSettings()">
@@ -557,51 +557,51 @@ body.light .st-btn-primary{color:#FFFFFF;}
       <nav class="st-nav">
         <div class="st-nav-head">
           <div class="st-nav-menu">MENU</div>
-          <div class="st-nav-title">Einstellungen</div>
+          <div class="st-nav-title">Settings</div>
         </div>
         <div class="st-nav-items">
           <div class="st-nav-item active" data-pane="general" onclick="switchSettingsPane(this)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            Allgemein
+            General
           </div>
           <div class="st-nav-item" data-pane="account" onclick="switchSettingsPane(this)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
-            Konto
+            Account
           </div>
           <div class="st-nav-item" data-pane="privacy" onclick="switchSettingsPane(this)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            Datenschutz
+            Privacy
           </div>
           <div class="st-nav-item" data-pane="usage" onclick="switchSettingsPane(this)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
-            Nutzung
+            Usage
           </div>
           <div class="st-nav-item" data-pane="skills" onclick="switchSettingsPane(this)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 10 6-10 6L2 8z"/><path d="m2 17 10 6 10-6M2 12l10 6 10-6"/></svg>
-            Fähigkeiten
+            Capabilities
           </div>
           <div class="st-nav-item" data-pane="connect" onclick="switchSettingsPane(this)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v3a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8z"/></svg>
-            Konnektoren
+            Connectors
           </div>
           <div class="st-nav-item" data-pane="activation" onclick="switchSettingsPane(this)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></svg>
-            Aktivierung
+            Activation
           </div>
           <div class="st-nav-item" data-pane="code" onclick="switchSettingsPane(this)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-            Jarvis Code
+            My Jarvis Code
           </div>
           <div class="st-nav-item" data-pane="browser" onclick="switchSettingsPane(this)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/></svg>
-            Jarvis im Browser<span class="st-nav-beta">Beta</span>
+            My Jarvis in the browser<span class="st-nav-beta">Beta</span>
           </div>
         </div>
         <div class="st-nav-footer">
           <div class="sb-avatar">S</div>
           <div style="flex:1;min-width:0">
             <div style="font-size:12px;color:var(--jv-ink-1)">Sebastian</div>
-            <div style="font-family:var(--fm);font-size:9px;color:var(--jv-ion);letter-spacing:0.14em;text-transform:uppercase">● OPERATOR · LOKAL</div>
+            <div style="font-family:var(--fm);font-size:9px;color:var(--jv-ion);letter-spacing:0.14em;text-transform:uppercase">● OPERATOR · LOCAL</div>
           </div>
         </div>
       </nav>
@@ -609,298 +609,298 @@ body.light .st-btn-primary{color:#FFFFFF;}
       <!-- Content area -->
       <div class="st-content">
 
-        <!-- ALLGEMEIN -->
+        <!-- GENERAL -->
         <div class="st-pane active" id="st-general">
           <div style="margin-bottom:28px">
-            <div class="st-pane-eyebrow">ALLGEMEIN</div>
-            <div class="st-pane-title">Allgemein</div>
-            <div class="st-pane-sub">Sprache der App, Erscheinungsbild, Hinweise.</div>
+            <div class="st-pane-eyebrow">GENERAL</div>
+            <div class="st-pane-title">General</div>
+            <div class="st-pane-sub">The app language, its appearance and its hints.</div>
           </div>
           <div class="st-row top">
-            <div><div class="st-row-label">Sprache</div><div class="st-row-hint">Sprache der Antworten und Sprachausgabe.</div></div>
+            <div><div class="st-row-label">Language</div><div class="st-row-hint">The language of the answers and the speech output.</div></div>
             <div class="st-row-val">
-              <div class="chip on" data-f="language" data-v="de-DE">Deutsch</div>
-              <div class="chip" data-f="language" data-v="en-US">English</div>
-              <div class="chip" data-f="language" data-v="fr-FR">Francais</div>
-              <div class="chip" data-f="language" data-v="es-ES">Espanol</div>
-              <div class="chip" data-f="language" data-v="it-IT">Italiano</div>
-              <div class="chip" data-f="language" data-v="tr-TR">Turkce</div>
+              <div class="chip on" data-f="language" data-v="en-US">English</div>
+              <div class="chip" data-f="language" data-v="de-DE">German</div>
+              <div class="chip" data-f="language" data-v="fr-FR">French</div>
+              <div class="chip" data-f="language" data-v="es-ES">Spanish</div>
+              <div class="chip" data-f="language" data-v="it-IT">Italian</div>
+              <div class="chip" data-f="language" data-v="tr-TR">Turkish</div>
             </div>
           </div>
           <div class="st-row">
-            <div><div class="st-row-label">Heller Modus</div><div class="st-row-hint">Helle Oberfläche statt dunkel.</div></div>
+            <div><div class="st-row-label">Light mode</div><div class="st-row-hint">A light interface instead of a dark one.</div></div>
             <div class="st-row-val"><div class="toggle" id="tgl-light" onclick="toggleLightMode()"></div></div>
           </div>
           <div class="st-row">
-            <div><div class="st-row-label">Vorschläge anzeigen</div><div class="st-row-hint">Proaktive Folge-Aktionen unter der letzten Antwort.</div></div>
+            <div><div class="st-row-label">Show suggestions</div><div class="st-row-hint">Proactive follow-up actions under the last answer.</div></div>
             <div class="st-row-val"><div class="toggle on" id="tgl-sug" onclick="toggleSwitch('tgl-sug')"></div></div>
           </div>
           <div class="st-savebar">
             <span class="st-savebar-dot"></span>
-            <span class="st-savebar-text">Nicht gespeicherte Änderungen.</span>
-            <button class="st-btn-ghost" onclick="closeSettings()">Verwerfen</button>
-            <button class="st-btn-primary" id="sm-save-btn">Speichern</button>
+            <span class="st-savebar-text">Unsaved changes.</span>
+            <button class="st-btn-ghost" onclick="closeSettings()">Discard</button>
+            <button class="st-btn-primary" id="sm-save-btn">Save</button>
           </div>
         </div>
 
-        <!-- KONTO -->
+        <!-- ACCOUNT -->
         <div class="st-pane" id="st-account">
           <div style="margin-bottom:28px">
-            <div class="st-pane-eyebrow">KONTO</div>
-            <div class="st-pane-title">Konto</div>
-            <div class="st-pane-sub">Identität und wie Jarvis mit dir spricht.</div>
+            <div class="st-pane-eyebrow">ACCOUNT</div>
+            <div class="st-pane-title">Account</div>
+            <div class="st-pane-sub">Your identity, and how My Jarvis talks to you.</div>
           </div>
           <div class="st-row">
-            <div><div class="st-row-label">Vollständiger Name</div></div>
+            <div><div class="st-row-label">Full name</div></div>
             <div class="st-row-val"><input class="st-field" id="s-name" type="text" value="Sebastian"></div>
           </div>
           <div class="st-row">
-            <div><div class="st-row-label">Wohnort</div><div class="st-row-hint">Standort für Wetter, Briefing und Zeitzonen.</div></div>
-            <div class="st-row-val"><input class="st-field" id="s-loc" type="text" placeholder="Wien, Österreich" value="Wien, Österreich"></div>
+            <div><div class="st-row-label">Location</div><div class="st-row-hint">The location used for weather, the briefing and time zones.</div></div>
+            <div class="st-row-val"><input class="st-field" id="s-loc" type="text" placeholder="Vienna, Austria" value="Vienna, Austria"></div>
           </div>
-          <div class="st-section">ANREDE &amp; STIL</div>
+          <div class="st-section">SALUTATION &amp; STYLE</div>
           <div class="st-row top">
-            <div><div class="st-row-label">Anrede</div><div class="st-row-hint">Wie Jarvis dich anspricht.</div></div>
+            <div><div class="st-row-label">Salutation</div><div class="st-row-hint">How My Jarvis addresses you.</div></div>
             <div class="st-row-val" id="salutation-row">
               <div class="chip on" data-f="salutation" data-v="Sir">Sir</div>
-              <div class="chip" data-f="salutation" data-v="Chef">Chef</div>
+              <div class="chip" data-f="salutation" data-v="Boss">Boss</div>
               <div class="chip" data-f="salutation" data-v="Bro">Bro</div>
               <div class="chip" data-f="salutation" data-v="Ma'am">Ma'am</div>
-              <div class="chip" data-f="salutation" data-v="">Kein</div>
-              <div class="chip-add" onclick="openCustomAnrede()" title="Eigene Anrede">+</div>
+              <div class="chip" data-f="salutation" data-v="">None</div>
+              <div class="chip-add" onclick="openCustomSalutation()" title="Custom salutation">+</div>
             </div>
           </div>
           <div class="st-row top">
-            <div><div class="st-row-label">Redeart</div><div class="st-row-hint">Sprachstil der Antworten.</div></div>
+            <div><div class="st-row-label">Tone</div><div class="st-row-hint">The tone of the answers.</div></div>
             <div class="st-row-val">
-              <div class="chip on" data-f="tone" data-v="professional">Professionell</div>
+              <div class="chip on" data-f="tone" data-v="professional">Professional</div>
               <div class="chip" data-f="tone" data-v="normal">Normal</div>
-              <div class="chip" data-f="tone" data-v="casual">Jugendlich</div>
+              <div class="chip" data-f="tone" data-v="casual">Casual</div>
             </div>
           </div>
           <div class="st-savebar">
             <span class="st-savebar-dot"></span>
-            <span class="st-savebar-text">Nicht gespeicherte Änderungen.</span>
-            <button class="st-btn-ghost" onclick="closeSettings()">Verwerfen</button>
-            <button class="st-btn-primary" onclick="document.getElementById('sm-save-btn').click()">Speichern</button>
+            <span class="st-savebar-text">Unsaved changes.</span>
+            <button class="st-btn-ghost" onclick="closeSettings()">Discard</button>
+            <button class="st-btn-primary" onclick="document.getElementById('sm-save-btn').click()">Save</button>
           </div>
         </div>
 
-        <!-- FÄHIGKEITEN -->
+        <!-- CAPABILITIES -->
         <div class="st-pane" id="st-skills">
           <div style="margin-bottom:28px">
-            <div class="st-pane-eyebrow">FÄHIGKEITEN</div>
-            <div class="st-pane-title">Fähigkeiten</div>
-            <div class="st-pane-sub">KI-Anbieter, Modelle und Sprach-Engine.</div>
+            <div class="st-pane-eyebrow">CAPABILITIES</div>
+            <div class="st-pane-title">Capabilities</div>
+            <div class="st-pane-sub">AI provider, models and the speech engine.</div>
           </div>
-          <div class="st-section" style="margin-top:0">KI-ANBIETER</div>
+          <div class="st-section" style="margin-top:0">AI PROVIDER</div>
           <div class="api-grid" style="margin-bottom:18px">
             <div class="ap on" data-p="anthropic"><span class="ap-name">Anthropic</span><div class="ap-sub">Claude</div></div>
             <div class="ap" data-p="openai"><span class="ap-name">OpenAI</span><div class="ap-sub">ChatGPT</div></div>
             <div class="ap" data-p="gemini"><span class="ap-name">Google</span><div class="ap-sub">Gemini</div></div>
             <div class="ap" data-p="nvidia"><span class="ap-name">NVIDIA</span><div class="ap-sub">NIM</div></div>
             <div class="ap" data-p="mistral"><span class="ap-name">Mistral</span><div class="ap-sub">AI</div></div>
-            <div class="ap" data-p="local"><span class="ap-name">Lokal</span><div class="ap-sub">Ollama</div></div>
+            <div class="ap" data-p="local"><span class="ap-name">Local</span><div class="ap-sub">Ollama</div></div>
           </div>
           <div class="st-row">
-            <div><div class="st-row-label">API-Key</div><div class="st-row-hint">Wird verschlüsselt im System-Schlüsselbund gespeichert.</div></div>
+            <div><div class="st-row-label">API key</div><div class="st-row-hint">Stored encrypted in the system keychain.</div></div>
             <div class="st-row-val" style="flex-direction:column;align-items:flex-end;gap:6px">
               <div class="af show" id="af-anthropic"><input class="st-field mono" id="k-anthropic" type="password" placeholder="sk-ant-api03-..." style="width:320px"></div>
               <div class="af" id="af-openai"><input class="st-field mono" id="k-openai" type="password" placeholder="sk-..." style="width:320px"></div>
               <div class="af" id="af-gemini"><input class="st-field mono" id="k-gemini" type="password" placeholder="AIza..." style="width:320px"></div>
               <div class="af" id="af-nvidia">
                 <input class="st-field mono" id="k-nvidia" type="password" placeholder="nvapi-..." style="width:320px;margin-bottom:6px">
-                <input class="st-field mono" id="m-nvidia" type="text" placeholder="Modell: meta/llama-3.1-70b-instruct" style="width:320px">
+                <input class="st-field mono" id="m-nvidia" type="text" placeholder="Model: meta/llama-3.1-70b-instruct" style="width:320px">
               </div>
-              <div class="af" id="af-mistral"><input class="st-field mono" id="k-mistral" type="password" placeholder="API-Key" style="width:320px"></div>
+              <div class="af" id="af-mistral"><input class="st-field mono" id="k-mistral" type="password" placeholder="API key" style="width:320px"></div>
               <div class="af" id="af-local">
                 <input class="st-field mono" id="u-local" type="text" placeholder="http://localhost:11434" value="http://localhost:11434" style="width:320px;margin-bottom:6px">
-                <input class="st-field mono" id="m-local" type="text" placeholder="Modell: llama3, mistral ..." style="width:320px">
+                <input class="st-field mono" id="m-local" type="text" placeholder="Model: llama3, mistral ..." style="width:320px">
               </div>
             </div>
           </div>
           <div class="st-row">
             <div><div class="st-row-label">Status</div></div>
             <div class="st-row-val">
-              <div class="key-status key-bad" id="sm-key-status" style="margin:0">Kein API-Key gesetzt</div>
+              <div class="key-status key-bad" id="sm-key-status" style="margin:0">No API key set</div>
             </div>
           </div>
-          <div class="st-section">SPRACH-ENGINE</div>
+          <div class="st-section">SPEECH ENGINE</div>
           <div class="st-row">
-            <div><div class="st-row-label">Sprachausgabe (TTS)</div><div class="st-row-hint">Antworten werden vorgelesen.</div></div>
+            <div><div class="st-row-label">Speech output (TTS)</div><div class="st-row-hint">Answers are read out loud.</div></div>
             <div class="st-row-val"><div class="toggle on" id="tgl-tts" onclick="toggleSwitch('tgl-tts')"></div></div>
           </div>
           <div class="st-row">
-            <div><div class="st-row-label">TTS-Stimme</div><div class="st-row-hint">Wird gefiltert nach gewählter Sprache.</div></div>
+            <div><div class="st-row-label">TTS voice</div><div class="st-row-hint">Filtered by the language you picked.</div></div>
             <div class="st-row-val">
-              <select class="st-select" id="voice-select"><option value="">Standard</option></select>
+              <select class="st-select" id="voice-select"><option value="">Default</option></select>
             </div>
           </div>
           <div class="st-savebar">
             <span class="st-savebar-dot"></span>
-            <span class="st-savebar-text">Nicht gespeicherte Änderungen.</span>
-            <button class="st-btn-ghost" onclick="closeSettings()">Verwerfen</button>
-            <button class="st-btn-primary" onclick="document.getElementById('sm-save-btn').click()">Speichern</button>
+            <span class="st-savebar-text">Unsaved changes.</span>
+            <button class="st-btn-ghost" onclick="closeSettings()">Discard</button>
+            <button class="st-btn-primary" onclick="document.getElementById('sm-save-btn').click()">Save</button>
           </div>
         </div>
 
-        <!-- AKTIVIERUNG -->
+        <!-- ACTIVATION -->
         <div class="st-pane" id="st-activation">
           <div style="margin-bottom:28px">
-            <div class="st-pane-eyebrow">AKTIVIERUNG</div>
-            <div class="st-pane-title">Aktivierung</div>
-            <div class="st-pane-sub">Wake Word, Klatsch-Erkennung und Mikrofon-Trigger.</div>
+            <div class="st-pane-eyebrow">ACTIVATION</div>
+            <div class="st-pane-title">Activation</div>
+            <div class="st-pane-sub">Wake word, clap detection and the microphone trigger.</div>
           </div>
           <div class="st-row">
-            <div><div class="st-row-label">Wake Word</div><div class="st-row-hint">"Hey Jarvis" zur Aktivierung.</div></div>
+            <div><div class="st-row-label">Wake Word</div><div class="st-row-hint">"Hey Jarvis" to activate.</div></div>
             <div class="st-row-val"><div class="toggle" id="tgl-wake" onclick="toggleSwitch('tgl-wake')"></div></div>
           </div>
           <div class="st-row">
-            <div><div class="st-row-label">Klatsch-Aktivierung</div><div class="st-row-hint">2× Klatschen als Trigger.</div></div>
+            <div><div class="st-row-label">Clap activation</div><div class="st-row-hint">Two claps as the trigger.</div></div>
             <div class="st-row-val"><div class="toggle" id="tgl-clap" onclick="toggleSwitch('tgl-clap')"></div></div>
           </div>
           <div id="clap-settings" style="display:none;padding:16px 0;border-bottom:1px solid var(--jv-line);">
             <div class="st-row" style="border:none;padding:0">
-              <div><div class="st-row-label">Empfindlichkeit</div><div class="st-row-hint">Threshold für Klatsch-Erkennung.</div></div>
+              <div><div class="st-row-label">Sensitivity</div><div class="st-row-hint">The threshold for clap detection.</div></div>
               <div class="st-row-val" style="gap:12px">
                 <input type="range" id="clap-slider" min="0.05" max="0.9" step="0.05" value="0.3" style="width:200px;accent-color:var(--jv-ion);">
                 <span id="clap-val" style="font-family:var(--fm);font-size:12px;color:var(--jv-ion);min-width:36px;text-align:right">0.30</span>
               </div>
             </div>
             <div style="margin-top:12px;display:flex;justify-content:flex-end">
-              <button class="st-btn-ghost" onclick="calibrateClap()">Kalibrieren</button>
+              <button class="st-btn-ghost" onclick="calibrateClap()">Calibrate</button>
             </div>
           </div>
           <div class="st-savebar">
             <span class="st-savebar-dot"></span>
-            <span class="st-savebar-text">Nicht gespeicherte Änderungen.</span>
-            <button class="st-btn-ghost" onclick="closeSettings()">Verwerfen</button>
-            <button class="st-btn-primary" onclick="document.getElementById('sm-save-btn').click()">Speichern</button>
+            <span class="st-savebar-text">Unsaved changes.</span>
+            <button class="st-btn-ghost" onclick="closeSettings()">Discard</button>
+            <button class="st-btn-primary" onclick="document.getElementById('sm-save-btn').click()">Save</button>
           </div>
         </div>
 
-        <!-- DATENSCHUTZ -->
+        <!-- PRIVACY -->
         <div class="st-pane" id="st-privacy">
           <div style="margin-bottom:28px">
-            <div class="st-pane-eyebrow">DATENSCHUTZ</div>
-            <div class="st-pane-title">Datenschutz</div>
-            <div class="st-pane-sub">Alle Daten bleiben lokal auf diesem Gerät. Du entscheidest, was Jarvis behält.</div>
+            <div class="st-pane-eyebrow">PRIVACY</div>
+            <div class="st-pane-title">Privacy</div>
+            <div class="st-pane-sub">All data stays local on this device. You decide what My Jarvis keeps.</div>
           </div>
-          <div class="st-section" style="margin-top:0">VERARBEITUNG</div>
+          <div class="st-section" style="margin-top:0">PROCESSING</div>
           <div class="st-row">
-            <div><div class="st-row-label">Konversationen merken</div><div class="st-row-hint">Verlauf für Kontext und Folgefragen lokal speichern.</div></div>
+            <div><div class="st-row-label">Remember conversations</div><div class="st-row-hint">Store the history locally, for context and follow-up questions.</div></div>
             <div class="st-row-val"><div class="toggle on" id="tgl-mem-history" onclick="toggleSwitch('tgl-mem-history')"></div></div>
           </div>
           <div class="st-row">
-            <div><div class="st-row-label">Automatisches Gedächtnis</div><div class="st-row-hint">Jarvis darf wichtige Fakten selbst als Erinnerung speichern.</div></div>
+            <div><div class="st-row-label">Automatic memory</div><div class="st-row-hint">My Jarvis may store important facts as memories on its own.</div></div>
             <div class="st-row-val"><div class="toggle on" id="tgl-mem-auto" onclick="toggleSwitch('tgl-mem-auto')"></div></div>
           </div>
           <div class="st-row">
-            <div><div class="st-row-label">Bildschirm-Vision</div><div class="st-row-hint">Screenshots an die Vision-API senden (nur bei Bedarf).</div></div>
+            <div><div class="st-row-label">Screen vision</div><div class="st-row-hint">Send screenshots to the vision API (only when needed).</div></div>
             <div class="st-row-val"><div class="toggle on" id="tgl-vision-allow" onclick="toggleSwitch('tgl-vision-allow')"></div></div>
           </div>
           <div class="st-row">
-            <div><div class="st-row-label">Telemetrie</div><div class="st-row-hint">Anonyme Fehlerberichte zur Diagnose.</div></div>
+            <div><div class="st-row-label">Telemetry</div><div class="st-row-hint">Anonymous error reports, for diagnosis.</div></div>
             <div class="st-row-val"><div class="toggle" id="tgl-telemetry" onclick="toggleSwitch('tgl-telemetry')"></div></div>
           </div>
 
-          <div class="st-section">SPEICHERORT</div>
+          <div class="st-section">STORAGE LOCATION</div>
           <div class="st-row">
-            <div><div class="st-row-label">Verzeichnis</div><div class="st-row-hint">Alle Daten sind Fernet-verschlüsselt.</div></div>
+            <div><div class="st-row-label">Directory</div><div class="st-row-hint">All data is Fernet-encrypted.</div></div>
             <div class="st-row-val"><code class="st-field mono" style="background:var(--jv-void);padding:9px 12px;display:inline-block;width:auto;font-size:11px" id="s-mem-path">~/.jarvis/</code></div>
           </div>
           <div class="st-row">
-            <div><div class="st-row-label">Gespeicherte Einträge</div></div>
+            <div><div class="st-row-label">Stored entries</div></div>
             <div class="st-row-val">
-              <span class="st-conn-status on" id="s-stat-mem">● 0 Erinnerungen</span>
-              <span class="st-conn-status" id="s-stat-hist" style="margin-left:8px">● 0 Verlauf</span>
+              <span class="st-conn-status on" id="s-stat-mem">● 0 memories</span>
+              <span class="st-conn-status" id="s-stat-hist" style="margin-left:8px">● 0 history</span>
             </div>
           </div>
 
           <div class="st-danger">
-            <div class="st-danger-title">GEFAHRENZONE</div>
-            <div class="st-danger-text">Alle Erinnerungen, Verlauf und Routinen löschen. Dies kann nicht rückgängig gemacht werden.</div>
-            <button class="st-btn-danger" onclick="confirmWipe()">Alle Daten löschen</button>
+            <div class="st-danger-title">DANGER ZONE</div>
+            <div class="st-danger-text">Delete every memory, the history and the routines. This cannot be undone.</div>
+            <button class="st-btn-danger" onclick="confirmWipe()">Delete all data</button>
           </div>
 
           <div class="st-savebar">
             <span class="st-savebar-dot"></span>
-            <span class="st-savebar-text">Nicht gespeicherte Änderungen.</span>
-            <button class="st-btn-ghost" onclick="closeSettings()">Verwerfen</button>
-            <button class="st-btn-primary" onclick="document.getElementById('sm-save-btn').click()">Speichern</button>
+            <span class="st-savebar-text">Unsaved changes.</span>
+            <button class="st-btn-ghost" onclick="closeSettings()">Discard</button>
+            <button class="st-btn-primary" onclick="document.getElementById('sm-save-btn').click()">Save</button>
           </div>
         </div>
 
-        <!-- NUTZUNG -->
+        <!-- USAGE -->
         <div class="st-pane" id="st-usage">
           <div style="margin-bottom:28px">
-            <div class="st-pane-eyebrow">NUTZUNG</div>
-            <div class="st-pane-title">Nutzung</div>
-            <div class="st-pane-sub">Sitzungsmetriken und Verbrauch über die letzten 7 Tage.</div>
+            <div class="st-pane-eyebrow">USAGE</div>
+            <div class="st-pane-title">Usage</div>
+            <div class="st-pane-sub">Session metrics and usage over the last 7 days.</div>
           </div>
 
           <div class="st-stat-grid">
             <div class="st-stat">
-              <div class="st-stat-label">TOKENS HEUTE</div>
+              <div class="st-stat-label">TOKENS TODAY</div>
               <div class="st-stat-val ion" id="u-tok-today">0</div>
-              <div class="st-stat-sub" id="u-tok-delta">Δ aus Sitzung</div>
+              <div class="st-stat-sub" id="u-tok-delta">Δ this session</div>
             </div>
             <div class="st-stat">
-              <div class="st-stat-label">NACHRICHTEN</div>
+              <div class="st-stat-label">MESSAGES</div>
               <div class="st-stat-val" id="u-msg-count">0</div>
-              <div class="st-stat-sub">letzte 7 Tage</div>
+              <div class="st-stat-sub">last 7 days</div>
             </div>
             <div class="st-stat">
-              <div class="st-stat-label">ERINNERUNGEN</div>
+              <div class="st-stat-label">MEMORIES</div>
               <div class="st-stat-val" id="u-mem-count">0</div>
-              <div class="st-stat-sub">aktive Einträge</div>
+              <div class="st-stat-sub">active entries</div>
             </div>
           </div>
 
-          <div class="st-section">AKTIVITÄT — LETZTE 7 TAGE</div>
+          <div class="st-section">ACTIVITY — LAST 7 DAYS</div>
           <div class="st-chart" id="u-chart"></div>
 
           <div class="st-section">DETAILS</div>
           <div class="st-row">
-            <div><div class="st-row-label">Routinen aktiv</div></div>
+            <div><div class="st-row-label">routines active</div></div>
             <div class="st-row-val"><span class="st-conn-status on" id="u-rout-count">● 0</span></div>
           </div>
           <div class="st-row">
-            <div><div class="st-row-label">Aktueller KI-Anbieter</div></div>
+            <div><div class="st-row-label">Current AI provider</div></div>
             <div class="st-row-val"><span class="api-badge-mini" id="u-provider">–</span></div>
           </div>
 
           <div class="st-savebar st-savebar-static" style="margin-top:24px">
             <span class="st-savebar-dot" style="background:var(--jv-success);box-shadow:0 0 8px var(--jv-success)"></span>
-            <span class="st-savebar-text">Live aus dem Backend.</span>
-            <button class="st-btn-ghost" onclick="refreshUsage()">Aktualisieren</button>
+            <span class="st-savebar-text">Live from the backend.</span>
+            <button class="st-btn-ghost" onclick="refreshUsage()">Refresh</button>
           </div>
         </div>
 
-        <!-- KONNEKTOREN -->
+        <!-- CONNECTORS -->
         <div class="st-pane" id="st-connect">
           <div style="margin-bottom:28px">
-            <div class="st-pane-eyebrow">KONNEKTOREN</div>
-            <div class="st-pane-title">Konnektoren</div>
-            <div class="st-pane-sub">Verbinde Jarvis mit deinen Diensten — Kalender, Tasks, E-Mail, Smart Home.</div>
+            <div class="st-pane-eyebrow">CONNECTORS</div>
+            <div class="st-pane-title">Connectors</div>
+            <div class="st-pane-sub">Connect My Jarvis to your services — calendar, tasks, email, smart home.</div>
           </div>
 
-          <div class="st-section" style="margin-top:0">PRODUKTIVITÄT</div>
+          <div class="st-section" style="margin-top:0">PRODUCTIVITY</div>
           <div class="st-conn" data-conn="calendar" id="conn-calendar">
             <div class="st-conn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
             <div class="st-conn-body">
               <div class="st-conn-name">Google Calendar</div>
-              <div class="st-conn-hint">Termine lesen und anlegen per Sprache.</div>
+              <div class="st-conn-hint">Read and create appointments by voice.</div>
             </div>
-            <span class="st-conn-status off" id="conn-status-calendar">● Nicht verbunden</span>
-            <button class="st-btn-ghost" onclick="expandConn('calendar')">Verbinden</button>
+            <span class="st-conn-status off" id="conn-status-calendar">● Not connected</span>
+            <button class="st-btn-ghost" onclick="expandConn('calendar')">Connect</button>
           </div>
           <div class="st-conn-form" id="conn-form-calendar">
-            <input class="st-field mono" id="conn-calendar-creds" type="password" placeholder="OAuth-Token oder credentials.json Pfad">
+            <input class="st-field mono" id="conn-calendar-creds" type="password" placeholder="An OAuth token or a credentials.json path">
             <div class="st-conn-form-row">
-              <button class="st-btn-primary" onclick="saveConn('calendar')">Speichern</button>
-              <button class="st-btn-ghost" onclick="testConn('calendar')">Verbindung testen</button>
-              <button class="st-btn-ghost" onclick="collapseConn('calendar')" style="margin-left:auto">Abbrechen</button>
+              <button class="st-btn-primary" onclick="saveConn('calendar')">Save</button>
+              <button class="st-btn-ghost" onclick="testConn('calendar')">Test the connection</button>
+              <button class="st-btn-ghost" onclick="collapseConn('calendar')" style="margin-left:auto">Cancel</button>
             </div>
           </div>
 
@@ -908,17 +908,17 @@ body.light .st-btn-primary{color:#FFFFFF;}
             <div class="st-conn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
             <div class="st-conn-body">
               <div class="st-conn-name">Todoist</div>
-              <div class="st-conn-hint">Aufgaben lesen, anlegen und abhaken.</div>
+              <div class="st-conn-hint">Read, create and tick off tasks.</div>
             </div>
-            <span class="st-conn-status off" id="conn-status-todoist">● Nicht verbunden</span>
-            <button class="st-btn-ghost" onclick="expandConn('todoist')">Verbinden</button>
+            <span class="st-conn-status off" id="conn-status-todoist">● Not connected</span>
+            <button class="st-btn-ghost" onclick="expandConn('todoist')">Connect</button>
           </div>
           <div class="st-conn-form" id="conn-form-todoist">
-            <input class="st-field mono" id="conn-todoist-key" type="password" placeholder="Todoist API-Token">
+            <input class="st-field mono" id="conn-todoist-key" type="password" placeholder="Todoist API token">
             <div class="st-conn-form-row">
-              <button class="st-btn-primary" onclick="saveConn('todoist')">Speichern</button>
-              <button class="st-btn-ghost" onclick="testConn('todoist')">Verbindung testen</button>
-              <button class="st-btn-ghost" onclick="collapseConn('todoist')" style="margin-left:auto">Abbrechen</button>
+              <button class="st-btn-primary" onclick="saveConn('todoist')">Save</button>
+              <button class="st-btn-ghost" onclick="testConn('todoist')">Test the connection</button>
+              <button class="st-btn-ghost" onclick="collapseConn('todoist')" style="margin-left:auto">Cancel</button>
             </div>
           </div>
 
@@ -926,71 +926,71 @@ body.light .st-btn-primary{color:#FFFFFF;}
             <div class="st-conn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h12l4 4v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><path d="M14 4v6h6"/></svg></div>
             <div class="st-conn-body">
               <div class="st-conn-name">Notion</div>
-              <div class="st-conn-hint">Datenbank-Tasks lesen und anlegen.</div>
+              <div class="st-conn-hint">Read and create database tasks.</div>
             </div>
-            <span class="st-conn-status off" id="conn-status-notion">● Nicht verbunden</span>
-            <button class="st-btn-ghost" onclick="expandConn('notion')">Verbinden</button>
+            <span class="st-conn-status off" id="conn-status-notion">● Not connected</span>
+            <button class="st-btn-ghost" onclick="expandConn('notion')">Connect</button>
           </div>
           <div class="st-conn-form" id="conn-form-notion">
-            <input class="st-field mono" id="conn-notion-key" type="password" placeholder="Notion Integration-Token" style="margin-bottom:8px">
-            <input class="st-field mono" id="conn-notion-db" type="text" placeholder="Datenbank-ID">
+            <input class="st-field mono" id="conn-notion-key" type="password" placeholder="Notion integration token" style="margin-bottom:8px">
+            <input class="st-field mono" id="conn-notion-db" type="text" placeholder="Database ID">
             <div class="st-conn-form-row">
-              <button class="st-btn-primary" onclick="saveConn('notion')">Speichern</button>
-              <button class="st-btn-ghost" onclick="testConn('notion')">Verbindung testen</button>
-              <button class="st-btn-ghost" onclick="collapseConn('notion')" style="margin-left:auto">Abbrechen</button>
+              <button class="st-btn-primary" onclick="saveConn('notion')">Save</button>
+              <button class="st-btn-ghost" onclick="testConn('notion')">Test the connection</button>
+              <button class="st-btn-ghost" onclick="collapseConn('notion')" style="margin-left:auto">Cancel</button>
             </div>
           </div>
 
-          <div class="st-section">KOMMUNIKATION</div>
+          <div class="st-section">COMMUNICATION</div>
           <div class="st-conn" data-conn="email" id="conn-email">
             <div class="st-conn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
             <div class="st-conn-body">
-              <div class="st-conn-name">E-Mail (IMAP/SMTP)</div>
-              <div class="st-conn-hint">Posteingang lesen, Antworten entwerfen.</div>
+              <div class="st-conn-name">Email (IMAP/SMTP)</div>
+              <div class="st-conn-hint">Read the inbox, draft replies.</div>
             </div>
-            <span class="st-conn-status off" id="conn-status-email">● Nicht verbunden</span>
-            <button class="st-btn-ghost" onclick="expandConn('email')">Verbinden</button>
+            <span class="st-conn-status off" id="conn-status-email">● Not connected</span>
+            <button class="st-btn-ghost" onclick="expandConn('email')">Connect</button>
           </div>
           <div class="st-conn-form" id="conn-form-email">
-            <input class="st-field mono" id="conn-email-addr" type="text" placeholder="E-Mail-Adresse" style="margin-bottom:8px">
-            <input class="st-field mono" id="conn-email-pass" type="password" placeholder="App-Passwort" style="margin-bottom:8px">
-            <input class="st-field mono" id="conn-email-imap" type="text" placeholder="IMAP-Server (z.B. imap.gmail.com)" style="margin-bottom:8px">
-            <input class="st-field mono" id="conn-email-smtp" type="text" placeholder="SMTP-Server (z.B. smtp.gmail.com)">
+            <input class="st-field mono" id="conn-email-addr" type="text" placeholder="Email address" style="margin-bottom:8px">
+            <input class="st-field mono" id="conn-email-pass" type="password" placeholder="App password" style="margin-bottom:8px">
+            <input class="st-field mono" id="conn-email-imap" type="text" placeholder="IMAP server (e.g. imap.gmail.com)" style="margin-bottom:8px">
+            <input class="st-field mono" id="conn-email-smtp" type="text" placeholder="SMTP server (e.g. smtp.gmail.com)">
             <div class="st-conn-form-row">
-              <button class="st-btn-primary" onclick="saveConn('email')">Speichern</button>
-              <button class="st-btn-ghost" onclick="testConn('email')">Verbindung testen</button>
-              <button class="st-btn-ghost" onclick="collapseConn('email')" style="margin-left:auto">Abbrechen</button>
+              <button class="st-btn-primary" onclick="saveConn('email')">Save</button>
+              <button class="st-btn-ghost" onclick="testConn('email')">Test the connection</button>
+              <button class="st-btn-ghost" onclick="collapseConn('email')" style="margin-left:auto">Cancel</button>
             </div>
           </div>
 
-          <div class="st-section">UMGEBUNG</div>
+          <div class="st-section">ENVIRONMENT</div>
           <div class="st-conn" data-conn="homeassistant" id="conn-homeassistant">
             <div class="st-conn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
             <div class="st-conn-body">
               <div class="st-conn-name">Home Assistant</div>
-              <div class="st-conn-hint">Lichter, Klima und Medien steuern.</div>
+              <div class="st-conn-hint">Control lights, climate and media.</div>
             </div>
-            <span class="st-conn-status off" id="conn-status-homeassistant">● Nicht verbunden</span>
-            <button class="st-btn-ghost" onclick="expandConn('homeassistant')">Verbinden</button>
+            <span class="st-conn-status off" id="conn-status-homeassistant">● Not connected</span>
+            <button class="st-btn-ghost" onclick="expandConn('homeassistant')">Connect</button>
           </div>
           <div class="st-conn-form" id="conn-form-homeassistant">
             <input class="st-field mono" id="conn-ha-url" type="text" placeholder="http://homeassistant.local:8123" style="margin-bottom:8px">
             <input class="st-field mono" id="conn-ha-token" type="password" placeholder="Long-Lived Access Token">
             <div class="st-conn-form-row">
-              <button class="st-btn-primary" onclick="saveConn('homeassistant')">Speichern</button>
-              <button class="st-btn-ghost" onclick="testConn('homeassistant')">Verbindung testen</button>
-              <button class="st-btn-ghost" onclick="collapseConn('homeassistant')" style="margin-left:auto">Abbrechen</button>
+              <button class="st-btn-primary" onclick="saveConn('homeassistant')">Save</button>
+              <button class="st-btn-ghost" onclick="testConn('homeassistant')">Test the connection</button>
+              <button class="st-btn-ghost" onclick="collapseConn('homeassistant')" style="margin-left:auto">Cancel</button>
             </div>
           </div>
 
-          <div class="st-section">INHALTE</div>
+          <div class="st-section">CONTENT</div>
           <div class="st-conn" data-conn="youtube" id="conn-youtube">
             <div class="st-conn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>
             <div class="st-conn-body">
-              <div class="st-conn-name">YouTube-Zusammenfassungen</div>
-              <div class="st-conn-hint">Transkripte abrufen — kein API-Key nötig.</div>
+              <div class="st-conn-name">YouTube summaries</div>
+              <div class="st-conn-hint">Fetch transcripts — no API key needed.</div>
             </div>
-            <span class="st-conn-status on" id="conn-status-youtube">● Verfügbar</span>
+            <span class="st-conn-status on" id="conn-status-youtube">● Available</span>
             <div class="toggle on" id="tgl-conn-youtube" onclick="toggleSwitch('tgl-conn-youtube')"></div>
           </div>
 
@@ -998,45 +998,45 @@ body.light .st-btn-primary{color:#FFFFFF;}
             <div class="st-conn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
             <div class="st-conn-body">
               <div class="st-conn-name">Research Briefing</div>
-              <div class="st-conn-hint">Tägliche Artikel, Paper und News zu deinen Themen.</div>
+              <div class="st-conn-hint">Daily articles, papers and news on your topics.</div>
             </div>
-            <span class="st-conn-status off" id="conn-status-research">● Aus</span>
-            <button class="st-btn-ghost" onclick="expandConn('research')">Konfigurieren</button>
+            <span class="st-conn-status off" id="conn-status-research">● Off</span>
+            <button class="st-btn-ghost" onclick="expandConn('research')">Configure</button>
           </div>
           <div class="st-conn-form" id="conn-form-research">
-            <input class="st-field" id="conn-research-topics" type="text" placeholder="Themen, kommagetrennt — z.B. KI, Startups, Python">
+            <input class="st-field" id="conn-research-topics" type="text" placeholder="Topics, comma-separated — e.g. AI, startups, Python">
             <div class="st-conn-form-row">
-              <button class="st-btn-primary" onclick="saveConn('research')">Speichern</button>
-              <button class="st-btn-ghost" onclick="collapseConn('research')" style="margin-left:auto">Abbrechen</button>
+              <button class="st-btn-primary" onclick="saveConn('research')">Save</button>
+              <button class="st-btn-ghost" onclick="collapseConn('research')" style="margin-left:auto">Cancel</button>
             </div>
           </div>
 
           <div class="st-savebar st-savebar-static">
             <span class="st-savebar-dot" style="background:var(--jv-success);box-shadow:0 0 8px var(--jv-success)"></span>
-            <span class="st-savebar-text">Änderungen werden pro Konnektor sofort gespeichert.</span>
-            <button class="st-btn-ghost" onclick="refreshConnectors()">Aktualisieren</button>
+            <span class="st-savebar-text">Changes are saved per connector, immediately.</span>
+            <button class="st-btn-ghost" onclick="refreshConnectors()">Refresh</button>
           </div>
         </div>
 
-        <!-- JARVIS CODE -->
+        <!-- MY JARVIS CODE -->
         <div class="st-pane" id="st-code">
           <div style="margin-bottom:28px">
-            <div class="st-pane-eyebrow">JARVIS CODE</div>
-            <div class="st-pane-title">Jarvis Code</div>
-            <div class="st-pane-sub">Code-Boxen werden vor der Anzeige automatisch geprüft und formatiert.</div>
+            <div class="st-pane-eyebrow">MY JARVIS CODE</div>
+            <div class="st-pane-title">My Jarvis Code</div>
+            <div class="st-pane-sub">Code blocks are checked and formatted automatically before they are shown.</div>
           </div>
 
-          <div class="st-section" style="margin-top:0">CODE-VERARBEITUNG</div>
+          <div class="st-section" style="margin-top:0">CODE PROCESSING</div>
           <div class="st-row">
-            <div><div class="st-row-label">Syntax-Check</div><div class="st-row-hint">Python via py_compile, JavaScript via node --check.</div></div>
+            <div><div class="st-row-label">Syntax check</div><div class="st-row-hint">Python via py_compile, JavaScript via node --check.</div></div>
             <div class="st-row-val"><div class="toggle on" id="tgl-code-check" onclick="toggleSwitch('tgl-code-check')"></div></div>
           </div>
           <div class="st-row">
-            <div><div class="st-row-label">Auto-Format</div><div class="st-row-hint">Python via black, JS/HTML via prettier (sofern installiert).</div></div>
+            <div><div class="st-row-label">Auto-format</div><div class="st-row-hint">Python via black, JS/HTML via prettier (where installed).</div></div>
             <div class="st-row-val"><div class="toggle on" id="tgl-code-format" onclick="toggleSwitch('tgl-code-format')"></div></div>
           </div>
           <div class="st-row">
-            <div><div class="st-row-label">Korrektur-Versuche</div><div class="st-row-hint">Wie oft Jarvis bei Syntaxfehlern erneut versucht.</div></div>
+            <div><div class="st-row-label">Correction attempts</div><div class="st-row-hint">How often My Jarvis retries on a syntax error.</div></div>
             <div class="st-row-val">
               <select class="st-select" id="s-code-retries" style="width:140px">
                 <option value="1">1×</option>
@@ -1049,7 +1049,7 @@ body.light .st-btn-primary{color:#FFFFFF;}
 
           <div class="st-section">TOOLS</div>
           <div class="st-row">
-            <div><div class="st-row-label">Verfügbar im System</div><div class="st-row-hint">Wird beim Speichern erkannt.</div></div>
+            <div><div class="st-row-label">Available on this system</div><div class="st-row-hint">Detected when you save.</div></div>
             <div class="st-row-val" id="s-code-tools" style="gap:6px">
               <span class="st-conn-status off">● black</span>
               <span class="st-conn-status off">● prettier</span>
@@ -1059,18 +1059,18 @@ body.light .st-btn-primary{color:#FFFFFF;}
 
           <div class="st-savebar">
             <span class="st-savebar-dot"></span>
-            <span class="st-savebar-text">Nicht gespeicherte Änderungen.</span>
-            <button class="st-btn-ghost" onclick="closeSettings()">Verwerfen</button>
-            <button class="st-btn-primary" onclick="document.getElementById('sm-save-btn').click()">Speichern</button>
+            <span class="st-savebar-text">Unsaved changes.</span>
+            <button class="st-btn-ghost" onclick="closeSettings()">Discard</button>
+            <button class="st-btn-primary" onclick="document.getElementById('sm-save-btn').click()">Save</button>
           </div>
         </div>
 
         <!-- JARVIS IM BROWSER (BETA) -->
         <div class="st-pane" id="st-browser">
           <div style="margin-bottom:28px">
-            <div class="st-pane-eyebrow">JARVIS IM BROWSER · BETA</div>
-            <div class="st-pane-title">Jarvis im Browser</div>
-            <div class="st-pane-sub">Browser-Erweiterung — derzeit in geschlossener Beta.</div>
+            <div class="st-pane-eyebrow">MY JARVIS IN THE BROWSER · BETA</div>
+            <div class="st-pane-title">My Jarvis in the browser</div>
+            <div class="st-pane-sub">A browser extension — currently in closed beta.</div>
           </div>
 
           <div class="st-conn" style="border-color:rgba(255,179,71,0.35);background:rgba(255,179,71,0.04)">
@@ -1078,29 +1078,29 @@ body.light .st-btn-primary{color:#FFFFFF;}
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v3M12 16h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
             </div>
             <div class="st-conn-body">
-              <div class="st-conn-name" style="color:var(--jv-arc)">Geschlossene Beta</div>
-              <div class="st-conn-hint">Erweiterung noch nicht verfügbar — Wartelist trägt sich beim Backend ein.</div>
+              <div class="st-conn-name" style="color:var(--jv-arc)">Closed beta</div>
+              <div class="st-conn-hint">The extension is not available yet — the waitlist registers with the backend.</div>
             </div>
           </div>
 
-          <div class="st-section">FUNKTIONEN</div>
+          <div class="st-section">FEATURES</div>
           <div class="st-row">
-            <div><div class="st-row-label">Side-Panel im Browser</div><div class="st-row-hint">Jarvis als persistente Spalte neben aktiver Seite.</div></div>
-            <div class="st-row-val"><span class="st-conn-status warn">● Geplant</span></div>
+            <div><div class="st-row-label">A side panel in the browser</div><div class="st-row-hint">My Jarvis as a persistent column beside the active page.</div></div>
+            <div class="st-row-val"><span class="st-conn-status warn">● Planned</span></div>
           </div>
           <div class="st-row">
-            <div><div class="st-row-label">Seiteninhalt lesen</div><div class="st-row-hint">DOM und sichtbarer Text als Kontext.</div></div>
-            <div class="st-row-val"><span class="st-conn-status warn">● Geplant</span></div>
+            <div><div class="st-row-label">Read the page content</div><div class="st-row-hint">The DOM and the visible text as context.</div></div>
+            <div class="st-row-val"><span class="st-conn-status warn">● Planned</span></div>
           </div>
           <div class="st-row">
-            <div><div class="st-row-label">Sprach-Trigger im Tab</div><div class="st-row-hint">Mikrofon-Hotkey aus jedem Browser-Tab.</div></div>
-            <div class="st-row-val"><span class="st-conn-status warn">● Geplant</span></div>
+            <div><div class="st-row-label">A voice trigger in the tab</div><div class="st-row-hint">A microphone hotkey from any browser tab.</div></div>
+            <div class="st-row-val"><span class="st-conn-status warn">● Planned</span></div>
           </div>
 
-          <div class="st-section">WARTELIST</div>
+          <div class="st-section">WAITLIST</div>
           <div class="st-row">
-            <div><div class="st-row-label">Beta-Code anfordern</div><div class="st-row-hint">Wir benachrichtigen dich, sobald die Erweiterung ausgerollt wird.</div></div>
-            <div class="st-row-val"><button class="st-btn-ghost" onclick="notify('Wartelist eingetragen')">Anmelden</button></div>
+            <div><div class="st-row-label">Request a beta code</div><div class="st-row-hint">We will let you know as soon as the extension rolls out.</div></div>
+            <div class="st-row-val"><button class="st-btn-ghost" onclick="notify('Wartelist eingetragen')">Sign in</button></div>
           </div>
         </div>
 
@@ -1112,23 +1112,23 @@ body.light .st-btn-primary{color:#FFFFFF;}
 <!-- WIPE CONFIRM MODAL -->
 <div id="wipe-modal" class="modal">
   <div class="sm-panel" style="width:420px;border-top-color:var(--jv-pulse);border-color:rgba(255,77,122,0.5)">
-    <div class="sm-title" style="color:var(--jv-pulse);font-size:13px">ALLE DATEN LÖSCHEN</div>
-    <div class="sm-sub">Dies kann nicht rückgängig gemacht werden.</div>
+    <div class="sm-title" style="color:var(--jv-pulse);font-size:13px">DELETE ALL DATA</div>
+    <div class="sm-sub">This cannot be undone.</div>
     <div class="sm-sect">
       <div style="font-size:13px;line-height:1.5;color:var(--jv-ink-2);margin-bottom:12px">
-        Folgende Daten werden permanent entfernt:
+        The following data is removed permanently:
         <ul style="margin:8px 0 0 18px;font-size:12px;color:var(--jv-ink-3);line-height:1.7">
-          <li>Alle Erinnerungen (KV-Speicher)</li>
-          <li>Konversations-Verlauf</li>
-          <li>Routinen und Projekte</li>
+          <li>Every memory (KV store)</li>
+          <li>Conversation history</li>
+          <li>Routines and projects</li>
         </ul>
       </div>
-      <label style="font-family:var(--fm);font-size:10px;letter-spacing:0.14em;color:var(--jv-pulse);text-transform:uppercase">Tippe LÖSCHEN zum Bestätigen</label>
-      <input class="sm-input" id="wipe-confirm" type="text" placeholder="LÖSCHEN" autocomplete="off" style="margin-top:8px">
+      <label style="font-family:var(--fm);font-size:10px;letter-spacing:0.14em;color:var(--jv-pulse);text-transform:uppercase">Type DELETE to confirm</label>
+      <input class="sm-input" id="wipe-confirm" type="text" placeholder="DELETE" autocomplete="off" style="margin-top:8px">
     </div>
     <div style="display:flex;gap:8px">
-      <button class="st-btn-ghost" onclick="closeWipe()" style="flex:1">Abbrechen</button>
-      <button class="st-btn-danger" onclick="executeWipe()" style="flex:1">Löschen</button>
+      <button class="st-btn-ghost" onclick="closeWipe()" style="flex:1">Cancel</button>
+      <button class="st-btn-danger" onclick="executeWipe()" style="flex:1">Delete</button>
     </div>
   </div>
 </div>
@@ -1137,27 +1137,27 @@ body.light .st-btn-primary{color:#FFFFFF;}
 <div id="setup-modal" class="modal">
   <div class="sm-panel">
     <div class="sm-title">JARVIS</div>
-    <div class="sm-sub">Erstkonfiguration</div>
+    <div class="sm-sub">First setup</div>
     <div class="sm-sect">
-      <label class="sm-label">Anrede</label>
+      <label class="sm-label">Salutation</label>
       <div class="sm-row">
         <div class="chip on" data-f="salutation" data-v="Sir">Sir</div>
-        <div class="chip" data-f="salutation" data-v="Chef">Chef</div>
+        <div class="chip" data-f="salutation" data-v="Boss">Boss</div>
         <div class="chip" data-f="salutation" data-v="Bro">Bro</div>
         <div class="chip" data-f="salutation" data-v="Ma'am">Ma'am</div>
-        <div class="chip" data-f="salutation" data-v="">Kein</div>
+        <div class="chip" data-f="salutation" data-v="">None</div>
       </div>
     </div>
     <div class="sm-sect">
-      <label class="sm-label">Redeart</label>
+      <label class="sm-label">Tone</label>
       <div class="sm-row">
-        <div class="chip on" data-f="tone" data-v="professional">Professionell</div>
+        <div class="chip on" data-f="tone" data-v="professional">Professional</div>
         <div class="chip" data-f="tone" data-v="normal">Normal</div>
-        <div class="chip" data-f="tone" data-v="casual">Jugendlich</div>
+        <div class="chip" data-f="tone" data-v="casual">Casual</div>
       </div>
     </div>
     <div class="sm-sect">
-      <label class="sm-label">KI-Anbieter &amp; API-Key</label>
+      <label class="sm-label">AI provider &amp; API key</label>
       <div class="api-grid" id="setup-api-grid">
         <div class="ap on" data-p="anthropic"><span class="ap-name">Claude</span></div>
         <div class="ap" data-p="openai"><span class="ap-name">ChatGPT</span></div>
@@ -1173,30 +1173,30 @@ body.light .st-btn-primary{color:#FFFFFF;}
         <input class="sm-input" id="sk-nvidia" type="password" placeholder="nvapi-..." style="margin-bottom:5px">
         <input class="sm-input" id="sm-nvidia" type="text" placeholder="meta/llama-3.1-70b-instruct">
       </div>
-      <div class="af" id="saf-mistral"><input class="sm-input" id="sk-mistral" type="password" placeholder="API-Key"></div>
+      <div class="af" id="saf-mistral"><input class="sm-input" id="sk-mistral" type="password" placeholder="API key"></div>
       <div class="af" id="saf-local">
         <input class="sm-input" id="su-local" type="text" value="http://localhost:11434" style="margin-bottom:5px">
         <input class="sm-input" id="sm-local" type="text" placeholder="llama3">
       </div>
     </div>
     <div class="sm-sect">
-      <label class="sm-label">Wohnort</label>
-      <input class="sm-input" id="setup-loc" type="text" value="Wien, Österreich">
+      <label class="sm-label">Location</label>
+      <input class="sm-input" id="setup-loc" type="text" value="Vienna, Austria">
     </div>
-    <button class="sm-save" id="setup-done-btn">JARVIS STARTEN</button>
+    <button class="sm-save" id="setup-done-btn">START MY JARVIS</button>
   </div>
 </div>
 
 <!-- CUSTOM ANREDE MODAL -->
 <div id="salutation-modal" class="modal">
   <div class="sm-panel" style="width:360px">
-    <button class="sm-close" onclick="closeCustomAnrede()">✕</button>
-    <div class="sm-title" style="font-size:13px">EIGENE ANREDE</div>
-    <div class="sm-sub">Wie soll JARVIS Sie nennen?</div>
+    <button class="sm-close" onclick="closeCustomSalutation()">✕</button>
+    <div class="sm-title" style="font-size:13px">CUSTOM SALUTATION</div>
+    <div class="sm-sub">What should My Jarvis call you?</div>
     <div class="sm-sect">
-      <input class="sm-input" id="custom-salutation-input" type="text" placeholder="z.B. Boss, Meister, Captain..." maxlength="20">
+      <input class="sm-input" id="custom-salutation-input" type="text" placeholder="e.g. Boss, Chief, Captain..." maxlength="20">
     </div>
-    <button class="sm-save" onclick="saveCustomAnrede()">HINZUFÜGEN</button>
+    <button class="sm-save" onclick="saveCustomSalutation()">ADD</button>
   </div>
 </div>
 
@@ -1204,37 +1204,37 @@ body.light .st-btn-primary{color:#FFFFFF;}
 <div id="todo-modal" class="modal">
   <div class="sm-panel" style="width:400px">
     <button class="sm-close" onclick="closeTodoModal()">✕</button>
-    <div class="sm-title" style="font-size:13px">NEUE AUFGABE</div>
-    <div class="sm-sub">Aufgabe zur To-Do Liste hinzufügen</div>
+    <div class="sm-title" style="font-size:13px">NEW TASK</div>
+    <div class="sm-sub">Add a task to the to-do list</div>
     <div class="sm-sect">
-      <input class="sm-input" id="todo-input" type="text" placeholder="z.B. Öffne Chrome und suche nach...">
+      <input class="sm-input" id="todo-input" type="text" placeholder="e.g. Open Chrome and search for...">
     </div>
-    <button class="sm-save" onclick="saveTodoFromModal()">HINZUFÜGEN</button>
+    <button class="sm-save" onclick="saveTodoFromModal()">ADD</button>
   </div>
 </div>
 
 <!-- SCREENSHOT COUNTDOWN -->
 <div id="ss-countdown"><div style="text-align:center"><div class="ss-num" id="ss-num">5</div><div class="ss-label">SCREENSHOT IN</div></div></div>
 
-<!-- COPILOT: AUFGABE STARTEN -->
+<!-- COPILOT: AUFGABE START -->
 <div id="copilot-task-modal" class="modal">
   <div class="sm-panel" style="width:460px">
     <button class="sm-close" onclick="closeCopilotModal()">✕</button>
     <div class="sm-title">COPILOT</div>
-    <div class="sm-sub">JARVIS steuert deinen PC</div>
+    <div class="sm-sub">My Jarvis is driving your PC</div>
     <div class="sm-sect">
-      <input class="sm-input" id="copilot-task-input" type="text" placeholder="z.B. Öffne die Tagesnachrichten">
+      <input class="sm-input" id="copilot-task-input" type="text" placeholder="e.g. Open the daily news">
     </div>
-    <label class="cp-check"><input type="checkbox" id="copilot-allow-all"><span>Immer erlauben — ohne Nachfrage bis fertig</span></label>
-    <button class="sm-save" onclick="startCopilot()">STARTEN</button>
-    <div class="cp-hint">See → Think → Act. Stop-Button oder Strg+Alt+J bricht jederzeit ab.<br>Passwörter werden niemals automatisch eingegeben.</div>
+    <label class="cp-check"><input type="checkbox" id="copilot-allow-all"><span>Always allow — no questions until it is done</span></label>
+    <button class="sm-save" onclick="startCopilot()">START</button>
+    <div class="cp-hint">See → Think → Act. The stop button or Ctrl+Alt+J aborts at any time.<br>Passwords are never entered automatically.</div>
   </div>
 </div>
 
-<!-- COPILOT: HANDSHAKE (Bestätigung / Checkpoint / Nutzer-Eingabe) -->
+<!-- COPILOT: HANDSHAKE (confirmation / checkpoint / user input) -->
 <div id="copilot-ask-modal" class="modal">
   <div class="sm-panel" style="width:440px">
-    <div class="sm-title" id="cpa-title">BESTÄTIGUNG</div>
+    <div class="sm-title" id="cpa-title">CONFIRMATION</div>
     <div class="sm-sub" id="cpa-sub">COPILOT</div>
     <div class="cpa-body" id="cpa-body"></div>
     <div class="cpa-actions" id="cpa-actions"></div>
@@ -1265,13 +1265,13 @@ body.light .st-btn-primary{color:#FFFFFF;}
     <div class="sb-new">
       <button class="sb-new-btn" onclick="location.reload()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-        NEUE SESSION
+        NEW SESSION
       </button>
     </div>
 
-    <div class="sb-eyebrow">Denkprozess</div>
+    <div class="sb-eyebrow">Reasoning</div>
     <div id="think-steps" style="flex:1;overflow-y:auto;padding:4px 8px;display:flex;flex-direction:column;gap:4px;">
-      <div style="padding:14px 8px;text-align:center;color:var(--jv-ink-4);font-family:var(--fm);font-size:10px;line-height:1.8;letter-spacing:0.02em" class="think-empty">Warte auf Eingabe.</div>
+      <div style="padding:14px 8px;text-align:center;color:var(--jv-ink-4);font-family:var(--fm);font-size:10px;line-height:1.8;letter-spacing:0.02em" class="think-empty">Waiting for input.</div>
     </div>
     <span class="think-agent-badge" id="think-agent" style="padding:0 14px 4px;display:block;min-height:14px;"></span>
 
@@ -1288,21 +1288,21 @@ body.light .st-btn-primary{color:#FFFFFF;}
       </div>
       <div class="orb-info">
         <div class="orb-badges">
-          <div class="state-badge" id="state-badge"><span id="stxt">BEREIT</span></div>
+          <div class="state-badge" id="state-badge"><span id="stxt">READY</span></div>
           <span class="orb-session"><span id="clk">--:--:--</span></span>
         </div>
-        <div class="orb-title" id="orb-title">Bereit, wenn du es bist.</div>
+        <div class="orb-title" id="orb-title">Ready when you are.</div>
       </div>
       <div class="orb-right">
         <div class="api-badge-mini" id="apib">–</div>
-        <button class="ksb" id="ksbtn">STRG+ALT+J</button>
+        <button class="ksb" id="ksbtn">CTRL+ALT+J</button>
       </div>
       <div id="sdot" class="dot" style="display:none;"></div>
     </div>
 
     <div id="setup-banner">
-      <span id="banner-txt">API-Key fehlt — Einstellungen öffnen.</span>
-      <button class="banner-btn" onclick="openSettings()">EINSTELLUNGEN</button>
+      <span id="banner-txt">The API key is missing — open the settings.</span>
+      <button class="banner-btn" onclick="openSettings()">SETTINGS</button>
     </div>
     <div id="tbar"></div>
 
@@ -1310,16 +1310,16 @@ body.light .st-btn-primary{color:#FFFFFF;}
     <div id="copilot-bar">
       <div class="cp-dot"></div>
       <div class="cp-info">
-        <div class="cp-status" id="cp-status">Copilot bereit</div>
+        <div class="cp-status" id="cp-status">The copilot is ready</div>
         <div class="cp-task" id="cp-task"></div>
       </div>
       <div class="cp-stepc" id="cp-stepc"></div>
-      <button class="cp-stop" id="cp-stop" onclick="stopCopilot()">STOPP</button>
+      <button class="cp-stop" id="cp-stop" onclick="stopCopilot()">STOP</button>
     </div>
 
     <!-- Think drawer (shows during thinking) -->
     <div id="think-drawer">
-      <div id="think-header"><span>DENKSCHRITTE</span></div>
+      <div id="think-header"><span>REASONING STEPS</span></div>
     </div>
 
     <div id="chat"></div>
@@ -1327,14 +1327,14 @@ body.light .st-btn-primary{color:#FFFFFF;}
     <!-- Composer -->
     <div id="composer">
       <div id="composer-row">
-        <button id="micbtn" title="Mikrofon (gedrückt halten)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></svg></button>
-        <button id="visionbtn" title="Live-Vision (Bildschirm beobachten)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-        <button id="copilotbtn" title="Copilot — JARVIS steuert deinen PC"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="M13 13l6 6"/></svg></button>
-        <input type="text" id="tinp" placeholder="Frag Jarvis, oder drücke Strg+K" autocomplete="off">
+        <button id="micbtn" title="Microphone (hold it down)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></svg></button>
+        <button id="visionbtn" title="Live vision (watch the screen)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        <button id="copilotbtn" title="Copilot — My Jarvis drives your PC"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="M13 13l6 6"/></svg></button>
+        <input type="text" id="tinp" placeholder="Ask My Jarvis, or press Ctrl+K" autocomplete="off">
         <button id="sbtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
       </div>
       <div id="composer-hint">
-        <span>Strg+K zum Fokus · Alt für Sprache · Esc zum Lösen</span>
+        <span>Ctrl+K to focus · Alt for voice · Esc to release</span>
         <span id="char-count">0/2000</span>
       </div>
     </div>
@@ -1343,45 +1343,45 @@ body.light .st-btn-primary{color:#FFFFFF;}
   <!-- Right Rail -->
   <div id="rail">
     <div class="rail-header">
-      <span class="rail-eyebrow">Kontext</span>
+      <span class="rail-eyebrow">Context</span>
     </div>
     <div class="ps">
       <div class="tbr">
         <div class="tb on" data-tab="todo">TODO</div>
-        <div class="tb" data-tab="memory">GEDÄCHTNIS</div>
-        <div class="tb" data-tab="suggest" id="tab-btn-suggest">VORSCHLÄGE</div>
+        <div class="tb" data-tab="memory">MEMORY</div>
+        <div class="tb" data-tab="suggest" id="tab-btn-suggest">SUGGESTIONS</div>
       </div>
     </div>
     <div class="ps grow tc on" id="tab-todo" style="display:flex;flex-direction:column;">
-      <div class="ph"><span>AUFGABEN</span></div>
-      <div class="tlist" id="todo-list" style="flex:1;overflow-y:auto;"><div style="padding:14px;text-align:center;color:var(--jv-ink-4);font-family:var(--fm);font-size:10px;letter-spacing:0.06em">KEINE AUFGABEN</div></div>
+      <div class="ph"><span>TASKS</span></div>
+      <div class="tlist" id="todo-list" style="flex:1;overflow-y:auto;"><div style="padding:14px;text-align:center;color:var(--jv-ink-4);font-family:var(--fm);font-size:10px;letter-spacing:0.06em">NO TASKS</div></div>
       <div id="todo-error-box"></div>
       <div class="todo-actions">
-        <button class="todo-add-btn" onclick="openTodoModal()">+ Aufgabe hinzufügen</button>
-        <button class="todo-btn" id="todo-start-btn" onclick="startTodo()">TO-DO STARTEN</button>
-        <button class="todo-btn stop" id="todo-cancel-btn" onclick="cancelTodo()" style="display:none">ABBRECHEN</button>
+        <button class="todo-add-btn" onclick="openTodoModal()">+ Add task</button>
+        <button class="todo-btn" id="todo-start-btn" onclick="startTodo()">START THE TO-DO LIST</button>
+        <button class="todo-btn stop" id="todo-cancel-btn" onclick="cancelTodo()" style="display:none">CANCEL</button>
       </div>
     </div>
     <div class="ps grow tc" id="tab-memory">
-      <div class="ph"><span>ERINNERUNGEN</span><button class="btn bc" onclick="sendWS('get_memories',{})" style="padding:2px 7px;font-size:12px" title="Aktualisieren">↻</button></div>
-      <div id="mem-list"><div style="padding:14px;text-align:center;color:var(--jv-ink-4);font-family:var(--fm);font-size:10px">LADE...</div></div>
+      <div class="ph"><span>MEMORIES</span><button class="btn bc" onclick="sendWS('get_memories',{})" style="padding:2px 7px;font-size:12px" title="Refresh">↻</button></div>
+      <div id="mem-list"><div style="padding:14px;text-align:center;color:var(--jv-ink-4);font-family:var(--fm);font-size:10px">LOADING...</div></div>
     </div>
     <div class="ps grow tc" id="tab-suggest">
-      <div class="ph"><span>VORSCHLÄGE</span></div>
-      <div id="sug-list"><div style="padding:14px;color:var(--jv-ink-4);font-family:var(--fm);font-size:10px;text-align:center">WARTE...</div></div>
+      <div class="ph"><span>SUGGESTIONS</span></div>
+      <div id="sug-list"><div style="padding:14px;color:var(--jv-ink-4);font-family:var(--fm);font-size:10px;text-align:center">WAITING...</div></div>
     </div>
 
   </div>
 </div>
 
 <!-- Account-Button: fest unten-links -->
-<div class="sb-footer" id="account-corner" onclick="openSettings()" title="Einstellungen" style="position:fixed;bottom:0;left:0;width:260px;z-index:200;background:var(--jv-void);border-top:1px solid var(--jv-line);border-right:1px solid var(--jv-line);">
+<div class="sb-footer" id="account-corner" onclick="openSettings()" title="Settings" style="position:fixed;bottom:0;left:0;width:260px;z-index:200;background:var(--jv-void);border-top:1px solid var(--jv-line);border-right:1px solid var(--jv-line);">
   <div class="sb-avatar">S</div>
   <div class="sb-user-info">
     <div class="sb-user-name">Sebastian</div>
-    <div class="sb-user-role">● OPERATOR · LOKAL</div>
+    <div class="sb-user-role">● OPERATOR · LOCAL</div>
   </div>
-  <button class="sb-gear" onclick="event.stopPropagation();openSettings()" title="Einstellungen">
+  <button class="sb-gear" onclick="event.stopPropagation();openSettings()" title="Settings">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
   </button>
 </div>
@@ -1391,11 +1391,11 @@ function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
 
 // ══ BOOT ════════════════════════════════════════════════════════════════════
 const BOOT_STEPS=[
-  {p:8,l:'KERNEL',t:'Systemkern initialisiert.'},{p:20,l:'SPEICHER',t:'RAM-Prüfung OK.'},
-  {p:33,l:'SPRACH-ENGINE',t:'TTS/STT Module bereit.'},{p:46,l:'SICHERHEIT',t:'SafetyGuard aktiv.'},
-  {p:58,l:'KI-GEHIRN',t:'Multi-Agent-Pool geladen.'},{p:70,l:'GEDÄCHTNIS',t:'Persistente Daten geladen.'},
-  {p:82,l:'NETZWERK',t:'WebSocket-Server gestartet.'},{p:92,l:'API-VERBINDUNG',t:'Verbinde mit Backend...'},
-  {p:100,l:'SYSTEM BEREIT',t:'JARVIS v2.8 online.'},
+  {p:8,l:'KERNEL',t:'System core initialised.'},{p:20,l:'MEMORY',t:'RAM check OK.'},
+  {p:33,l:'SPEECH ENGINE',t:'TTS/STT modules ready.'},{p:46,l:'SAFETY',t:'SafetyGuard active.'},
+  {p:58,l:'AI BRAIN',t:'Multi-agent pool loaded.'},{p:70,l:'MEMORY',t:'Persistent data loaded.'},
+  {p:82,l:'NETWORK',t:'WebSocket server started.'},{p:92,l:'API CONNECTION',t:'Connecting to the backend...'},
+  {p:100,l:'SYSTEM READY',t:'My Jarvis v2.8 online.'},
 ];
 async function runBoot(){
   const fill=document.getElementById('bfill'),pct=document.getElementById('bpct'),step=document.getElementById('bstep');
@@ -1427,7 +1427,7 @@ const S={
 
 // ══ LAUNCH ═══════════════════════════════════════════════════════════════════
 function launchApp(){
-  restoreCustomAnreden();
+  restoreCustomSalutationn();
   document.getElementById('app').classList.add('show');
   if(S.cfg){startApp();}
   else{document.getElementById('setup-modal').classList.add('show');setupChips();}
@@ -1439,7 +1439,7 @@ function startApp(){
 }
 
 // ══ CUSTOM ANREDE ════════════════════════════════════════════════════════════
-function restoreCustomAnreden(){
+function restoreCustomSalutationn(){
   const row=document.getElementById('salutation-row');if(!row)return;
   const addBtn=row.querySelector('.chip-add');
   S.customSalutations.forEach(a=>{
@@ -1449,11 +1449,11 @@ function restoreCustomAnreden(){
     }
   });
 }
-function openCustomAnrede(){document.getElementById('salutation-modal').classList.add('show');setTimeout(()=>document.getElementById('custom-salutation-input').focus(),100);}
-function closeCustomAnrede(){document.getElementById('salutation-modal').classList.remove('show');}
-function saveCustomAnrede(){
+function openCustomSalutation(){document.getElementById('salutation-modal').classList.add('show');setTimeout(()=>document.getElementById('custom-salutation-input').focus(),100);}
+function closeCustomSalutation(){document.getElementById('salutation-modal').classList.remove('show');}
+function saveCustomSalutation(){
   const val=document.getElementById('custom-salutation-input').value.trim();
-  if(!val){notify('Bitte etwas eingeben','err');return;}
+  if(!val){notify('Please enter something','err');return;}
   if(!S.customSalutations.includes(val)){S.customSalutations.push(val);localStorage.setItem('jcustomsalutation',JSON.stringify(S.customSalutations));}
   const row=document.getElementById('salutation-row');const addBtn=row.querySelector('.chip-add');
   row.querySelectorAll('.chip[data-f="salutation"]').forEach(x=>x.classList.remove('on'));
@@ -1461,7 +1461,7 @@ function saveCustomAnrede(){
   c.addEventListener('click',()=>{row.querySelectorAll('.chip[data-f="salutation"]').forEach(x=>x.classList.remove('on'));c.classList.add('on');});
   row.insertBefore(c,addBtn);
   document.getElementById('custom-salutation-input').value='';
-  closeCustomAnrede();notify('Anrede hinzugefügt');
+  closeCustomSalutation();notify('Salutation added');
 }
 
 // ══ CHIPS ════════════════════════════════════════════════════════════════════
@@ -1490,19 +1490,19 @@ document.getElementById('setup-done-btn').addEventListener('click',()=>{
   const p=document.querySelector('#setup-api-grid .ap.on')?.dataset.p||'anthropic';
   const keyMap={anthropic:'sk-anthropic',openai:'sk-openai',gemini:'sk-gemini',nvidia:'sk-nvidia',mistral:'sk-mistral'};
   const key=p!=='local'?(document.getElementById(keyMap[p])?.value.trim()||''):'';
-  if(!key&&p!=='local'){notify('Bitte API-Key eingeben.','err');return;}
+  if(!key&&p!=='local'){notify('Bitte API key eingeben.','err');return;}
   const salutation=document.querySelector('#setup-modal .chip[data-f="salutation"].on')?.dataset.v||'Sir';
   const tone=document.querySelector('#setup-modal .chip[data-f="tone"].on')?.dataset.v||'professional';
   const extra={};
   if(p==='nvidia')extra.nvidia_model=document.getElementById('sm-nvidia')?.value.trim()||'meta/llama-3.1-70b-instruct';
   if(p==='local'){extra.local_url=document.getElementById('su-local')?.value.trim()||'http://localhost:11434';extra.local_model=document.getElementById('sm-local')?.value.trim()||'llama3';}
-  S.cfg={salutation,tone,api_provider:p,api_key:key,language:'de-DE',
+  S.cfg={salutation,tone,api_provider:p,api_key:key,language:'en-US',
     location:document.getElementById('setup-loc')?.value.trim()||'Wien',
     tts_enabled:true,suggestions_enabled:true,...extra};
   localStorage.setItem('jcfg',JSON.stringify(S.cfg));
   document.getElementById('setup-modal').classList.remove('show');
   startApp();sendWS('save_config',S.cfg);
-  addMsg('jarvis',`Willkommen${salutation?', '+salutation:''}. JARVIS v2.8 bereit.`);
+  addMsg('jarvis',`Willkommen${salutation?', '+salutation:''}. My Jarvis v2.8 bereit.`);
 });
 
 // ══ SETTINGS ══════════════════════════════════════════════════════════════════
@@ -1523,7 +1523,7 @@ function switchSettingsPane(el){
   if(pane==='code'){refreshCodeTools();}
 }
 
-// ══ NUTZUNG ══════════════════════════════════════════════════════════════════
+// ══ USAGE ══════════════════════════════════════════════════════════════════
 function refreshUsage(){
   sendWS('get_usage_stats',{});
   const cur=S.tokenCount||0;
@@ -1538,7 +1538,7 @@ function renderUsageChart(buckets){
   c.innerHTML=buckets.map(b=>{
     const h=Math.max(2,Math.round((b.count/max)*88));
     const empty=b.count===0?'empty':'';
-    return `<div class="st-chart-bar"><div class="st-chart-bar-fill ${empty}" style="height:${h}px" title="${b.count} Nachrichten"></div><div class="st-chart-bar-label">${b.label}</div></div>`;
+    return `<div class="st-chart-bar"><div class="st-chart-bar-fill ${empty}" style="height:${h}px" title="${b.count} messages"></div><div class="st-chart-bar-label">${b.label}</div></div>`;
   }).join('');
 }
 function renderUsageStats(stats){
@@ -1549,27 +1549,27 @@ function renderUsageStats(stats){
   if(stats.activity)renderUsageChart(stats.activity);
 }
 
-// ══ DATENSCHUTZ ══════════════════════════════════════════════════════════════
+// ══ PRIVACY ══════════════════════════════════════════════════════════════
 function refreshPrivacyStats(){
   sendWS('get_usage_stats',{});
   // path is always ~/.jarvis/ on user home
 }
 function applyPrivacyStats(stats){
   if(!stats)return;
-  const m=document.getElementById('s-stat-mem');if(m)m.textContent='● '+(stats.memories??0)+' Erinnerungen';
-  const h=document.getElementById('s-stat-hist');if(h)h.textContent='● '+(stats.history??0)+' Verlauf';
+  const m=document.getElementById('s-stat-mem');if(m)m.textContent='● '+(stats.memories??0)+' memories';
+  const h=document.getElementById('s-stat-hist');if(h)h.textContent='● '+(stats.history??0)+' history';
 }
 function confirmWipe(){document.getElementById('wipe-modal').classList.add('show');setTimeout(()=>document.getElementById('wipe-confirm').focus(),100);}
 function closeWipe(){document.getElementById('wipe-modal').classList.remove('show');document.getElementById('wipe-confirm').value='';}
 function executeWipe(){
   const v=document.getElementById('wipe-confirm').value.trim();
-  if(v!=='LÖSCHEN'){notify('Bestätigung muss exakt "LÖSCHEN" sein','err');return;}
+  if(v!=='DELETE'){notify('The confirmation must be exactly "DELETE"','err');return;}
   sendWS('clear_all_data',{});
   closeWipe();
-  notify('Alle Daten werden gelöscht...');
+  notify('Deleting all data...');
 }
 
-// ══ KONNEKTOREN ══════════════════════════════════════════════════════════════
+// ══ CONNECTORS ══════════════════════════════════════════════════════════════
 function refreshConnectors(){sendWS('get_connectors_status',{});}
 function expandConn(name){document.getElementById('conn-form-'+name)?.classList.add('show');}
 function collapseConn(name){document.getElementById('conn-form-'+name)?.classList.remove('show');}
@@ -1582,7 +1582,7 @@ function saveConn(name){
   else if(name==='homeassistant'){payload.url=document.getElementById('conn-ha-url').value.trim();payload.token=document.getElementById('conn-ha-token').value.trim();}
   else if(name==='research')payload.topics=document.getElementById('conn-research-topics').value.split(',').map(s=>s.trim()).filter(Boolean);
   sendWS('save_connector',payload);
-  notify(name+' gespeichert');
+  notify(name+' saved');
   collapseConn(name);
   setTimeout(refreshConnectors,500);
 }
@@ -1599,16 +1599,16 @@ function applyConnectorsStatus(items){
       card?.classList.add('connected');
     }else if(info.warn){
       status.className='st-conn-status warn';
-      status.textContent='● '+(info.label||'Geprüft');
+      status.textContent='● '+(info.label||'Checked');
     }else{
       status.className='st-conn-status off';
-      status.textContent='● '+(info.label||'Nicht verbunden');
+      status.textContent='● '+(info.label||'Not connected');
       card?.classList.remove('connected');
     }
   });
 }
 
-// ══ JARVIS CODE ══════════════════════════════════════════════════════════════
+// ══ MY JARVIS CODE ══════════════════════════════════════════════════════════════
 function refreshCodeTools(){sendWS('get_code_tools',{});}
 function applyCodeTools(tools){
   if(!tools)return;
@@ -1621,11 +1621,11 @@ function applyCodeTools(tools){
 
 function loadCfgIntoSettings(){
   if(!S.cfg)return;
-  restoreCustomAnreden();
+  restoreCustomSalutationn();
   const p=S.cfg.api_provider||'anthropic';
   document.querySelectorAll('#settings-modal .chip[data-f="salutation"]').forEach(c=>c.classList.toggle('on',c.dataset.v===(S.cfg.salutation||'')));
   document.querySelectorAll('#settings-modal .chip[data-f="tone"]').forEach(c=>c.classList.toggle('on',c.dataset.v===(S.cfg.tone||'professional')));
-  document.querySelectorAll('#settings-modal .chip[data-f="language"]').forEach(c=>c.classList.toggle('on',c.dataset.v===(S.cfg.language||'de-DE')));
+  document.querySelectorAll('#settings-modal .chip[data-f="language"]').forEach(c=>c.classList.toggle('on',c.dataset.v===(S.cfg.language||'en-US')));
   document.querySelectorAll('#settings-modal .ap').forEach(c=>c.classList.toggle('on',c.dataset.p===p));
   document.querySelectorAll('#settings-modal [id^="af-"]').forEach(f=>f.classList.remove('show'));
   document.getElementById('af-'+p)?.classList.add('show');
@@ -1674,8 +1674,8 @@ function loadCfgIntoSettings(){
 }
 function updateKeyStatusEl(ok){
   const el=document.getElementById('sm-key-status');if(!el)return;
-  if(ok){el.className='key-status key-ok';el.textContent='API-Key aktiv';}
-  else{el.className='key-status key-bad';el.textContent='Kein API-Key gesetzt';}
+  if(ok){el.className='key-status key-ok';el.textContent='API key active';}
+  else{el.className='key-status key-bad';el.textContent='No API key set';}
 }
 
 document.getElementById('sm-save-btn').addEventListener('click',()=>{
@@ -1684,12 +1684,12 @@ document.getElementById('sm-save-btn').addEventListener('click',()=>{
   const key=p!=='local'?(document.getElementById(keyMap[p])?.value.trim()||''):'';
   const salutation=document.querySelector('#settings-modal .chip[data-f="salutation"].on')?.dataset.v??S.cfg?.salutation??'';
   const tone=document.querySelector('#settings-modal .chip[data-f="tone"].on')?.dataset.v||S.cfg?.tone||'professional';
-  const language=document.querySelector('#settings-modal .chip[data-f="language"].on')?.dataset.v||S.cfg?.language||'de-DE';
+  const language=document.querySelector('#settings-modal .chip[data-f="language"].on')?.dataset.v||S.cfg?.language||'en-US';
   const location=document.getElementById('s-loc')?.value.trim()||S.cfg?.location||'';
   const tts_enabled=document.getElementById('tgl-tts').classList.contains('on')?true:false;
   const suggestions_enabled=document.getElementById('tgl-sug').classList.contains('on')?true:false;
   const tts_voice=document.getElementById('voice-select')?.value||'';
-  if(!key&&p!=='local'&&!(S.cfg?.api_key)){notify('API-Key eingeben.','err');return;}
+  if(!key&&p!=='local'&&!(S.cfg?.api_key)){notify('API key eingeben.','err');return;}
   const extra={};
   if(p==='nvidia')extra.nvidia_model=document.getElementById('m-nvidia')?.value.trim()||'meta/llama-3.1-70b-instruct';
   if(p==='local'){extra.local_url=document.getElementById('u-local')?.value.trim()||'http://localhost:11434';extra.local_model=document.getElementById('m-local')?.value.trim()||'llama3';}
@@ -1717,10 +1717,10 @@ document.getElementById('sm-save-btn').addEventListener('click',()=>{
   if(!tts_enabled)stopAllSpeech();
   clearDirty();
   document.getElementById('setup-banner').classList.remove('show');
-  notify('Einstellungen gespeichert');
+  notify('Settings saved');
 });
 
-// Dirty-Tracking: Änderungen in Einstellungen erkennen
+// dirty tracking: notice changes made in the settings
 document.addEventListener('DOMContentLoaded',()=>{
   const modal=document.getElementById('settings-modal');
   modal.addEventListener('click',e=>{
@@ -1750,7 +1750,7 @@ function initWS(){
     const wsUrl=`${wsProto}//${wsHost}:${wsPort}`;
     console.log('[WebSocket] Connecting to:', wsUrl);
     S.ws=new WebSocket(wsUrl);
-    S.ws.onopen=()=>{console.log('[WebSocket] Connected');setStatus('VERBUNDEN','');notify('Backend verbunden');sendWS('get_memories',{});sendWS('get_routines',{});if(S.cfg)sendWS('save_config',S.cfg);};
+    S.ws.onopen=()=>{console.log('[WebSocket] Connected');setStatus('CONNECTED','');notify('Backend connected');sendWS('get_memories',{});sendWS('get_routines',{});if(S.cfg)sendWS('save_config',S.cfg);};
     S.ws.onmessage=e=>{try{handleMsg(JSON.parse(e.data));}catch(err){console.error('[WebSocket] Message error:', err)}};
     S.ws.onclose=()=>{console.log('[WebSocket] Closed');setStatus('GETRENNT','err');setTimeout(initWS,3000);};
     S.ws.onerror=(err)=>{console.error('[WebSocket] Error:', err);setStatus('OFFLINE','err');};
@@ -1782,23 +1782,23 @@ function handleMsg(m){
     memory_saved:()=>{notify('Gespeichert');sendWS('get_memories',{});},
     memories_data:()=>renderMem(data.memories),
     routines_data:()=>{},
-    needs_setup:()=>{document.getElementById('banner-txt').textContent=(data.reason||'API-Key fehlt')+'  — Einstellungen öffnen.';document.getElementById('setup-banner').classList.add('show');},
+    needs_setup:()=>{document.getElementById('banner-txt').textContent=(data.reason||'The API key is missing')+'  — open the settings.';document.getElementById('setup-banner').classList.add('show');},
     config_update:()=>updateKeyStatusEl(data.api_key_set),
-    config_saved:()=>{notify('Config bestätigt');updateKeyStatusEl(!!data.key_preview);},
-    mic_done:()=>{S.listening=false;document.getElementById('micbtn').classList.remove('on');setStatus('BEREIT','');},
+    config_saved:()=>{notify('Config confirmed');updateKeyStatusEl(!!data.key_preview);},
+    mic_done:()=>{S.listening=false;document.getElementById('micbtn').classList.remove('on');setStatus('READY','');},
     screenshot_countdown:()=>startScreenshot(data.query),
-    live_vision_status:()=>{const btn=document.getElementById('visionbtn');if(data.active){btn.classList.add('on');notify('Live-Vision aktiv');}else{btn.classList.remove('on');notify('Live-Vision gestoppt');}},
-    wake_word_status:()=>{const el=document.getElementById('tgl-wake');if(data.enabled){el.classList.add('on');notify('Wake Word aktiv');}else{el.classList.remove('on');notify('Wake Word deaktiviert');}},
-    clap_status:()=>{const el=document.getElementById('tgl-clap');if(data.enabled){el.classList.add('on');document.getElementById('clap-settings').style.display='block';notify('Klatsch-Aktivierung aktiv');}else{el.classList.remove('on');document.getElementById('clap-settings').style.display='none';notify('Klatsch-Aktivierung deaktiviert');}},
+    live_vision_status:()=>{const btn=document.getElementById('visionbtn');if(data.active){btn.classList.add('on');notify('Live vision active');}else{btn.classList.remove('on');notify('Live vision stopped');}},
+    wake_word_status:()=>{const el=document.getElementById('tgl-wake');if(data.enabled){el.classList.add('on');notify('Wake word active');}else{el.classList.remove('on');notify('Wake word off');}},
+    clap_status:()=>{const el=document.getElementById('tgl-clap');if(data.enabled){el.classList.add('on');document.getElementById('clap-settings').style.display='block';notify('Clap activation on');}else{el.classList.remove('on');document.getElementById('clap-settings').style.display='none';notify('Clap activation off');}},
     clap_calibrated:()=>{const s=document.getElementById('clap-slider');const v=document.getElementById('clap-val');if(s){s.value=data.threshold;v.textContent=data.threshold.toFixed(2);}notify('Kalibriert: '+data.threshold.toFixed(2));},
-    wake_triggered:()=>{notify('Hey Jarvis erkannt!');setStatus('HÖRE ZU...','listen');document.getElementById('micbtn').classList.add('on');S.listening=true;},
+    wake_triggered:()=>{notify("Heard 'Hey Jarvis'!");setStatus('LISTENING...','listen');document.getElementById('micbtn').classList.add('on');S.listening=true;},
     notify:()=>notify(data.text),
     usage_stats:()=>{renderUsageStats(data.stats);applyPrivacyStats(data.stats);},
     connectors_status:()=>applyConnectorsStatus(data.connectors),
-    connector_saved:()=>{notify((data.name||'Konnektor')+' gespeichert');refreshConnectors();},
-    connector_test:()=>{const ok=data.ok;notify((data.name||'Test')+': '+(ok?'OK':(data.error||'Fehler')),ok?'':'err');refreshConnectors();},
+    connector_saved:()=>{notify((data.name||'Connector')+' saved');refreshConnectors();},
+    connector_test:()=>{const ok=data.ok;notify((data.name||'Test')+': '+(ok?'OK':(data.error||'Error')),ok?'':'err');refreshConnectors();},
     code_tools:()=>applyCodeTools(data.tools),
-    data_cleared:()=>{notify('Alle Daten gelöscht');sendWS('get_memories',{});refreshPrivacyStats();},
+    data_cleared:()=>{notify('All data deleted');sendWS('get_memories',{});refreshPrivacyStats();},
     copilot_started:()=>setCopilotActive(true,data.task),
     copilot_status:()=>setCopilotStatus(data.text,data.phase,data.step),
     copilot_plan:()=>copilotPlan(data),
@@ -1821,7 +1821,7 @@ function addThinkStep(label,text){
   c.appendChild(d);c.scrollTop=9999;
 }
 function resetThinkPanel(){
-  document.getElementById('think-steps').innerHTML='<div class="think-empty" style="padding:14px 8px;text-align:center;color:var(--jv-ink-4);font-family:var(--fm);font-size:10px;line-height:1.8;letter-spacing:0.02em">Warte auf Eingabe.</div>';
+  document.getElementById('think-steps').innerHTML='<div class="think-empty" style="padding:14px 8px;text-align:center;color:var(--jv-ink-4);font-family:var(--fm);font-size:10px;line-height:1.8;letter-spacing:0.02em">Waiting for input.</div>';
   document.getElementById('think-agent').textContent='';
 }
 
@@ -1848,7 +1848,7 @@ function renderContent(text){
   return parts.map(p=>{
     if(p.type==='code'){
       const id='c'+Math.random().toString(36).slice(2,9);
-      return `<div class="code-box"><div class="code-head"><span class="code-lang">${esc(p.lang)}</span><button class="code-copy" onclick="copyCode('${id}',this)">KOPIEREN</button></div><div class="code-body" id="${id}">${hlCode(p.content,p.lang)}</div></div>`;
+      return `<div class="code-box"><div class="code-head"><span class="code-lang">${esc(p.lang)}</span><button class="code-copy" onclick="copyCode('${id}',this)">COPY</button></div><div class="code-body" id="${id}">${hlCode(p.content,p.lang)}</div></div>`;
     }
     return `<span>${renderMd(esc(p.content))}</span>`;
   }).join('');
@@ -1857,7 +1857,7 @@ function copyCode(id,btn){
   const el=document.getElementById(id);if(!el)return;
   navigator.clipboard.writeText(el.textContent).then(()=>{
     btn.textContent='KOPIERT';btn.classList.add('copied');
-    setTimeout(()=>{btn.textContent='KOPIEREN';btn.classList.remove('copied');},1500);
+    setTimeout(()=>{btn.textContent='COPY';btn.classList.remove('copied');},1500);
   });
 }
 function hlCode(code,lang){
@@ -1883,11 +1883,11 @@ function addMsg(role,text){
   const div=document.createElement('div');
   div.className=`msg ${isJ?'':'user'}`;
   div.dataset.role=role;div.dataset.text=text;
-  const t=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+  const t=new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
   const body=isJ?renderContent(text):renderMd(esc(text));
   const copyIcon='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
   const retryIcon='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12a9 9 0 1 1 9 9"/><path d="M3 21v-5h5"/></svg>';
-  const actions=`<div class="msg-actions"><button class="msg-act" onclick="copyMsg(this)" title="Kopieren">${copyIcon}</button>${!isJ?`<button class="msg-act" onclick="retryMsg(this)" title="Wiederholen">${retryIcon}</button>`:''}</div>`;
+  const actions=`<div class="msg-actions"><button class="msg-act" onclick="copyMsg(this)" title="Copy">${copyIcon}</button>${!isJ?`<button class="msg-act" onclick="retryMsg(this)" title="Retry">${retryIcon}</button>`:''}</div>`;
   const avatar=isJ?'<div class="mav"><div class="mav-orb"></div><div class="mav-orb-inner"></div><div class="mav-orb-core"></div></div>':'<div class="mav">U</div>';
   div.innerHTML=`${avatar}<div class="mc"><div class="ml">${isJ?'<span class="j-tag">JARVIS</span>':'NUTZER'} · ${t}</div><div class="mb">${body}</div>${actions}</div>`;
   chat.appendChild(div);chat.scrollTop=9999;
@@ -1926,7 +1926,7 @@ function handleStream(text){
   let bub=document.getElementById('sbub');
   if(!bub){
     const div=document.createElement('div');div.className='msg';
-    const t=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+    const t=new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
     div.innerHTML=`<div class="mav"><div class="mav-orb"></div><div class="mav-orb-inner"></div><div class="mav-orb-core"></div></div><div class="mc"><div class="ml"><span class="j-tag">JARVIS</span> · ${t}</div><div class="mb" id="sbub" data-raw=""></div></div>`;
     chat.appendChild(div);bub=document.getElementById('sbub');
   }
@@ -1936,7 +1936,7 @@ function handleStream(text){
 function setThink(on){
   document.getElementById('tbar').className=on?'on':'';
   if(on){showTyping();setStatus('DENKT...','think');}
-  else{removeTyping();setStatus('BEREIT','');
+  else{removeTyping();setStatus('READY','');
     const b=document.getElementById('sbub');if(b)b.id='';
   }
 }
@@ -1947,21 +1947,21 @@ function addSafety(d){
 }
 function addPerm(grund){
   removeTyping();const id='p'+Date.now();const chat=document.getElementById('chat');const div=document.createElement('div');
-  div.innerHTML=`<div class="perm-msg" id="${id}"><div class="perm-title">ERLAUBNIS ERFORDERLICH</div><div class="perm-reason">${esc(grund)}</div><div class="pbts"><button class="btn ba" onclick="perm('${id}',true)">ERLAUBEN</button><button class="btn bd" onclick="perm('${id}',false)">ABLEHNEN</button></div></div>`;
+  div.innerHTML=`<div class="perm-msg" id="${id}"><div class="perm-title">PERMISSION REQUIRED</div><div class="perm-reason">${esc(grund)}</div><div class="pbts"><button class="btn ba" onclick="perm('${id}',true)">ALLOW</button><button class="btn bd" onclick="perm('${id}',false)">REJECT</button></div></div>`;
   chat.appendChild(div.firstChild);chat.scrollTop=9999;
 }
 function perm(id,ok){
   sendWS('permission_response',{granted:ok});const el=document.getElementById(id);
-  if(el){el.style.opacity='.5';el.innerHTML+=`<div style="margin-top:7px;font-family:var(--fm);font-size:10px;color:${ok?'var(--jv-success)':'var(--jv-pulse)'}">${ok?'ERLAUBT':'ABGELEHNT'}</div>`;el.querySelectorAll('.btn').forEach(b=>b.disabled=true);}
+  if(el){el.style.opacity='.5';el.innerHTML+=`<div style="margin-top:7px;font-family:var(--fm);font-size:10px;color:${ok?'var(--jv-success)':'var(--jv-pulse)'}">${ok?'ALLOWED':'REJECTED'}</div>`;el.querySelectorAll('.btn').forEach(b=>b.disabled=true);}
 }
 
 // ══ ORB STATUS ════════════════════════════════════════════════════════════════
 const ORB_TITLES={
-  '':'Bereit, wenn du es bist.',
-  'listen':'Sprich. Ich höre zu.',
-  'think':'Arbeite daran.',
-  'speak':'Antwort bereit.',
-  'err':'Verbindung unterbrochen.',
+  '':'Ready when you are.',
+  'listen':'Speak. I am listening.',
+  'think':'Working on it.',
+  'speak':'The answer is ready.',
+  'err':'The connection dropped.',
 };
 function setStatus(text,type){
   document.getElementById('stxt').textContent=text;
@@ -1971,7 +1971,7 @@ function setStatus(text,type){
   badge.className='state-badge '+(type||'');
   document.getElementById('orb-title').textContent=ORB_TITLES[type||'']||text;
 }
-const AGENT_NAMES={conversation:'KONVERSATION',computer_control:'PC-STEUERUNG',web_search:'WEBSUCHE',coding:'CODING',analysis:'ANALYSE',planning:'PLANUNG',memory:'GEDÄCHTNIS',system:'SYSTEM',screen_vision:'BILDSCHIRM'};
+const AGENT_NAMES={conversation:'CONVERSATION',computer_control:'PC CONTROL',web_search:'WEB SEARCH',coding:'CODING',analysis:'ANALYSIS',planning:'PLANNING',memory:'MEMORY',system:'SYSTEM',screen_vision:'SCREEN'};
 function setAgent(ag){document.getElementById('think-agent').textContent=AGENT_NAMES[ag]||ag.toUpperCase();}
 function updateBadge(){
   const labels={anthropic:'CLAUDE',openai:'GPT-4o',gemini:'GEMINI',nvidia:'NVIDIA NIM',mistral:'MISTRAL',local:'OLLAMA'};
@@ -2011,7 +2011,7 @@ function activateKill(){
   S.todoRunning=false;
   document.getElementById('todo-cancel-btn').style.display='none';
   const tbtn=document.getElementById('todo-start-btn');
-  tbtn.textContent='TO-DO STARTEN';tbtn.disabled=true;tbtn.classList.remove('solved');tbtn.onclick=startTodo;
+  tbtn.textContent='START THE TO-DO LIST';tbtn.disabled=true;tbtn.classList.remove('solved');tbtn.onclick=startTodo;
   // Copilot ebenfalls visuell stoppen (Backend stoppt via Kill-Event)
   setCopilotActive(false,'');
   document.getElementById('copilot-ask-modal')?.classList.remove('show');
@@ -2021,15 +2021,15 @@ function deactivateKill(){
   if(!S.killActive)return;
   S.killActive=false;
   document.getElementById('kill-ov').classList.remove('persistent');
-  setStatus('BEREIT','');
+  setStatus('READY','');
   document.getElementById('tinp').disabled=false;
   document.getElementById('sbtn').disabled=false;
   document.getElementById('micbtn').disabled=false;
-  document.getElementById('ksbtn').textContent='STRG+ALT+J';
+  document.getElementById('ksbtn').textContent='CTRL+ALT+J';
   document.getElementById('ksbtn').style.borderColor='';
   document.getElementById('ksbtn').style.color='';
   document.getElementById('todo-start-btn').disabled=false;
-  notify('Kill-Switch deaktiviert');
+  notify('Kill switch deactivated');
 }
 function toggleKill(){
   if(S.killActive){deactivateKill();sendWS('kill_deactivate',{});}
@@ -2038,7 +2038,7 @@ function toggleKill(){
 document.getElementById('ksbtn').addEventListener('click',toggleKill);
 
 // ══ CLOCK ══════════════════════════════════════════════════════════════════════
-function startClock(){const up=()=>document.getElementById('clk').textContent=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit',second:'2-digit'});up();setInterval(up,1000);}
+function startClock(){const up=()=>document.getElementById('clk').textContent=new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});up();setInterval(up,1000);}
 
 // ══ INPUT ══════════════════════════════════════════════════════════════════════
 function initInputs(){
@@ -2048,14 +2048,14 @@ function initInputs(){
     e.preventDefault();
     if(S.listening)return;
     S.listening=true;mic.classList.add('on');
-    setStatus('HÖRE ZU...','listen');notify('Sprechen Sie jetzt');
+    setStatus('LISTENING...','listen');notify('Speak now');
     sendWS('start_listening',{});
   }
   function micStop(e){
     e.preventDefault();
     if(!S.listening)return;
     S.listening=false;mic.classList.remove('on');
-    setStatus('BEREIT','');
+    setStatus('READY','');
     sendWS('stop_listening',{});
   }
   mic.addEventListener('mousedown',micStart);
@@ -2064,10 +2064,10 @@ function initInputs(){
   mic.addEventListener('touchstart',micStart,{passive:false});
   mic.addEventListener('touchend',micStop,{passive:false});
   mic.addEventListener('touchcancel',micStop,{passive:false});
-  document.getElementById('visionbtn').addEventListener('click',()=>{if(S.killActive){notify('Kill-Switch aktiv.','err');return;}sendWS('toggle_live_vision',{});});
+  document.getElementById('visionbtn').addEventListener('click',()=>{if(S.killActive){notify('The kill switch is active.','err');return;}sendWS('toggle_live_vision',{});});
   document.getElementById('copilotbtn').addEventListener('click',openCopilotModal);
   document.getElementById('copilot-task-input')?.addEventListener('keydown',e=>{if(e.key==='Enter')startCopilot();});
-  document.getElementById('custom-salutation-input')?.addEventListener('keydown',e=>{if(e.key==='Enter')saveCustomAnrede();});
+  document.getElementById('custom-salutation-input')?.addEventListener('keydown',e=>{if(e.key==='Enter')saveCustomSalutation();});
   document.getElementById('todo-input')?.addEventListener('keydown',e=>{if(e.key==='Enter')saveTodoFromModal();});
   const tinp=document.getElementById('tinp');
   tinp.addEventListener('input',()=>{
@@ -2082,7 +2082,7 @@ function initKeys(){
   });
 }
 function sendMsg(){
-  if(S.killActive){notify('Kill-Switch aktiv.','err');return;}
+  if(S.killActive){notify('The kill switch is active.','err');return;}
   const inp=document.getElementById('tinp');const txt=inp.value.trim();if(!txt)return;
   inp.value='';
   document.getElementById('char-count').textContent='0/2000';
@@ -2113,34 +2113,34 @@ async function startScreenshot(query){
 
 // ══ OFFLINE AI ════════════════════════════════════════════════════════════════
 async function processOffline(text){
-  const cfg=S.cfg;if(!cfg?.api_key){addMsg('jarvis','Kein API-Key — Einstellungen öffnen.');openSettings();return;}
+  const cfg=S.cfg;if(!cfg?.api_key){addMsg('jarvis','No API key — open the settings.');openSettings();return;}
   showTyping();
-  const sys={professionell:'Du bist JARVIS. Präzise, Fachbegriffe, Deutsch.',normal:'Du bist JARVIS. Freundlich, klar, Deutsch.',jugendlich:'Du bist JARVIS. Jugendslang (bro, gng, wallah). Deutsch.'}[cfg.tone||'normal']+(cfg.salutation?` Anrede: ${cfg.salutation}.`:'')+(cfg.location?` Standort des Nutzers: ${cfg.location}. Nutze diesen ohne nachzufragen.`:'');
+  const sys={professional:'You are My Jarvis. Precise, technical terms welcome, in English.',normal:'You are My Jarvis. Friendly, clear, in English.',casual:'You are My Jarvis. Casual slang. In English.'}[cfg.tone||'normal']+(cfg.salutation?` Address the user as: ${cfg.salutation}.`:'')+(cfg.location?` The user's location: ${cfg.location}. Use it without asking.`:'');
   try{
     let reply='';
     if(cfg.api_provider==='anthropic'){
       const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':cfg.api_key,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2048,system:sys,messages:[{role:'user',content:text}]})});
-      const d=await r.json();reply=d.content?.[0]?.text||d.error?.message||'Fehler';
+      const d=await r.json();reply=d.content?.[0]?.text||d.error?.message||'Error';
     }else if(cfg.api_provider==='openai'){
       const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.api_key},body:JSON.stringify({model:cfg.openai_model||'gpt-4o-mini',max_tokens:2048,messages:[{role:'system',content:sys},{role:'user',content:text}]})});
-      const d=await r.json();reply=d.choices?.[0]?.message?.content||d.error?.message||'Fehler';
+      const d=await r.json();reply=d.choices?.[0]?.message?.content||d.error?.message||'Error';
     }else if(cfg.api_provider==='gemini'){
       const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${cfg.api_key}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:sys+'\n\n'+text}]}]})});
-      const d=await r.json();reply=d.candidates?.[0]?.content?.parts?.[0]?.text||'Fehler';
+      const d=await r.json();reply=d.candidates?.[0]?.content?.parts?.[0]?.text||'Error';
     }else if(cfg.api_provider==='mistral'){
       const r=await fetch('https://api.mistral.ai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.api_key},body:JSON.stringify({model:'mistral-large-latest',max_tokens:2048,messages:[{role:'system',content:sys},{role:'user',content:text}]})});
-      const d=await r.json();reply=d.choices?.[0]?.message?.content||'Fehler';
-    }else if(cfg.api_provider==='nvidia'){reply='NVIDIA NIM: python jarvis.py starten (Browser-CORS).';}
-    else{reply='Lokales Modell: python jarvis.py starten.';}
+      const d=await r.json();reply=d.choices?.[0]?.message?.content||'Error';
+    }else if(cfg.api_provider==='nvidia'){reply='NVIDIA NIM: start python jarvis.py (browser CORS).';}
+    else{reply='Local model: start python jarvis.py.';}
     removeTyping();addMsg('jarvis',reply);speak(reply);
-  }catch(e){removeTyping();addMsg('jarvis','Fehler: '+e.message);}
+  }catch(e){removeTyping();addMsg('jarvis','Error: '+e.message);}
 }
 
 // ══ TTS ══════════════════════════════════════════════════════════════════════
 function populateVoices(){
   const sel=document.getElementById('voice-select');if(!sel)return;
   const voices=window.speechSynthesis?.getVoices()||[];
-  sel.innerHTML='<option value="">Standard</option>';
+  sel.innerHTML='<option value="">Default</option>';
   voices.forEach(v=>{
     const opt=document.createElement('option');
     opt.value=v.name;
@@ -2154,7 +2154,7 @@ function speak(text){
   if(S.cfg?.tts_enabled===false)return;
   let clean=text.replace(/```[\s\S]*?```/g,' Codeblock. ').replace(/\s+/g,' ').trim();
   window.speechSynthesis.cancel();
-  const lang=S.cfg?.language||'de-DE';
+  const lang=S.cfg?.language||'en-US';
   const chunks=clean.match(/[^.!?]+[.!?]*/g)||[clean];
   const voices=window.speechSynthesis.getVoices();
   const selectedName=S.cfg?.tts_voice||'';
@@ -2163,7 +2163,7 @@ function speak(text){
     const u=new SpeechSynthesisUtterance(chunk.trim());
     u.lang=lang;u.rate=1.0;u.pitch=0.9;if(voice)u.voice=voice;
     if(i===0)u.onstart=()=>setStatus('SPRICHT...','speak');
-    if(i===chunks.length-1)u.onend=()=>setStatus('BEREIT','');
+    if(i===chunks.length-1)u.onend=()=>setStatus('READY','');
     window.speechSynthesis.speak(u);
   });
 }
@@ -2187,7 +2187,7 @@ function initTabs(){
 function renderTodo(items){
   S.todoItems=items||[];
   const l=document.getElementById('todo-list');
-  if(!S.todoItems.length){l.innerHTML='<div style="padding:14px;text-align:center;color:var(--jv-ink-4);font-family:var(--fm);font-size:10px">KEINE AUFGABEN</div>';return;}
+  if(!S.todoItems.length){l.innerHTML='<div style="padding:14px;text-align:center;color:var(--jv-ink-4);font-family:var(--fm);font-size:10px">NO TASKS</div>';return;}
   l.innerHTML=S.todoItems.map(t=>`<div class="ti ${t.done?'done':''} ${t.running?'running':''}" onclick="togTodo(${t.id})"><div class="tck">${t.done?'●':t.running?'▲':''}</div><span class="ti-txt">${esc(t.text)}</span><button class="tdel" onclick="event.stopPropagation();delTodo(${t.id})">✕</button></div>`).join('');
 }
 function togTodo(id){if(S.todoRunning)return;const t=S.todoItems.find(x=>x.id===id);if(t){t.done=!t.done;renderTodo(S.todoItems);sendWS('todo_edit',{items:S.todoItems});}}
@@ -2196,16 +2196,16 @@ function delTodo(id){if(S.todoRunning)return;S.todoItems=S.todoItems.filter(t=>t
 function openTodoModal(){document.getElementById('todo-modal').classList.add('show');setTimeout(()=>document.getElementById('todo-input').focus(),100);}
 function closeTodoModal(){document.getElementById('todo-modal').classList.remove('show');}
 function saveTodoFromModal(){
-  const txt=document.getElementById('todo-input').value.trim();if(!txt){notify('Bitte Aufgabe eingeben.','err');return;}
+  const txt=document.getElementById('todo-input').value.trim();if(!txt){notify('Please enter a task.','err');return;}
   S.todoItems.push({id:Date.now(),text:txt,done:false,running:false});
   renderTodo(S.todoItems);sendWS('todo_edit',{items:S.todoItems});
-  document.getElementById('todo-input').value='';closeTodoModal();notify('Aufgabe hinzugefügt');
+  document.getElementById('todo-input').value='';closeTodoModal();notify('Task added');
 }
 
 function startTodo(){
-  if(S.todoRunning){notify('Läuft bereits.','err');return;}
+  if(S.todoRunning){notify('Already running.','err');return;}
   const open=S.todoItems.filter(t=>!t.done);
-  if(!open.length){notify('Keine offenen Aufgaben.','err');return;}
+  if(!open.length){notify('No open tasks.','err');return;}
   S.todoRunning=true;
   const btn=document.getElementById('todo-start-btn');
   btn.textContent='ARBEITE AB...';btn.disabled=true;
@@ -2218,10 +2218,10 @@ function cancelTodo(){
   S.todoRunning=false;
   S.todoItems.forEach(t=>t.running=false);renderTodo(S.todoItems);
   const btn=document.getElementById('todo-start-btn');
-  btn.textContent='TO-DO STARTEN';btn.disabled=false;btn.classList.remove('solved');btn.onclick=startTodo;
+  btn.textContent='START THE TO-DO LIST';btn.disabled=false;btn.classList.remove('solved');btn.onclick=startTodo;
   document.getElementById('todo-cancel-btn').style.display='none';
   document.getElementById('todo-error-box').innerHTML='';
-  notify('To-Do abgebrochen');
+  notify('To-do list cancelled');
 }
 function setTodoRunning(id){
   S.todoItems.forEach(t=>t.running=(t.id===id));renderTodo(S.todoItems);
@@ -2233,9 +2233,9 @@ function showTodoError(message){
   S.todoRunning=false;
   document.getElementById('todo-cancel-btn').style.display='none';
   const box=document.getElementById('todo-error-box');
-  box.innerHTML=`<div class="todo-error">JARVIS braucht Hilfe:<br>${esc(message)}</div>`;
+  box.innerHTML=`<div class="todo-error">My Jarvis needs help:<br>${esc(message)}</div>`;
   const btn=document.getElementById('todo-start-btn');
-  btn.textContent='PROBLEM GELÖST';btn.disabled=false;btn.classList.add('solved');
+  btn.textContent='PROBLEM SOLVED';btn.disabled=false;btn.classList.add('solved');
   btn.onclick=()=>{
     box.innerHTML='';btn.textContent='ARBEITE AB...';btn.disabled=true;btn.classList.remove('solved');btn.onclick=startTodo;
     document.getElementById('todo-cancel-btn').style.display='';
@@ -2246,7 +2246,7 @@ function showTodoError(message){
 function todoComplete(){
   S.todoRunning=false;
   const btn=document.getElementById('todo-start-btn');
-  btn.textContent='TO-DO STARTEN';btn.disabled=false;btn.classList.remove('solved');btn.onclick=startTodo;
+  btn.textContent='START THE TO-DO LIST';btn.disabled=false;btn.classList.remove('solved');btn.onclick=startTodo;
   document.getElementById('todo-cancel-btn').style.display='none';
   notify('To-Do abgeschlossen');
 }
@@ -2254,19 +2254,19 @@ function todoComplete(){
 // ══ MEMORY ════════════════════════════════════════════════════════════════════
 function renderMem(mems){
   const l=document.getElementById('mem-list');
-  if(!mems?.length){l.innerHTML='<div style="padding:14px;text-align:center;color:var(--jv-ink-4);font-family:var(--fm);font-size:10px">KEINE ERINNERUNGEN</div>';return;}
+  if(!mems?.length){l.innerHTML='<div style="padding:14px;text-align:center;color:var(--jv-ink-4);font-family:var(--fm);font-size:10px">NO MEMORIES</div>';return;}
   l.innerHTML=mems.map(m=>{
     const content=m.kv||m.content||m.trigger||'';
     const formatted=content.includes('=')?content.split('=').map((p,i)=>i===0?`<span class="mi-key">${esc(p)}</span>`:esc(p)).join('='):esc(content);
     return `<div class="mi"><div class="mi-t">${formatted}</div><button class="mi-d" onclick="delMem(${m.id})">✕</button></div>`;
   }).join('');
 }
-function delMem(id){sendWS('memory_delete',{id});setTimeout(()=>sendWS('get_memories',{}),300);notify('Erinnerung gelöscht');}
+function delMem(id){sendWS('memory_delete',{id});setTimeout(()=>sendWS('get_memories',{}),300);notify('Memory deleted');}
 
 // ══ SUGGESTIONS ══════════════════════════════════════════════════════════════
 function renderSug(list){
   const l=document.getElementById('sug-list');
-  if(!list?.length){l.innerHTML='<div style="padding:14px;text-align:center;color:var(--jv-ink-4);font-family:var(--fm);font-size:10px">KEINE VORSCHLÄGE</div>';return;}
+  if(!list?.length){l.innerHTML='<div style="padding:14px;text-align:center;color:var(--jv-ink-4);font-family:var(--fm);font-size:10px">NO SUGGESTIONS</div>';return;}
   l.innerHTML=list.map(s=>`<div class="sug" onclick="accSug(this,'${esc(s).replace(/'/g,"\\'")}')">${esc(s)}</div>`).join('');
 }
 function accSug(el,s){
@@ -2286,38 +2286,38 @@ function notify(text,type=''){
 
 // ══ COPILOT ══════════════════════════════════════════════════════════════════
 function openCopilotModal(){
-  if(S.killActive){notify('Kill-Switch aktiv.','err');return;}
-  if(S.copilotActive){notify('Copilot läuft bereits.');return;}
+  if(S.killActive){notify('The kill switch is active.','err');return;}
+  if(S.copilotActive){notify('The copilot is already running.');return;}
   document.getElementById('copilot-task-modal').classList.add('show');
   setTimeout(()=>document.getElementById('copilot-task-input').focus(),50);
 }
 function closeCopilotModal(){document.getElementById('copilot-task-modal').classList.remove('show');}
 function startCopilot(){
-  if(S.killActive){notify('Kill-Switch aktiv.','err');return;}
+  if(S.killActive){notify('The kill switch is active.','err');return;}
   const inp=document.getElementById('copilot-task-input');
   const task=(inp.value||'').trim();
-  if(!task){notify('Bitte eine Aufgabe eingeben.','err');return;}
+  if(!task){notify('Please enter a task.','err');return;}
   const allow=document.getElementById('copilot-allow-all').checked;
   closeCopilotModal();inp.value='';
   clearThinkSteps();
   addMsg('user','🖥️ Copilot: '+task);
   sendWS('copilot_start',{task,allow_all:allow});
 }
-function stopCopilot(){sendWS('copilot_stop',{});notify('Copilot wird gestoppt…');}
+function stopCopilot(){sendWS('copilot_stop',{});notify('Stopping the copilot…');}
 function setCopilotActive(on,task){
   S.copilotActive=!!on;
   document.getElementById('copilot-bar').classList.toggle('on',!!on);
   document.getElementById('copilotbtn').classList.toggle('on',!!on);
   if(on){
-    document.getElementById('cp-task').textContent=task?('Aufgabe: '+task):'';
-    document.getElementById('cp-status').textContent='Copilot gestartet…';
+    document.getElementById('cp-task').textContent=task?('Task: '+task):'';
+    document.getElementById('cp-status').textContent='Copilot started…';
     document.getElementById('cp-stepc').textContent='';
   }
 }
 function setCopilotStatus(text,phase,step){
   const s=document.getElementById('cp-status');if(s&&text)s.textContent=text;
   const sc=document.getElementById('cp-stepc');
-  if(sc)sc.textContent=(step!==undefined&&step!==null&&step!=='')?('Schritt '+step):sc.textContent;
+  if(sc)sc.textContent=(step!==undefined&&step!==null&&step!=='')?('Step '+step):sc.textContent;
 }
 function copilotPlan(d){
   const steps=(d&&d.steps)||[];
@@ -2325,7 +2325,7 @@ function copilotPlan(d){
   const chat=document.getElementById('chat');if(!chat)return;
   const el=document.createElement('div');
   el.className='cp-plan'+(d.destructive?' warn':'');
-  const head=d.destructive?'⚠️ PLAN · enthält heikle Schritte':'📋 PLAN';
+  const head=d.destructive?'⚠️ PLAN · contains sensitive steps':'📋 PLAN';
   const reason=(d.destructive&&d.reason)?`<div class="cp-plan-reason">${esc(d.reason)}</div>`:'';
   el.innerHTML=`<div class="cp-plan-head">${head}</div>${reason}<ol class="cp-plan-list">`+
     steps.map(s=>`<li>${esc(s)}</li>`).join('')+`</ol>`;
@@ -2348,17 +2348,17 @@ function addCopilotStep(d){
 function copilotAsk(kind,d){
   let title='',body='',btns=[];
   if(kind==='confirm'){
-    title='BESTÄTIGUNG';
-    body='JARVIS möchte eine möglicherweise heikle Aktion ausführen:<br><br><strong>'+esc(d.detail||d.action||'')+'</strong>';
-    btns=[['ERLAUBEN','primary','allow'],['IMMER ERLAUBEN','warn','always'],['ABLEHNEN','danger','deny']];
+    title='CONFIRMATION';
+    body='My Jarvis wants to run a potentially sensitive action:<br><br><strong>'+esc(d.detail||d.action||'')+'</strong>';
+    btns=[['ALLOW','primary','allow'],['IMMER ALLOW','warn','always'],['REJECT','danger','deny']];
   }else if(kind==='checkpoint'){
     title='WEITERMACHEN?';
-    body='Der Copilot hat <strong>'+esc(String(d.step||''))+'</strong> Schritte ausgeführt. Soll er weitermachen?';
-    btns=[['WEITER','primary','continue'],['IMMER ERLAUBEN','warn','always'],['STOPP','danger','stop']];
+    body='The copilot has run <strong>'+esc(String(d.step||''))+'</strong> steps. Should it carry on?';
+    btns=[['CONTINUE','primary','continue'],['ALWAYS ALLOW','warn','always'],['STOP','danger','stop']];
   }else{
     title='DEINE EINGABE';
-    body=esc(d.message||'Bitte gib die nötige Eingabe manuell ein, dann klicke »Weiter«.');
-    btns=[['WEITER','primary','user_done'],['STOPP','danger','stop']];
+    body=esc(d.message||'Please enter what is needed manually, then click "Continue".');
+    btns=[['WEITER','primary','user_done'],['STOP','danger','stop']];
   }
   document.getElementById('cpa-title').textContent=title;
   document.getElementById('cpa-body').innerHTML=body;
@@ -2375,7 +2375,7 @@ function copilotDone(status,summary){
   const icon=status==='done'?'✅':(status==='stopped'?'⏹':'⚠️');
   addMsg('jarvis',icon+' '+(summary||''));
   if(status==='done'||status==='fail')speak(summary||'');
-  notify('Copilot: '+(status==='done'?'fertig':status==='stopped'?'gestoppt':'abgebrochen'),status==='fail'?'err':'');
+  notify('Copilot: '+(status==='done'?'finished':status==='stopped'?'stopped':'aborted'),status==='fail'?'err':'');
 }
 
 // ══ UTILS ════════════════════════════════════════════════════════════════════
@@ -2408,10 +2408,10 @@ setTimeout(()=>{
     console.log('[Boot] WebSocket not connected, showing offline mode');
     const chatEl=document.getElementById('chat');
     if(chatEl && chatEl.children.length===0){
-      addMsg('jarvis','JARVIS v2.8 aktiv.\nFür PC-Steuerung: python jarvis.py starten.');
+      addMsg('jarvis','My Jarvis v2.8 is active.\nFor PC control: start python jarvis.py.');
     }
     if(!S.cfg?.api_key||S.cfg.api_key.length<10){
-      document.getElementById('banner-txt').textContent='API-Key fehlt — Einstellungen öffnen.';
+      document.getElementById('banner-txt').textContent='The API key is missing — open the settings.';
       document.getElementById('setup-banner').classList.add('show');
     }
     setStatus('OFFLINE','err');
