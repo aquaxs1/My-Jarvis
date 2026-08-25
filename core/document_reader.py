@@ -59,7 +59,7 @@ class DocumentReader:
                     text_parts.append(page_text)
             return "\n\n".join(text_parts) if text_parts else None
         except ImportError:
-            logger.warning("[DocReader] Weder pdfplumber noch pypdf installiert")
+            logger.warning("[DocReader] Neither pdfplumber nor pypdf is installed")
             return None
         except Exception as e:
             logger.error("[DocReader] pypdf error: %s", e)

@@ -111,7 +111,7 @@ class TaskManager:
             for page in result.get("results", []):
                 title_prop = page.get("properties", {}).get("Name", {})
                 title_parts = title_prop.get("title", [])
-                title = title_parts[0]["plain_text"] if title_parts else "(Kein Titel)"
+                title = title_parts[0]["plain_text"] if title_parts else "(No title)"
                 due_prop = page.get("properties", {}).get("Due", {})
                 due = due_prop.get("date", {}).get("start", "") if due_prop.get("date") else ""
                 tasks.append({

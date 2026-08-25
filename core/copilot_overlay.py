@@ -39,7 +39,7 @@ class CopilotOverlay:
     """A thread-safe desktop overlay for the copilot.
 
     Public API (callable from any thread):
-        show(task)          – Fenster einblenden (startet den tkinter-Thread)
+        show(task)          – show the window (starts the tkinter thread)
         update_status(text) – update the current step
         hide()              – close the window
     """

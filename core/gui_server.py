@@ -549,7 +549,7 @@ class GUIServer:
     # ── Server start ──────────────────────────────────────────────────────
     def start(self):
         global PORT_HTTP, PORT_WS
-        # HTTP-Server mit Port-Retry starten
+        # start the HTTP server, retrying on port conflicts
         PORT_HTTP = self._start_http_with_retry()
         if PORT_HTTP == 0:
             print("[GUI] ERROR: the HTTP server could not be started.")
@@ -590,7 +590,7 @@ class GUIServer:
         self.loop.run_until_complete(_run())
 
     def _start_http_with_retry(self) -> int:
-        """Startet den HTTP-Server; probiert bei Port-Konflikten bis zu MAX_PORT_RETRIES Ports."""
+        """Starts the HTTP server; on a port conflict it tries up to MAX_PORT_RETRIES ports."""
         os.chdir(str(GUI_DIR))
 
         class Q(SimpleHTTPRequestHandler):
@@ -767,7 +767,7 @@ class GUIServer:
             if name == "todoist":
                 token = cfg.get("todoist_token")
                 if not token:
-                    return False, "Kein Token"
+                    return False, "No token"
                 try:
                     import urllib.request, urllib.error
                     req = urllib.request.Request(
@@ -783,7 +783,7 @@ class GUIServer:
             if name == "notion":
                 token = cfg.get("notion_token")
                 if not token:
-                    return False, "Kein Token"
+                    return False, "No token"
                 try:
                     import urllib.request, urllib.error
                     req = urllib.request.Request(

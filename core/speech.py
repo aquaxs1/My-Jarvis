@@ -52,7 +52,7 @@ class SpeechEngine:
             print("[TTS] No TTS backend – the text is only displayed.")
 
     def _set_voice(self, lang_code: str):
-        """Passt die Stimme an die Sprache an."""
+        """Matches the voice to the language."""
         if self.tts_backend != "pyttsx3":
             return
         # maps lang_code → keywords used to find a voice
@@ -173,7 +173,7 @@ class SpeechEngine:
                 print("[STT] sounddevice is not installed")
             except Exception as e:
                 print(f"[STT] sounddevice init failed: {e}")
-            print("[STT] Kein Audio-Backend. pip install pyaudio")
+            print("[STT] No audio backend. pip install pyaudio")
         except ImportError:
             print("[STT] SpeechRecognition is missing")
 

@@ -2382,7 +2382,7 @@ function copilotDone(status,summary){
 const esc=t=>String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
 // ══ CLAP / WAKE WORD ════════════════════════════════════════════════════════
-function calibrateClap(){notify('Kalibriere... 3 Sekunden leise sein');sendWS('calibrate_clap',{});}
+function calibrateClap(){notify('Calibrating... stay quiet for 3 seconds');sendWS('calibrate_clap',{});}
 document.addEventListener('DOMContentLoaded',()=>{
   const slider=document.getElementById('clap-slider');
   if(slider)slider.addEventListener('input',()=>{

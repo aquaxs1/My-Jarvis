@@ -90,7 +90,7 @@ def _cache_path() -> str:
 
 # ── source 1: the Windows registry (uninstall keys) ──────────────────────────
 def _clean_icon_path(raw: str) -> str:
-    """DisplayIcon → echter .exe-Pfad. Format oft 'C:\\...\\app.exe,0'."""
+    """DisplayIcon → the real .exe path. Often formatted 'C:\\...\\app.exe,0'."""
     if not raw:
         return ""
     p = raw.strip().strip('"')
@@ -235,7 +235,7 @@ def _scan_program_dirs() -> list:
                 continue
             if not os.path.isdir(sub):
                 continue
-            # .exe eine Ebene tief
+            # .exe files one level deep
             try:
                 for f in os.listdir(sub):
                     if f.lower().endswith(".exe"):
@@ -322,7 +322,7 @@ def _is_launchable(path: str | None) -> bool:
 
 
 def scan_installed_apps() -> list:
-    """Alle drei Quellen scannen, kombinieren, deduplizieren. [{name,path,source}]."""
+    """Scan all three sources, combine and dedupe. [{name,path,source}]."""
     apps: list = []
     for fn in (_scan_registry, _scan_start_menu, _scan_program_dirs,
                _scan_windows_builtins):
@@ -413,7 +413,7 @@ def prewarm(background: bool = True) -> None:
 # ── Teil 1c: Unscharfe Suche (fuzzy matching) ─────────────────────────────────
 def find_best_match(user_term: str, all_apps: list | None = None,
                     limit: int = 3) -> list:
-    """Findet die zu user_term am besten passenden installierten Programme.
+    """Finds the installed programs that best match user_term.
 
     'vlc' → 'VLC media player', 'edge' → 'Microsoft Edge', 'photo' → 'Photoshop'.
     [{name,path,source}].
@@ -520,7 +520,7 @@ def find_running_processes(user_term: str, limit: int = 5) -> list:
         scored.sort(key=lambda t: t[0])
         return [p for _, p in scored][:limit]
 
-    # difflib-Fallback auf die Prozess-Basisnamen
+    # a difflib fallback on the process base names
     base_map: dict = {}
     for p in procs:
         base_map.setdefault(base(p["name"]), p)
@@ -618,8 +618,8 @@ def find_any_browser() -> dict:
 
 
 def find_launch_path(user_term: str) -> dict | None:
-    """Bequemer Einzeltreffer: bester installierter Treffer MIT startbarem Pfad.
-    {name, path, source} oder None."""
+    """A convenient single hit: the best installed match WITH a launchable path.
+    {name, path, source}, or None."""
     for app in find_best_match(user_term, limit=FUZZY_N):
         if _is_launchable(app.get("path")):
             return app

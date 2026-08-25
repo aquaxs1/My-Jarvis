@@ -110,7 +110,7 @@ class SmartHomeManager:
 
 
 class HueBridge:
-    """Direkter Philips Hue Fallback (ohne Home Assistant)."""
+    """A direct Philips Hue fallback (without Home Assistant)."""
 
     def __init__(self, config: dict):
         self.config = config

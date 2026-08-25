@@ -88,7 +88,7 @@ def _json_from_text(raw):
             return obj
     except (json.JSONDecodeError, ValueError):
         pass
-    # Fallback: erstes balanciertes {...} herausschneiden
+    # fallback: cut out the first balanced {...}
     start = s.find("{")
     if start == -1:
         return None
@@ -315,7 +315,7 @@ class Brain:
         # the Anthropic client (self.client), so on NVIDIA/OpenAI/Gemini/local the
         # whole agent routing collapsed (everything became "conversation"). Now
         # Anthropic still uses the cheap, fast Haiku classifier model and all
-        # anderen Provider ihr Hauptmodell via decide_text().
+        # other providers use their main model through decide_text().
         try:
             if provider == "anthropic" and self.client:
                 classifier_model = self.config.get("classifier_model", "claude-haiku-4-5-20251001")  # Bug 1.16
@@ -353,7 +353,7 @@ class Brain:
         salutation = self.config.get("salutation","")
         if salutation: system += f" Address the user as '{salutation}'."
 
-        # Sprache
+        # language
         lang = self.config.get("language","de-DE")
         if lang != "de-DE":
             system += f" From now on, answer in {LANG_NAMES.get(lang,'English')}."
@@ -387,7 +387,7 @@ class Brain:
         if not api_key and provider != "local":
             msg = "Please enter an API key in the settings (⚙) first."
             self._emit("message", {"role":"jarvis","text": msg})
-            self._emit("needs_setup", {"reason":"Kein API-Key"})
+            self._emit("needs_setup", {"reason":"No API key"})
             return None
 
         # YouTube-URL Auto-Detect
@@ -408,7 +408,7 @@ class Brain:
         screen_kw = ["look at my screen","screenshot","check my screen",
                       "what do you see","look at my screen","help me i am stuck here",
                       "what do i click here","take a look","what is on my screen",
-                      "kannst du meinen bildschirm sehen","zeig mir was ich sehe","screen"]
+                      "can you see my screen","show me what i see","screen"]
         if any(kw in query.lower() for kw in screen_kw):
             self._step("VISION", "Screen request detected – starting the countdown...")
             self._emit("screenshot_countdown", {"query": query})
@@ -435,9 +435,9 @@ class Brain:
             self._step("PLANUNG", s)
 
         if cl.get("sicherheitsrisiko") == "hoch":
-            self._step("SICHERHEIT", "Risiko zu hoch – Aktion blockiert.")
-            self._emit("safety_warning", {"level":"hoch","message":"Aktion blockiert – zu hohes Risiko."})
-            if todo_mode: return {"status":"error","message":"Sicherheitsrisiko zu hoch."}
+            self._step("SAFETY", "The risk is too high – the action was blocked.")
+            self._emit("safety_warning", {"level":"high","message":"Action blocked – the risk is too high."})
+            if todo_mode: return {"status":"error","message":"The safety risk is too high."}
             return None
 
         if cl.get("braucht_erlaubnis") and not todo_mode:
@@ -500,7 +500,7 @@ class Brain:
             self.memory.add_to_history("assistant", reply)
             self._step("FERTIG", "Antwort gesendet.")
 
-        # Memory: nur Key=Value extrahieren
+        # memory: extract key=value only
         if any(kw in query.lower() for kw in ["remember that","remember","keep in mind","do not forget"]):
             self._save_key_memory(query)
 
@@ -546,7 +546,7 @@ class Brain:
             return "Briefing module unavailable."
         sections = self.briefing.generate_briefing()
         text = self.briefing.format_briefing(sections)
-        # Zur sprachlichen Aufbereitung ans Modell senden
+        # send it to the model to be phrased
         return self._enrich_with_model(text, "Phrase this briefing naturally and engagingly in English. Keep every piece of information:")
 
     def _agent_youtube(self, query):
@@ -587,7 +587,7 @@ class Brain:
             return "Research module unavailable."
         q = query.lower()
         import re
-        detail_match = re.search(r'(?:mehr zu|details zu|artikel)\s*(\d+)', q)
+        detail_match = re.search(r'(?:more on|details on|article)\s*(\d+)', q)
         if detail_match:
             idx = int(detail_match.group(1))
             article = self.research.get_article_detail(idx)
@@ -687,7 +687,7 @@ class Brain:
             if not emails:
                 return text
             return self._enrich_with_model(
-                f"Fasse diese ungelesenen E-Mails zusammen:\n\n{text}",
+                f"Summarise these unread emails:\n\n{text}",
                 "Write a compact summary of these emails in English:"
             )
         return "What would you like to do with your email? (summarise, write a reply...)"
@@ -728,7 +728,7 @@ class Brain:
             if lights:
                 self.smarthome.light_on(lights[0]["entity_id"])
                 return f"Licht eingeschaltet: {lights[0]['name']}"
-        elif any(kw in q for kw in ["licht aus"]):
+        elif any(kw in q for kw in ["lights off"]):
             lights = self.smarthome.get_entities("light")
             if lights:
                 self.smarthome.light_off(lights[0]["entity_id"])
@@ -827,7 +827,7 @@ class Brain:
             self._emit("memory_saved", {"query": kv})
             logger.info("[Memory] key info stored: %s", kv)
         else:
-            logger.debug("[Memory] Konnte kein Key=Value extrahieren: %s", query[:60])
+            logger.debug("[Memory] Could not extract a key=value pair: %s", query[:60])
 
     # ── Screenshot-Analyse ─────────────────────────────────────────────
     def analyze_screenshot(self, screenshot_b64: str, query: str = "") -> str:
@@ -846,7 +846,7 @@ class Brain:
             "(e.g. 'top left', 'in the middle', 'bottom right'). "
             "Be precise: name button labels, menu items, window titles and so on."
         )
-        user_text = query if query else "Was siehst du auf meinem Bildschirm? Beschreibe was du siehst."
+        user_text = query if query else "What do you see on my screen? Describe what you see."
 
         try:
             if provider == "anthropic" and self.client:

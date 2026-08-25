@@ -104,8 +104,8 @@ class YouTubeManager:
 
         if len(chunks) == 1:
             return (
-                f"Fasse folgendes YouTube-Video-Transkript zusammen. "
-                f"Gib eine kompakte, strukturierte Zusammenfassung auf Deutsch:\n\n"
+                f"Summarise the following YouTube video transcript. "
+                f"Give a compact, structured summary in English:\n\n"
                 f"{chunks[0][:8000]}"
             )
 
@@ -114,8 +114,8 @@ class YouTubeManager:
             for i, c in enumerate(chunks)
         )
         return (
-            f"Fasse folgendes YouTube-Video-Transkript zusammen. "
+            f"Summarise the following YouTube video transcript. "
             f"Es ist in {len(chunks)} Abschnitte aufgeteilt. "
-            f"Erstelle eine Gesamtzusammenfassung auf Deutsch:\n\n"
+            f"Produce an overall summary in English:\n\n"
             f"{chunk_texts[:8000]}"
         )

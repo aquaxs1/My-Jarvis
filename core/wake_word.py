@@ -88,7 +88,7 @@ class WakeWordListener:
             import pvporcupine
             access_key = self.config.get("porcupine_access_key", "")
             if not access_key:
-                raise ValueError("Kein Porcupine Access Key")
+                raise ValueError("No Porcupine access key")
             self._porcupine = pvporcupine.create(
                 access_key=access_key,
                 keywords=["jarvis"]

@@ -29,16 +29,16 @@ class ProactiveEngine:
         hour = datetime.now().hour
 
         if hour < 10:
-            suggestions.append("Gib mir mein Briefing")
+            suggestions.append("Give me my briefing")
         elif hour >= 22:
-            suggestions.append("Fasse meinen Tag zusammen")
+            suggestions.append("Sum up my day")
 
         if self.calendar and self.calendar.is_configured:
             try:
                 events = self.calendar.get_events(days=1)
                 if events:
                     next_ev = events[0]
-                    suggestions.append(f"Details zu '{next_ev['title']}'")
+                    suggestions.append(f"Details on '{next_ev['title']}'")
             except Exception:
                 pass
 
@@ -72,7 +72,7 @@ class ProactiveEngine:
             suggestions.append("Should I set a reminder?")
 
         if any(kw in action_lower for kw in ["code", "programm", "script"]):
-            suggestions.append("Soll ich den Code testen?")
+            suggestions.append("Should I test the code?")
 
         if any(kw in reply_lower for kw in ["zusammenfassung", "zusammengefasst"]):
             suggestions.append("Should I save the summary as a note?")

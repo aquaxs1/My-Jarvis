@@ -111,7 +111,7 @@ class CalendarManager:
                 end = event["end"].get("dateTime", event["end"].get("date", ""))
                 events.append({
                     "id": event.get("id", ""),
-                    "title": event.get("summary", "(Kein Titel)"),
+                    "title": event.get("summary", "(No title)"),
                     "start": start,
                     "end": end,
                     "location": event.get("location", ""),

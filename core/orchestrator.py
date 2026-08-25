@@ -22,7 +22,7 @@ class SubAgent:
 
 class ResearchAgent(SubAgent):
     def __init__(self, research_mgr):
-        super().__init__("ResearchAgent", "Web-Recherche und Zusammenfassung")
+        super().__init__("ResearchAgent", "Researches the web and summarises")
         self.research = research_mgr
 
     def run(self, task: str, context: dict = None) -> dict:
@@ -36,7 +36,7 @@ class ResearchAgent(SubAgent):
 
 class CalendarAgent(SubAgent):
     def __init__(self, calendar_mgr):
-        super().__init__("CalendarAgent", "Termine und Deadlines verwalten")
+        super().__init__("CalendarAgent", "Manages appointments and deadlines")
         self.calendar = calendar_mgr
 
     def run(self, task: str, context: dict = None) -> dict:
@@ -58,7 +58,7 @@ class FileAgent(SubAgent):
     def run(self, task: str, context: dict = None) -> dict:
         filepath = context.get("filepath") if context else None
         if not filepath:
-            return {"status": "skip", "result": "Kein Dateipfad angegeben", "agent": self.name}
+            return {"status": "skip", "result": "No file path given", "agent": self.name}
         try:
             text = self.reader.read(filepath)
             if text:

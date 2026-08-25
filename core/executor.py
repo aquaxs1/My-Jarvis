@@ -107,7 +107,7 @@ def _validate_launch_path(path: str) -> tuple[bool, str]:
         return False, f"Only {', '.join(_LAUNCH_EXTS)} may be launched: {path}"
     if not os.path.isabs(path):
         return False, f"Path must be absolute: {path}"
-    # Blockliste auch hier durchsetzen (cmd, powershell, regedit, taskkill, …)
+    # enforce the block list here too (cmd, powershell, regedit, taskkill, …)
     base = os.path.basename(path).lower()
     if os.path.splitext(base)[0] in BLOCKED_PROGRAMS or base in BLOCKED_PROGRAMS:
         return False, f"Blocked program: {path}"

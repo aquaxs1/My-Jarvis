@@ -137,7 +137,7 @@ class EmailManager:
             return "No unread emails."
         lines = []
         for i, em in enumerate(emails, 1):
-            lines.append(f"**{i}.** Von: {em['from']}\n   Betreff: {em['subject']}\n   {em['body_preview'][:100]}...")
+            lines.append(f"**{i}.** From: {em['from']}\n   Subject: {em['subject']}\n   {em['body_preview'][:100]}...")
         return "\n\n".join(lines)
 
     @staticmethod
