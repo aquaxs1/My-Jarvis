@@ -1,7 +1,7 @@
 """
-JARVIS Proactive Engine
-- Schlägt nächste Schritte vor basierend auf Kontext
-- Tageszeit-abhängige Vorschläge
+My Jarvis proactive engine
+- suggests next steps based on the context
+- suggestions that depend on the time of day
 """
 import logging
 from datetime import datetime
@@ -46,7 +46,7 @@ class ProactiveEngine:
             try:
                 open_tasks = self.tasks.get_all_tasks()
                 if open_tasks:
-                    suggestions.append(f"Was sind meine offenen Aufgaben?")
+                    suggestions.append("What are my open tasks?")
             except Exception:
                 pass
 
@@ -69,15 +69,15 @@ class ProactiveEngine:
         reply_lower = reply.lower() if reply else ""
 
         if any(kw in action_lower for kw in ["termin", "meeting", "besprechung"]):
-            suggestions.append("Soll ich eine Erinnerung setzen?")
+            suggestions.append("Should I set a reminder?")
 
         if any(kw in action_lower for kw in ["code", "programm", "script"]):
             suggestions.append("Soll ich den Code testen?")
 
         if any(kw in reply_lower for kw in ["zusammenfassung", "zusammengefasst"]):
-            suggestions.append("Soll ich die Zusammenfassung als Notiz speichern?")
+            suggestions.append("Should I save the summary as a note?")
 
         if any(kw in action_lower for kw in ["email", "e-mail", "mail"]):
-            suggestions.append("Soll ich eine Antwort entwerfen?")
+            suggestions.append("Should I draft a reply?")
 
         return suggestions

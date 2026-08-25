@@ -1,6 +1,6 @@
 """
-JARVIS v2.8 - Just A Rather Very Intelligent System
-Event-gesteuert: Spracheingabe NUR wenn Mic-Button gedrückt
+My Jarvis v2.8 - Just A Rather Very Intelligent System
+Event-driven: voice input ONLY while the mic button is pressed
 """
 import sys
 import threading
@@ -39,7 +39,7 @@ try:
     KEYBOARD_AVAILABLE = True
 except ImportError:
     KEYBOARD_AVAILABLE = False
-    print("[WARNUNG] 'keyboard' fehlt → python -m pip install keyboard")
+    print("[WARNING] 'keyboard' is missing → python -m pip install keyboard")
 
 from core.config     import Config
 from core.speech     import SpeechEngine
@@ -52,29 +52,29 @@ from core.copilot    import Copilot
 from memory.memory_store import MemoryStore
 from core.gui_server import GUIServer
 
-# ── Kill-Switch ────────────────────────────────────────────────────────────
+# ── kill switch ────────────────────────────────────────────────────────────
 KILL_ACTIVE = threading.Event()
 
 def activate_kill():
     if KILL_ACTIVE.is_set():
         KILL_ACTIVE.clear()
-        print("[KILL-SWITCH] Deaktiviert.")
+        print("[KILL SWITCH] Deactivated.")
         if _gui_ref:
             _gui_ref.send_event("kill_deactivated", {})
     else:
         KILL_ACTIVE.set()
-        print("[KILL-SWITCH] Alle Befehle gestoppt.")
-        # v2.8 Bug 4: GUI sofort informieren (nicht erst über den 0.2s-Poll im
-        # Haupt-Loop) – hält Frontend und Backend-Zustand synchron.
+        print("[KILL SWITCH] Every command stopped.")
+        # v2.8 bug 4: tell the GUI right away (not only through the 0.2s poll in the
+        # main loop) – this keeps the frontend and backend state in sync.
         if _gui_ref:
             _gui_ref.send_event("kill_switch", {})
 
 if KEYBOARD_AVAILABLE:
     try:
         keyboard.add_hotkey("ctrl+alt+j", activate_kill)
-        print("[Kill-Switch] Strg+Alt+J aktiv.")
+        print("[Kill switch] Ctrl+Alt+J active.")
     except Exception as e:
-        print(f"[WARNUNG] Hotkey: {e}")
+        print(f"[WARNING] Hotkey: {e}")
 
 
 class JARVIS:
@@ -87,7 +87,7 @@ class JARVIS:
         self.screen   = ScreenWatcher()
         self.brain    = Brain(self.config, self.memory, self.executor, self.screen, KILL_ACTIVE)
         self.gui      = GUIServer(self)
-        # Kritisch: Brain muss GUI-Callback kennen sonst landen Antworten im Nichts
+        # critical: the brain must know the GUI callback, or answers go nowhere
         self.brain.set_gui_callback(self.gui.send_event)
         # Copilot: See→Think→Act PC-Steuerung (nutzt Brain-Vision + Executor)
         self.copilot  = Copilot(self.brain, self.executor, self.screen,
@@ -105,7 +105,7 @@ class JARVIS:
                 except queue.Empty:
                     break
                 except Exception as e:
-                    print(f"[LOG] Flush-Fehler: {e}")
+                    print(f"[LOG] Flush error: {e}")
                     break
         self.gui.on_client_connect = _flush
 
@@ -129,44 +129,44 @@ class JARVIS:
         })
 
         if not self._has_valid_key():
-            print("[JARVIS] Kein API-Key – bitte im Interface eingeben.")
-            self.gui.send_event("needs_setup", {"reason": "Kein API-Key gesetzt."})
+            print("[My Jarvis] No API key – please enter one in the interface.")
+            self.gui.send_event("needs_setup", {"reason": "No API key set."})
 
-        # Begrüßung
-        anrede  = self.config.get("anrede", "")
+        # greeting
+        salutation  = self.config.get("salutation", "")
         hour    = datetime.now().hour
-        tages   = "Guten Morgen" if hour < 12 else ("Guten Tag" if hour < 18 else "Guten Abend")
-        greeting = f"{tages}{', ' + anrede if anrede else ''}. Ich bin JARVIS und bereit."
+        part_of_day = "Good morning" if hour < 12 else ("Good afternoon" if hour < 18 else "Good evening")
+        greeting = f"{part_of_day}{', ' + salutation if salutation else ''}. I am My Jarvis and I am ready."
         self.speech.speak(greeting)
         self.gui.send_event("message", {"role": "jarvis", "text": greeting})
 
-        # Startup-Vorschläge (nur wenn aktiviert)
+        # startup suggestions (only when enabled)
         if self.config.get("suggestions_enabled", True):
-            suggestions = ["Aktuelle Nachrichten zusammenfassen",
-                           "Wetter für heute & die nächsten Tage",
-                           "Aktienpreise vorlesen"]
+            suggestions = ["Summarise the latest news",
+                           "Weather for today & the next few days",
+                           "Read out the stock prices"]
             for r in self.memory.get_routines():
                 suggestions.append(f"Routine: {r['name']}")
-            # Dynamische Vorschläge aus offenen To-Dos
+            # dynamic suggestions from open to-dos
             for item in self.brain.current_todo:
                 if not item.get("done"):
-                    suggestions.append(f"Aufgabe erledigen: {item['text']}")
-            # Aus gespeicherten Erinnerungen einen Vorschlag ableiten
+                    suggestions.append(f"Finish this task: {item['text']}")
+            # derive a suggestion from the stored memories
             mems = self.memory.get_all_memories()
             if mems:
-                suggestions.append("Was hast du dir über mich gemerkt?")
+                suggestions.append("What have you remembered about me?")
             self.gui.send_event("startup_suggestions", {"suggestions": suggestions[:8]})
 
-        # Wake Word / Clap Detection starten (falls aktiviert)
+        # start wake word / clap detection (if enabled)
         if self.config.get("wake_word_enabled") or self.config.get("clap_enabled"):
             self.wake_word.start()
 
-        print("[JARVIS] Bereit. Steuerung über das Interface.")
-        print("[JARVIS] Mikrofon: Knopf im Chat-Panel drücken.")
-        print("[JARVIS] Kill-Switch: Strg+Alt+J")
+        print("[My Jarvis] Ready. Control it through the interface.")
+        print("[My Jarvis] Microphone: press the button in the chat panel.")
+        print("[My Jarvis] Kill switch: Ctrl+Alt+J")
 
-        # ── Haupt-Loop: nur Kill-Switch überwachen ──────────────────────
-        # Alle Eingaben kommen jetzt über WebSocket-Events (GUI)
+        # ── main loop: only watch the kill switch ───────────────────────
+        # every input now arrives through WebSocket events (the GUI)
         try:
             while self.running:
                 KILL_ACTIVE.wait(timeout=0.2)
@@ -183,9 +183,9 @@ class JARVIS:
                         KILL_ACTIVE.wait(timeout=0.2)
 
         except KeyboardInterrupt:
-            print("[JARVIS] Strg+C – beende...")
+            print("[My Jarvis] Ctrl+C – shutting down...")
         except Exception as e:
-            print(f"[KRITISCH] {e}")
+            print(f"[CRITICAL] {e}")
             import traceback; traceback.print_exc()
         finally:
             self.running = False
@@ -193,13 +193,13 @@ class JARVIS:
             gui_thread.join(timeout=3)
 
     def _on_wake_trigger(self):
-        """Wird vom WakeWordListener aufgerufen wenn 'Hey Jarvis' oder 2x Klatschen erkannt."""
+        """Called by the WakeWordListener on 'Hey Jarvis' or two claps."""
         if KILL_ACTIVE.is_set():
             return
         self.gui.send_event("wake_triggered", {})
-        self.gui.send_event("status", {"text": "HÖRE ZU..."})
-        self.gui.send_event("notify", {"text": "Hey Jarvis erkannt!"})
-        # Starte Mikrofon-Aufnahme (gleiche Logik wie Mic-Button)
+        self.gui.send_event("status", {"text": "LISTENING..."})
+        self.gui.send_event("notify", {"text": "Heard 'Hey Jarvis'!"})
+        # start recording (the same logic as the mic button)
         if self.gui._listen_thread and self.gui._listen_thread.is_alive():
             return
         self.gui._stop_listening.clear()
@@ -208,50 +208,50 @@ class JARVIS:
         self.gui._listen_thread.start()
 
     def handle_text(self, text: str):
-        """Wird von GUIServer aufgerufen – für Text UND Sprache."""
+        """Called by the GUIServer – for text AND speech."""
         if KILL_ACTIVE.is_set():
-            # v2.8 Bug 4: GUI auf den echten (aktiven) Zustand re-synchronisieren,
-            # falls Frontend fälschlich "Kill aus" zeigt.
+            # v2.8 bug 4: re-sync the GUI to the real (active) state, in case the
+            # frontend wrongly shows "kill off".
             self.gui.send_event("kill_switch", {})
-            self.gui.send_event("message", {"role":"jarvis","text":"Kill-Switch ist aktiv. Bitte zuerst deaktivieren."})
+            self.gui.send_event("message", {"role":"jarvis","text":"The kill switch is active. Please deactivate it first."})
             return
         text = text.strip()
         if not text:
             return
 
         if len(text) > 10000:
-            self.gui.send_event("message", {"role":"jarvis","text":"Nachricht zu lang (max. 10000 Zeichen)."})
+            self.gui.send_event("message", {"role":"jarvis","text":"That message is too long (max. 10000 characters)."})
             return
 
-        beenden = ["beenden","auf wiedersehen","tschüss","goodbye","exit","quit"]
-        if any(w in text.lower() for w in beenden):
-            anrede = self.config.get("anrede","")
-            bye = f"Auf Wiedersehen{', '+anrede if anrede else ''}."
+        farewells = ["shut down","shutdown","goodbye","good bye","bye","exit","quit"]
+        if any(w in text.lower() for w in farewells):
+            salutation = self.config.get("salutation","")
+            bye = f"Goodbye{', '+salutation if salutation else ''}."
             self.speech.speak(bye)
             self.gui.send_event("message", {"role":"jarvis","text": bye})
             self.running = False
             return
 
         if not self._has_valid_key():
-            msg = "Bitte zuerst einen API-Key im linken Panel eingeben."
+            msg = "Please enter an API key in the left panel first."
             self.speech.speak(msg)
             self.gui.send_event("message", {"role":"jarvis","text": msg})
-            self.gui.send_event("needs_setup", {"reason":"API-Key fehlt."})
+            self.gui.send_event("needs_setup", {"reason":"The API key is missing."})
             return
 
         self.gui.send_event("thinking", {"status": True})
         try:
-            self.brain.process(text)   # synchron – kein asyncio nötig
+            self.brain.process(text)   # synchronous – no asyncio needed
         except Exception as e:
             err = str(e)
             if "401" in err or "authentication" in err.lower():
-                msg = "⚠️ API-Key ungültig (401). Bitte neuen Key eingeben."
-                self.gui.send_event("needs_setup", {"reason": "API-Key ungültig."})
+                msg = "⚠️ The API key is invalid (401). Please enter a new one."
+                self.gui.send_event("needs_setup", {"reason": "The API key is invalid."})
             elif "429" in err:
-                msg = "⚠️ Rate-Limit – kurz warten."
+                msg = "⚠️ Rate limited – wait a moment."
             else:
-                msg = f"⚠️ Fehler: {err[:120]}"
-            print(f"[FEHLER] {err}")
+                msg = f"⚠️ Error: {err[:120]}"
+            print(f"[ERROR] {err}")
             self.gui.send_event("message", {"role":"jarvis","text": msg})
             self.speech.speak(msg[:200])
         finally:
@@ -259,14 +259,15 @@ class JARVIS:
 
 
 if __name__ == "__main__":
-    # Bug 7: Wenn keine Konfiguration existiert, jetzt initialisieren
-    # (interaktiv im TTY, sonst Defaults speichern via TTY-Guard in first_setup)
+    # bug 7: if no configuration exists, initialise it now
+    # (interactively on a TTY, otherwise save the defaults via the TTY guard in
+    # first_setup)
     if not Config.exists():
-        print("[JARVIS] Keine Konfiguration gefunden – initialisiere Defaults.")
+        print("[My Jarvis] No configuration found – initialising the defaults.")
         try:
             Config.first_setup()
         except Exception as e:
-            print(f"[JARVIS] Setup-Fehler: {e} – fahre mit Defaults fort.")
+            print(f"[My Jarvis] Setup error: {e} – continuing with the defaults.")
             Config.save(Config.load())
-        print("[JARVIS] Bitte API-Key anschließend im Interface eingeben.")
+        print("[My Jarvis] Please enter the API key in the interface afterwards.")
     JARVIS().run()

@@ -1,18 +1,18 @@
 @echo off
 chcp 65001 >nul
-title JARVIS v1.1 Installer
+title My Jarvis v1.1 Installer
 color 0B
 echo.
 
-:: 1. Das animierte Riesen-Logo laden (call verhindert, dass die .bat hier abbricht!)
+:: 1. Load the animated giant logo (call keeps the .bat from stopping here!)
 call npx oh-my-logo@latest "JARVIS" ocean --filled
 
-:: 2. Dein personalisierter Subtext in Blau
+:: 2. The personalised subtitle, in blue
 powershell -Command "Write-Host 'made by aquaxs-ai' -ForegroundColor Blue"
 
 echo.
 :: ==========================================================
-:: AB HIER KANNST DU DEINEN NORMALEN INSTALLER-CODE WEITERLAUFEN LASSEN
+:: THE NORMAL INSTALLER CODE CARRIES ON FROM HERE
 :: ==========================================================
 
 :: Python check
@@ -20,9 +20,9 @@ python --version >nul 2>&1
 if errorlevel 1 (
     py --version >nul 2>&1
     if errorlevel 1 (
-        echo  [FEHLER] Python nicht gefunden!
-        echo  Bitte Python 3.10+ von python.org installieren.
-        echo  Wichtig: Haken bei "Add Python to PATH" setzen!
+        echo  [ERROR] Python not found!
+        echo  Please install Python 3.10+ from python.org.
+        echo  Important: tick "Add Python to PATH"!
         pause & exit /b 1
     )
     set PYCMD=py
@@ -30,17 +30,17 @@ if errorlevel 1 (
     set PYCMD=python
 )
 
-echo  [1/6] Python gefunden
+echo  [1/6] Python found
 
-echo  [2/6] pip sicherstellen...
+echo  [2/6] Making sure pip is there...
 %PYCMD% -m ensurepip --upgrade >nul 2>&1
 %PYCMD% -m pip install --upgrade pip --quiet >nul 2>&1
 
-echo  [3/6] Basis-Pakete installieren...
+echo  [3/6] Installing the base packages...
 %PYCMD% -m pip install anthropic SpeechRecognition pyttsx3 pyautogui Pillow keyboard websockets requests numpy sounddevice openai google-generativeai --quiet
 if errorlevel 1 (
-    echo  [WARNUNG] Einige Pakete konnten nicht installiert werden.
-    echo            Versuche einzeln...
+    echo  [WARNING] Some packages could not be installed.
+    echo            Trying them one by one...
     %PYCMD% -m pip install anthropic --quiet
     %PYCMD% -m pip install SpeechRecognition --quiet
     %PYCMD% -m pip install pyttsx3 --quiet
@@ -51,31 +51,31 @@ if errorlevel 1 (
     %PYCMD% -m pip install requests numpy sounddevice --quiet
     %PYCMD% -m pip install openai google-generativeai --quiet
 )
-echo  [3/6] Basis-Pakete fertig.
+echo  [3/6] Base packages done.
 
-echo  [4/6] PyAudio installieren...
+echo  [4/6] Installing PyAudio...
 %PYCMD% -m pip install pyaudio --quiet >nul 2>&1
 if errorlevel 1 (
-    echo       Direktinstallation fehlgeschlagen, versuche pipwin...
+    echo       Direct install failed, trying pipwin...
     %PYCMD% -m pip install pipwin --quiet >nul 2>&1
     %PYCMD% -m pipwin install pyaudio >nul 2>&1
     if errorlevel 1 (
-        echo       PyAudio nicht installierbar.
-        echo       JARVIS nutzt sounddevice als Fallback - kein Problem!
+        echo       PyAudio cannot be installed.
+        echo       My Jarvis falls back to sounddevice - no problem!
     ) else (
         echo       PyAudio via pipwin OK.
     )
 ) else (
-    echo       PyAudio direkt installiert.
+    echo       PyAudio installed directly.
 )
 
-echo  [5/6] Verzeichnisse erstellen...
+echo  [5/6] Creating directories...
 if not exist "%USERPROFILE%\.jarvis\memory" mkdir "%USERPROFILE%\.jarvis\memory"
 type nul > core\__init__.py 2>nul
 type nul > memory\__init__.py 2>nul
 type nul > agents\__init__.py 2>nul
 
-echo  [6/6] Pruefe Installation...
+echo  [6/6] Checking the installation...
 %PYCMD% -c "import anthropic; print('  anthropic OK')"
 %PYCMD% -c "import keyboard; print('  keyboard OK')"
 %PYCMD% -c "import websockets; print('  websockets OK')"

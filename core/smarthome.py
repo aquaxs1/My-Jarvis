@@ -1,5 +1,5 @@
 """
-JARVIS Smart Home Integration
+My Jarvis smart home integration
 - Home Assistant REST API
 - Philips Hue (Fallback)
 """
@@ -88,7 +88,7 @@ class SmartHomeManager:
 
     def get_status_text(self) -> str:
         if not self.is_configured:
-            return ("Smart Home nicht konfiguriert. Bitte Home Assistant URL und Token "
+            return ("Smart home is not configured. Please add the Home Assistant URL and token "
                     "in den Einstellungen eintragen.")
         lights = self.get_entities("light")
         climate = self.get_entities("climate")
@@ -106,7 +106,7 @@ class SmartHomeManager:
             if playing:
                 lines.append(f"**Medien:** {len(playing)} aktiv")
 
-        return "\n".join(lines) if lines else "Keine Smart-Home-Geräte gefunden."
+        return "\n".join(lines) if lines else "No smart home devices found."
 
 
 class HueBridge:
@@ -129,7 +129,7 @@ class HueBridge:
         except ImportError:
             logger.debug("[Hue] phue nicht installiert")
         except Exception as e:
-            logger.error("[Hue] Verbindung fehlgeschlagen: %s", e)
+            logger.error("[Hue] The connection failed: %s", e)
 
     @property
     def is_configured(self) -> bool:

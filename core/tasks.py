@@ -1,8 +1,8 @@
 """
-JARVIS Task Management
-- Todoist Integration
-- Notion Integration
-- Einheitliches Interface für beide Provider
+My Jarvis task management
+- Todoist integration
+- Notion integration
+- one interface for both providers
 """
 import logging
 from typing import Optional
@@ -163,10 +163,10 @@ class TaskManager:
 
     def format_tasks_text(self, tasks: list) -> str:
         if not tasks:
-            return "Keine offenen Aufgaben."
+            return "No open tasks."
         lines = []
         for t in tasks:
-            due = f" (fällig: {t['due']})" if t.get("due") else ""
+            due = f" (due: {t['due']})" if t.get("due") else ""
             src = f" [{t['source']}]" if t.get("source") else ""
             lines.append(f"- {t['content']}{due}{src}")
         return "\n".join(lines)

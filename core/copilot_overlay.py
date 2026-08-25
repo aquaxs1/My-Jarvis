@@ -1,14 +1,14 @@
 """
 JARVIS Copilot — Desktop-Overlay (v2.7 #1)
 ==========================================
-Kleines, immer-sichtbares Fenster, das anzeigt, dass JARVIS gerade den PC steuert.
+A small, always-visible window showing that My Jarvis is driving the PC.
 
-- Bleibt über allen anderen Fenstern (``-topmost``), halbtransparent, JARVIS-Stil.
-- Zeigt Logo/Header, „JARVIS is Controlling your PC", den aktuellen Schritt
-  (live aktualisiert) und einen roten Stopp-Button.
-- Läuft in einem EIGENEN Thread (tkinter braucht seinen eigenen Event-Loop) und
-  wird über eine thread-sichere Queue mit Status-Updates versorgt.
-- Fehlt tkinter (headless), verhält sich alles als No-Op.
+- Stays above every other window (``-topmost``), semi-transparent, in the My Jarvis style.
+- Shows the logo/header, "My Jarvis is Controlling your PC", the current step
+  (updated live) and a red stop button.
+- Runs in its OWN thread (tkinter needs its own event loop) and is fed status
+  updates through a thread-safe queue.
+- If tkinter is missing (headless), everything behaves as a no-op.
 """
 
 import os
@@ -18,7 +18,7 @@ import threading
 
 logger = logging.getLogger("jarvis.copilot.overlay")
 
-# Optionaler Logo-Pfad (PNG/GIF – von tk.PhotoImage unterstützt). Fallback: Text.
+# Optional logo path (PNG/GIF – supported by tk.PhotoImage). Fallback: text.
 _LOGO_CANDIDATES = (
     os.path.join("gui", "assets", "jarvis.png"),
     os.path.join("gui", "assets", "logo.png"),
@@ -36,12 +36,12 @@ _WIN_W, _WIN_H = 320, 156
 
 
 class CopilotOverlay:
-    """Thread-sicheres Desktop-Overlay für den Copilot.
+    """A thread-safe desktop overlay for the copilot.
 
-    Öffentliche API (von jedem Thread aufrufbar):
+    Public API (callable from any thread):
         show(task)          – Fenster einblenden (startet den tkinter-Thread)
-        update_status(text) – aktuellen Schritt aktualisieren
-        hide()              – Fenster schließen
+        update_status(text) – update the current step
+        hide()              – close the window
     """
 
     def __init__(self, on_stop=None):
@@ -54,10 +54,10 @@ class CopilotOverlay:
         self._close      = threading.Event()
         self._visible    = False
 
-    # ── öffentliche, thread-sichere API ──────────────────────────────────────
+    # ── the public, thread-safe API ──────────────────────────────────────────
     def show(self, task: str = ""):
         if self._visible:
-            self.update_status(("Neue Aufgabe: " + task) if task else "…")
+            self.update_status(("New task: " + task) if task else "…")
             return
         self._close.clear()
         self._visible = True
@@ -87,16 +87,16 @@ class CopilotOverlay:
         try:
             import tkinter as tk
         except Exception as e:  # noqa: BLE001
-            logger.info("[Overlay] tkinter nicht verfügbar: %s", e)
+            logger.info("[Overlay] tkinter is not available: %s", e)
             self._visible = False
             return
 
         try:
             root = tk.Tk()
             self._root = root
-            root.title("JARVIS Copilot")
-            root.overrideredirect(True)            # keine Standard-Fensterleiste
-            root.attributes("-topmost", True)      # immer ganz oben
+            root.title("My Jarvis Copilot")
+            root.overrideredirect(True)            # no standard title bar
+            root.attributes("-topmost", True)      # always on top
             try:
                 root.attributes("-alpha", 0.93)    # leicht transparent
             except Exception:  # noqa: BLE001
@@ -123,7 +123,7 @@ class CopilotOverlay:
             tk.Label(frame, text="is Controlling your PC", bg=_BG, fg=_FG,
                      font=("Segoe UI", 11)).pack()
 
-            self._status_var = tk.StringVar(value="Startet…")
+            self._status_var = tk.StringVar(value="Starting…")
             tk.Label(frame, textvariable=self._status_var, bg=_BG, fg=_ACCENT,
                      font=("Segoe UI", 9), wraplength=_WIN_W - 30,
                      justify="center").pack(pady=(6, 6))
@@ -134,20 +134,20 @@ class CopilotOverlay:
                       cursor="hand2", command=self._handle_stop).pack(pady=(0, 8))
 
             if task:
-                self._status_var.set("Aufgabe: " + (task[:60]))
+                self._status_var.set("Task: " + (task[:60]))
 
             self._bind_drag(root, frame)
             root.after(120, self._poll)
             root.mainloop()
         except Exception as e:  # noqa: BLE001
-            logger.info("[Overlay] Fehler im tkinter-Thread: %s", e)
+            logger.info("[Overlay] Error in the tkinter thread: %s", e)
         finally:
             self._root = None
             self._status_var = None
             self._visible = False
 
     def _poll(self):
-        """Liest die Status-Queue und schließt bei Bedarf das Fenster."""
+        """Reads the status queue and closes the window when asked to."""
         root = self._root
         if root is None:
             return
@@ -174,11 +174,11 @@ class CopilotOverlay:
 
     def _handle_stop(self):
         if self._status_var is not None:
-            self._status_var.set("Stoppe…")
+            self._status_var.set("Stopping…")
         try:
             self._on_stop()
         except Exception as e:  # noqa: BLE001
-            logger.info("[Overlay] on_stop-Fehler: %s", e)
+            logger.info("[Overlay] on_stop error: %s", e)
 
     def _load_logo(self, tk):
         for p in _LOGO_CANDIDATES:
@@ -194,7 +194,7 @@ class CopilotOverlay:
         return None
 
     def _bind_drag(self, root, widget):
-        """Fenster lässt sich ohne Titlebar mit der Maus verschieben."""
+        """Lets the window be dragged with the mouse despite having no title bar."""
         state = {"x": 0, "y": 0}
 
         def start(e):

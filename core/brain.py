@@ -18,9 +18,9 @@ CLASSIFIER_MAX_TOKENS = 400
 MEMORY_EXTRACT_MAX_TOKENS = 60
 
 SYSTEM_PROMPTS = {
-    "professionell": "You are My Jarvis, a highly capable AI assistant. Answer precisely in English. Technical terms are welcome.",
+    "professional": "You are My Jarvis, a highly capable AI assistant. Answer precisely in English. Technical terms are welcome.",
     "normal":        "You are My Jarvis, a friendly AI assistant. Answer clearly and understandably in English.",
-    "jugendlich":    "You are My Jarvis, a laid-back AI assistant. Use casual slang. Answer in English.",
+    "casual":    "You are My Jarvis, a laid-back AI assistant. Use casual slang. Answer in English.",
 }
 
 # Language display names – could be externalized to a config file or JSON resource (Bug 1.17)
@@ -326,7 +326,7 @@ class Brain:
             elif api_key or provider == "local":
                 raw = self.decide_text(
                     "You are a request classifier. Answer EXCLUSIVELY with "
-                    "einem einzigen validen JSON-Objekt – kein Markdown, kein Text drumherum.",
+                    "a single valid JSON object – no markdown, no text around it.",
                     CLASSIFIER + query, max_tokens=CLASSIFIER_MAX_TOKENS)
             else:
                 return default
@@ -349,21 +349,21 @@ class Brain:
             return default
 
     def _build_system(self):
-        system = SYSTEM_PROMPTS.get(self.config.get("redeart","normal"), SYSTEM_PROMPTS["normal"])
-        anrede = self.config.get("anrede","")
-        if anrede: system += f" Address the user as '{anrede}'."
+        system = SYSTEM_PROMPTS.get(self.config.get("tone","normal"), SYSTEM_PROMPTS["normal"])
+        salutation = self.config.get("salutation","")
+        if salutation: system += f" Address the user as '{salutation}'."
 
         # Sprache
-        lang = self.config.get("sprache","de-DE")
+        lang = self.config.get("language","de-DE")
         if lang != "de-DE":
             system += f" From now on, answer in {LANG_NAMES.get(lang,'English')}."
 
         # Location - IMPORTANT: use it, never ask for it
-        wohnort = self.config.get("wohnort","")
-        if wohnort:
-            system += (f"\n\nIMPORTANT: the user's location is '{wohnort}'. "
+        location = self.config.get("location","")
+        if location:
+            system += (f"\n\nIMPORTANT: the user's location is '{location}'. "
                        f"ALWAYS use this location directly for weather, local info and so on. "
-                       f"NEVER ask for the location - you already know it: {wohnort}.")
+                       f"NEVER ask for the location - you already know it: {location}.")
 
         ctx = self.memory.get_relevant_context("")
         if ctx: system += f"\n\nStored facts about the user:\n{ctx}"
@@ -404,13 +404,13 @@ class Brain:
                     return {"status":"ok","reply":result}
                 return result
 
-        # Schnelle Bildschirm-Erkennung (vor Klassifizierung)
-        screen_kw = ["schau auf meinen bildschirm","screenshot","bildschirm anschauen",
+        # a fast screen-request check (before classification)
+        screen_kw = ["look at my screen","screenshot","check my screen",
                       "what do you see","look at my screen","help me i am stuck here",
                       "what do i click here","take a look","what is on my screen",
                       "kannst du meinen bildschirm sehen","zeig mir was ich sehe","screen"]
         if any(kw in query.lower() for kw in screen_kw):
-            self._step("VISION", "Bildschirm-Anfrage erkannt – starte Countdown...")
+            self._step("VISION", "Screen request detected – starting the countdown...")
             self._emit("screenshot_countdown", {"query": query})
             return None
 
@@ -613,7 +613,7 @@ class Brain:
             days = 2
         events = self.calendar.get_events(days)
         text = self.calendar.format_events_text(events)
-        period = "morgen" if "morgen" in q else ("diese Woche" if days == 7 else "heute")
+        period = "tomorrow" if "tomorrow" in q else ("this week" if days == 7 else "today")
         return f"**Termine {period}:**\n\n{text}"
 
     def _calendar_create(self, query):
@@ -666,7 +666,7 @@ class Brain:
                     break
             result = self.tasks.add_task(content)
             if result:
-                return f"Aufgabe erstellt: **{result['content']}** [{result['source']}]"
+                return f"Task created: **{result['content']}** [{result['source']}]"
             return "Could not create the task."
         task_list = self.tasks.get_all_tasks()
         return f"**Offene Aufgaben ({self.tasks.get_provider_name()}):**\n\n{self.tasks.format_tasks_text(task_list)}"
@@ -838,10 +838,10 @@ class Brain:
 
         self._step("VISION", "Analysing the screenshot...")
 
-        anrede = self.config.get("anrede", "")
-        anrede_str = f" Address the user as '{anrede}'." if anrede else ""
+        salutation = self.config.get("salutation", "")
+        salutation_str = f" Address the user as '{salutation}'." if salutation else ""
         system = (
-            f"You are My Jarvis, an AI assistant that can see the user's screen.{anrede_str} "
+            f"You are My Jarvis, an AI assistant that can see the user's screen.{salutation_str} "
             "Describe EXACTLY what you see and give specific instructions with positions "
             "(e.g. 'top left', 'in the middle', 'bottom right'). "
             "Be precise: name button labels, menu items, window titles and so on."
@@ -1257,7 +1257,7 @@ class Brain:
                     [{"role": "user", "content": fix_prompt}]
                 )
             except Exception as e:
-                logger.warning("[Brain] Code-Fix Versuch %d fehlgeschlagen: %s", attempt + 1, e)
+                logger.warning("[Brain] Code fix attempt %d failed: %s", attempt + 1, e)
                 break
 
             if not fix_reply:

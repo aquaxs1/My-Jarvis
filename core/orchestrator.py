@@ -1,7 +1,7 @@
 """
-JARVIS Multi-Agent Orchestrator
-- Komplexe Aufgaben in Teilaufgaben aufteilen
-- Sub-Agenten parallel koordinieren
+My Jarvis multi-agent orchestrator
+- splits complex tasks into sub-tasks
+- coordinates sub-agents in parallel
 """
 import logging
 import threading
@@ -63,7 +63,7 @@ class FileAgent(SubAgent):
             text = self.reader.read(filepath)
             if text:
                 return {"status": "ok", "result": text[:3000], "agent": self.name}
-            return {"status": "error", "result": "Datei konnte nicht gelesen werden", "agent": self.name}
+            return {"status": "error", "result": "The file could not be read", "agent": self.name}
         except Exception as e:
             return {"status": "error", "result": str(e), "agent": self.name}
 
@@ -151,6 +151,6 @@ class Orchestrator:
 
         return {
             "task": task,
-            "result": "\n\n---\n\n".join(parts) if parts else "Keine Ergebnisse.",
+            "result": "\n\n---\n\n".join(parts) if parts else "No results.",
             "agents_used": list(results.keys()),
         }

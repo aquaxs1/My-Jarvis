@@ -1,7 +1,7 @@
 """
-JARVIS Deadline Tracker
-- Sammelt Deadlines aus Kalender, Tasks, Gesprächen
-- Warnt bei nahenden Deadlines (24h, 1h, 15min)
+My Jarvis deadline tracker
+- collects deadlines from the calendar, tasks and conversations
+- warns about approaching deadlines (24h, 1h, 15min)
 """
 import logging
 import threading

@@ -1,7 +1,7 @@
 """
-JARVIS Memory Store v2.8 – Encrypted Storage
-- save_memory_kv: speichert als key=value
-- get_relevant_context: gibt kv-Format zurück
+My Jarvis memory store v2.8 – encrypted storage
+- save_memory_kv: stores as key=value
+- get_relevant_context: returns the kv format
 - All JSON files encrypted at rest with Fernet (PBKDF2-derived key)
 """
 import json
@@ -77,8 +77,8 @@ class MemoryStore:
         self.history_file  = MEMORY_DIR / "history.json"
         self.routines_file = MEMORY_DIR / "routines.json"
         self.projects_file = MEMORY_DIR / "projects.json"
-        # Bug 15: schützt die In-Memory-Listen + verschlüsselte Datei-Writes
-        # gegen gleichzeitige Zugriffe aus mehreren Threads (Brain, Copilot,
+        # bug 15: guards the in-memory lists + encrypted file writes against
+        # concurrent access from several threads (brain, copilot,
         # Proactive, GUI). RLock erlaubt verschachtelte Aufrufe.
         self._lock = threading.RLock()
         self._load_all()
@@ -137,7 +137,7 @@ class MemoryStore:
                 if not line or "=" not in line:
                     continue
                 if len(line) > MAX_KV_LENGTH:
-                    logger.warning("[Memory] KV-Eintrag zu lang (%d Zeichen), übersprungen.", len(line))
+                    logger.warning("[Memory] The KV entry is too long (%d characters), skipped.", len(line))
                     continue
                 key = line.split("=", 1)[0].strip().lower()
                 # Remove old entries with the same key (guard against malformed kv)
@@ -159,7 +159,7 @@ class MemoryStore:
             self._save_json(self.memories_file, self.memories)
 
     def save_memory(self, trigger: str, content: str, category: str = "allgemein"):
-        """Legacy – speichert Volltext (wird intern als kv komprimiert wenn möglich)."""
+        """Legacy – stores full text (compressed to kv internally where possible)."""
         entry = {
             "id": int(datetime.now().timestamp()),
             "timestamp": datetime.now().isoformat(),

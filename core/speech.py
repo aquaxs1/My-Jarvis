@@ -1,9 +1,9 @@
 """
-JARVIS Sprach-Engine v2.8
-- TTS: Satz-Chunking statt harter 500-Zeichen-Grenze
-- Mehrsprachig: de-DE, en-US, es-ES, fr-FR, it-IT, ja-JP
-- TTS Ein/Aus über Config
-- stop() bricht Aufnahme ab
+My Jarvis speech engine v2.8
+- TTS: sentence chunking instead of a hard 500-character limit
+- multilingual: en-US, de-DE, es-ES, fr-FR, it-IT, ja-JP
+- TTS on/off through the config
+- stop() aborts the recording
 """
 import threading
 import queue
@@ -32,7 +32,7 @@ class SpeechEngine:
         self._tts_thread.start()
 
     def get_lang(self):
-        return self.config.get("sprache", "de-DE")
+        return self.config.get("language", "de-DE")
 
     def tts_enabled(self):
         return self.config.get("tts_enabled", True)
@@ -49,13 +49,13 @@ class SpeechEngine:
             print("[TTS] pyttsx3 initialisiert")
         except Exception:
             self.tts_backend = "none"
-            print("[TTS] Kein TTS-Backend – Text wird nur angezeigt.")
+            print("[TTS] No TTS backend – the text is only displayed.")
 
     def _set_voice(self, lang_code: str):
         """Passt die Stimme an die Sprache an."""
         if self.tts_backend != "pyttsx3":
             return
-        # Mapping: lang_code → Schlüsselwörter für Stimmsuche
+        # maps lang_code → keywords used to find a voice
         lang_keywords = {
             "de-DE": ["german","deutsch","de_","helena","hedda"],
             "en-US": ["english","en_","zira","david","samantha"],
@@ -73,7 +73,7 @@ class SpeechEngine:
                 return
 
     def update_language(self, lang_code: str):
-        self.config["sprache"] = lang_code
+        self.config["language"] = lang_code
         if self.tts_backend == "pyttsx3":
             try:
                 import pyttsx3
@@ -105,16 +105,16 @@ class SpeechEngine:
             self.tts_queue.task_done()
 
     def _speak_chunked(self, text: str):
-        """Teilt langen Text in Sätze auf – kein harter Abbruch mehr."""
+        """Splits long text into sentences – no more hard truncation."""
         self._stop_flag.clear()
-        # Code-Blöcke und Markdown entfernen
+        # strip code blocks and markdown
         text = re.sub(r'```[\s\S]*?```', '[Code-Block]', text)
         text = re.sub(r'`[^`]+`', '', text)
         text = re.sub(r'\*+([^*]+)\*+', r'\1', text)
         text = re.sub(r'#+\s', '', text)
         text = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', text)
 
-        # Sätze aufteilen
+        # split into sentences
         sentences = re.split(r'(?<=[.!?])\s+', text.strip())
 
         for sentence in sentences:
@@ -198,7 +198,7 @@ class SpeechEngine:
         try:
             with sr.Microphone() as source:
                 self.recognizer.adjust_for_ambient_noise(source, duration=0.3)
-                print(f"[STT] Höre zu ({lang})...")
+                print(f"[STT] Listening ({lang})...")
                 audio = self.recognizer.listen(source, timeout=STT_LISTEN_TIMEOUT, phrase_time_limit=STT_PHRASE_LIMIT)
                 if (stop_event and stop_event.is_set()) or self._stop_flag.is_set():
                     return None
@@ -214,7 +214,7 @@ class SpeechEngine:
         import speech_recognition as sr, io, wave
         try:
             fs, duration = 16000, 8
-            print(f"[STT] Höre zu via sounddevice ({lang})...")
+            print(f"[STT] Listening via sounddevice ({lang})...")
             recording = self.sd.rec(int(duration*fs), samplerate=fs, channels=1, dtype='int16')
             for _ in range(duration*10):
                 time.sleep(0.1)

@@ -1,7 +1,7 @@
 """
-JARVIS Tägliches Briefing
-- Wetter, News, Termine, Tasks zusammenfassen
-- Automatisch zur eingestellten Uhrzeit oder auf Anfrage
+My Jarvis daily briefing
+- summarises weather, news, appointments and tasks
+- automatically at the configured time, or on request
 """
 import logging
 import threading
@@ -24,10 +24,10 @@ class BriefingManager:
         sections = {}
         with ThreadPoolExecutor(max_workers=4) as pool:
             futures = {}
-            futures[pool.submit(self._get_weather)] = "wetter"
+            futures[pool.submit(self._get_weather)] = "weather"
             futures[pool.submit(self._get_news)] = "news"
-            futures[pool.submit(self._get_calendar)] = "termine"
-            futures[pool.submit(self._get_tasks)] = "aufgaben"
+            futures[pool.submit(self._get_calendar)] = "appointments"
+            futures[pool.submit(self._get_tasks)] = "tasks"
 
             for future in as_completed(futures, timeout=30):
                 key = futures[future]
@@ -36,43 +36,43 @@ class BriefingManager:
                     if result:
                         sections[key] = result
                 except Exception as e:
-                    logger.warning("[Briefing] %s fehlgeschlagen: %s", key, e)
+                    logger.warning("[Briefing] %s failed: %s", key, e)
 
         return sections
 
     def format_briefing(self, sections: dict) -> str:
         now = datetime.now()
         hour = now.hour
-        greet = "Guten Morgen" if hour < 12 else ("Guten Tag" if hour < 18 else "Guten Abend")
+        greet = "Good morning" if hour < 12 else ("Good afternoon" if hour < 18 else "Good evening")
         date_str = now.strftime("%A, %d. %B %Y")
 
-        lines = [f"**{greet}! Hier ist dein Briefing für {date_str}:**\n"]
+        lines = [f"**{greet}! Here is your briefing for {date_str}:**\n"]
 
-        if "wetter" in sections:
-            lines.append(f"**Wetter:** {sections['wetter']}\n")
+        if "weather" in sections:
+            lines.append(f"**Weather:** {sections['weather']}\n")
 
-        if "termine" in sections:
-            lines.append(f"**Termine heute:**\n{sections['termine']}\n")
+        if "appointments" in sections:
+            lines.append(f"**Appointments today:**\n{sections['appointments']}\n")
 
-        if "aufgaben" in sections:
-            lines.append(f"**Offene Aufgaben:**\n{sections['aufgaben']}\n")
+        if "tasks" in sections:
+            lines.append(f"**Open tasks:**\n{sections['tasks']}\n")
 
         if "news" in sections:
-            lines.append(f"**Nachrichten:**\n{sections['news']}\n")
+            lines.append(f"**News:**\n{sections['news']}\n")
 
         if len(lines) == 1:
-            lines.append("Keine Daten verfügbar. Konfiguriere Kalender und Tasks in den Einstellungen.")
+            lines.append("No data available. Configure the calendar and tasks in the settings.")
 
         return "\n".join(lines)
 
     def _get_weather(self) -> Optional[str]:
         import requests
-        wohnort = self.config.get("wohnort", "")
-        if not wohnort:
+        location = self.config.get("location", "")
+        if not location:
             return None
         try:
             r = requests.get(
-                f"https://wttr.in/{wohnort}?format=3&lang=de",
+                f"https://wttr.in/{location}?format=3&lang=de",
                 timeout=10,
                 headers={"User-Agent": "JARVIS/2.2"}
             )

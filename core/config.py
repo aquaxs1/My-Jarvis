@@ -1,5 +1,5 @@
 """
-JARVIS Konfiguration v2.8 – Encrypted API Key Storage
+My Jarvis configuration v2.8 – encrypted API key storage
 """
 import json
 import hashlib
@@ -17,30 +17,42 @@ SERVICE_NAME = "jarvis-assistant"
 ACCOUNT_NAME = "api_key"
 SALT_PATH = Path.home() / ".jarvis" / ".config_salt"
 
-# Bugs 10–13: weitere sensible Felder dürfen NICHT im Klartext in config.json
-# landen. Sie werden inline mit Fernet (gleicher abgeleiteter Schlüssel)
-# verschlüsselt und mit FERNET_PREFIX markiert. api_key bleibt separat
-# (keyring-bevorzugt) – siehe _store_key/_retrieve_key.
+# Bugs 10-13: further sensitive fields must NOT land in config.json as plain
+# text. They are encrypted inline with Fernet (the same derived key) and marked
+# with FERNET_PREFIX. api_key stays separate (keyring preferred) – see
+# _store_key/_retrieve_key.
 SECRET_FIELDS = (
     "email_password",
     "notion_token",
     "todoist_token",
     "ha_token",
 )
-FERNET_PREFIX = "__FERNET__:"   # Markierung für inline-verschlüsselte Werte
+FERNET_PREFIX = "__FERNET__:"   # marks inline-encrypted values
 
 logger = logging.getLogger("jarvis.config")
 
+# v3.0: config keys used to be German. Old config.json files are migrated on
+# load, so an existing installation keeps its settings.
+LEGACY_KEYS = {
+    "anrede": "salutation",
+    "sprache": "language",
+    "redeart": "tone",
+    "webcam_erlaubt": "webcam_allowed",
+    "wohnort": "location",
+    "aktien_symbole": "stock_symbols",
+}
+LEGACY_TONES = {"professionell": "professional", "jugendlich": "casual"}
+
 DEFAULT_CONFIG = {
-    "name": "JARVIS",
-    "anrede": "Sir",
-    "sprache": "de-DE",
-    "redeart": "professionell",
+    "name": "My Jarvis",
+    "salutation": "Sir",
+    "language": "en-US",
+    "tone": "professional",
     "api_provider": "anthropic",
     "api_key": "",
-    "webcam_erlaubt": False,
-    "wohnort": "Wien, Österreich",
-    "aktien_symbole": ["AAPL", "MSFT", "NVDA"],
+    "webcam_allowed": False,
+    "location": "Vienna, Austria",
+    "stock_symbols": ["AAPL", "MSFT", "NVDA"],
     "tts_enabled": True,
     "tts_voice": "",
     "suggestions_enabled": True,
@@ -116,8 +128,8 @@ def _store_key(api_key: str) -> str:
     except Exception as e:
         logger.error(f"[Config] Secure storage failed completely: {type(e).__name__}")
         raise RuntimeError(
-            "API-Key konnte nicht sicher gespeichert werden. "
-            "Bitte 'cryptography' installieren: pip install cryptography"
+            "The API key could not be stored securely. "
+            "Please install 'cryptography': pip install cryptography"
         )
 
 
@@ -158,12 +170,11 @@ def _retrieve_key(sentinel: str) -> str:
 
 
 def _encrypt_value(value: str) -> str:
-    """Verschlüsselt einen einzelnen Secret-Wert inline (Fernet).
+    """Encrypts a single secret value inline (Fernet).
 
-    Gibt FERNET_PREFIX + Token zurück. Leere/bereits verschlüsselte Werte
-    werden unverändert durchgereicht. Schlägt die Verschlüsselung fehl
-    (z.B. fehlendes 'cryptography'), wird eine RuntimeError geworfen statt
-    still Klartext zu speichern.
+    Returns FERNET_PREFIX + token. Empty or already encrypted values are passed
+    through unchanged. If encryption fails (e.g. 'cryptography' is missing) a
+    RuntimeError is raised instead of quietly storing plain text.
     """
     if not value or not isinstance(value, str) or value.startswith(FERNET_PREFIX):
         return value
@@ -173,15 +184,15 @@ def _encrypt_value(value: str) -> str:
         token = f.encrypt(value.encode("utf-8")).decode("ascii")
         return FERNET_PREFIX + token
     except Exception as e:
-        logger.error("[Config] Secret-Verschlüsselung fehlgeschlagen: %s", type(e).__name__)
+        logger.error("[Config] Secret encryption failed: %s", type(e).__name__)
         raise RuntimeError(
-            "Sensibles Feld konnte nicht verschlüsselt werden. "
-            "Bitte 'cryptography' installieren: pip install cryptography"
+            "A sensitive field could not be encrypted. "
+            "Please install 'cryptography': pip install cryptography"
         )
 
 
 def _decrypt_value(value: str) -> str:
-    """Entschlüsselt einen inline-verschlüsselten Secret-Wert wieder zu Klartext."""
+    """Decrypts an inline-encrypted secret value back to plain text."""
     if not value or not isinstance(value, str) or not value.startswith(FERNET_PREFIX):
         return value
     try:
@@ -189,8 +200,27 @@ def _decrypt_value(value: str) -> str:
         f = Fernet(_derive_fernet_key())
         return f.decrypt(value[len(FERNET_PREFIX):].encode("ascii")).decode("utf-8")
     except Exception as e:
-        logger.warning("[Config] Secret-Entschlüsselung fehlgeschlagen: %s", type(e).__name__)
+        logger.warning("[Config] Secret decryption failed: %s", type(e).__name__)
         return ""
+
+
+def _migrate_legacy_keys(saved: dict) -> dict:
+    """v3.0: rename the old German config keys and values to their English names.
+
+    Runs on every load, so a config.json written by an earlier version keeps
+    working. New keys always win when both are present.
+    """
+    if not isinstance(saved, dict):
+        return {}
+    out = dict(saved)
+    for old, new in LEGACY_KEYS.items():
+        if old in out:
+            value = out.pop(old)
+            out.setdefault(new, value)
+    tone = out.get("tone")
+    if isinstance(tone, str) and tone in LEGACY_TONES:
+        out["tone"] = LEGACY_TONES[tone]
+    return out
 
 
 class Config:
@@ -205,9 +235,9 @@ class Config:
             try:
                 with open(CONFIG_PATH, "r", encoding="utf-8") as f:
                     saved = json.load(f)
-                base.update(saved)
+                base.update(_migrate_legacy_keys(saved))
             except Exception as e:
-                logger.error(f"[Config] Ladefehler: {type(e).__name__}")
+                logger.error(f"[Config] Load error: {type(e).__name__}")
 
         # Retrieve the real API key from secure storage
         needs_migration = False
@@ -216,26 +246,26 @@ class Config:
             base["api_key"] = _retrieve_key(raw_key)
         elif raw_key:
             # Legacy plaintext key found — migrate immediately to secure storage
-            logger.warning("[Config] Klartext-API-Key gefunden – migriere zu verschlüsselter Speicherung.")
+            logger.warning("[Config] Plain-text API key found – migrating to encrypted storage.")
             needs_migration = True
 
-        # Bugs 10–13: sensible Felder entschlüsseln; Klartext-Altbestände migrieren
+        # Bugs 10-13: decrypt sensitive fields; migrate any plain-text leftovers
         for field in SECRET_FIELDS:
             val = base.get(field, "")
             if isinstance(val, str) and val.startswith(FERNET_PREFIX):
                 base[field] = _decrypt_value(val)
             elif val:
-                logger.warning("[Config] Klartext-Secret '%s' gefunden – migriere zu "
-                               "verschlüsselter Speicherung.", field)
+                logger.warning("[Config] Plain-text secret '%s' found – migrating to "
+                               "encrypted storage.", field)
                 needs_migration = True
 
-        # Eine einzige Migrations-Speicherung verschlüsselt api_key + alle Secrets
+        # a single migration save encrypts api_key + every secret
         if needs_migration:
             try:
                 Config.save(base)
-                logger.info("[Config] Migration zu verschlüsselter Speicherung abgeschlossen.")
+                logger.info("[Config] Migration to encrypted storage complete.")
             except Exception as e:
-                logger.error("[Config] Migration fehlgeschlagen: %s", e)
+                logger.error("[Config] Migration failed: %s", e)
 
         return base
 
@@ -257,7 +287,7 @@ class Config:
         elif not api_key:
             to_save["api_key"] = ""
 
-        # Bugs 10–13: sensible Felder verschlüsselt ablegen (nie Klartext auf Disk)
+        # Bugs 10-13: store sensitive fields encrypted (never plain text on disk)
         for field in SECRET_FIELDS:
             val = to_save.get(field, "")
             if val and isinstance(val, str) and not val.startswith(FERNET_PREFIX):
@@ -267,7 +297,7 @@ class Config:
         _LEGACY_KEY_FIELDS = ("anthropic_api_key", "openai_api_key", "gemini_api_key")
         for field in _LEGACY_KEY_FIELDS:
             if field in to_save:
-                logger.warning("[Config] Entferne Legacy-Klartextfeld '%s'.", field)
+                logger.warning("[Config] Removing legacy plain-text field '%s'.", field)
                 to_save.pop(field)
 
         with open(CONFIG_PATH, "w", encoding="utf-8") as f:
@@ -280,50 +310,50 @@ class Config:
 
     @staticmethod
     def first_setup():
-        # Guard: nur im interaktiven Terminal ausführen, sonst Default speichern
+        # guard: only run in an interactive terminal, otherwise save the defaults
         if not (sys.stdin and sys.stdin.isatty()):
             logger.warning(
-                "[Config] first_setup() ohne TTY aufgerufen – speichere Defaults. "
-                "Konfiguration anschließend über GUI vornehmen."
+                "[Config] first_setup() called without a TTY – saving the defaults. "
+                "Configure it afterwards through the GUI."
             )
             config = DEFAULT_CONFIG.copy()
             Config.save(config)
             return config
 
         print("\n╔══════════════════════════════════╗")
-        print("║   JARVIS ERSTKONFIGURATION v2.8  ║")
+        print("║    MY JARVIS FIRST SETUP v2.8    ║")
         print("╚══════════════════════════════════╝\n")
 
         config = DEFAULT_CONFIG.copy()
 
-        print("Wie soll JARVIS Sie ansprechen?")
-        print("  1) Sir   2) Ma'am   3) Bro   4) Chef   5) Kein Titel")
-        c = input("Wahl (1-5): ").strip()
-        config["anrede"] = {"1": "Sir", "2": "Ma'am", "3": "Bro", "4": "Chef", "5": ""}.get(c, "Sir")
+        print("How should My Jarvis address you?")
+        print("  1) Sir   2) Ma'am   3) Bro   4) Boss   5) No title")
+        c = input("Choice (1-5): ").strip()
+        config["salutation"] = {"1": "Sir", "2": "Ma'am", "3": "Bro", "4": "Boss", "5": ""}.get(c, "Sir")
 
-        print("\nRedeart?")
-        print("  1) Professionell   2) Normal   3) Jugendlich")
-        r = input("Wahl (1-3): ").strip()
-        config["redeart"] = {"1": "professionell", "2": "normal", "3": "jugendlich"}.get(r, "normal")
+        print("\nTone?")
+        print("  1) Professional   2) Normal   3) Casual")
+        r = input("Choice (1-3): ").strip()
+        config["tone"] = {"1": "professional", "2": "normal", "3": "casual"}.get(r, "normal")
 
-        print("\nKI-Anbieter?")
+        print("\nAI provider?")
         print("  1) Anthropic Claude   2) OpenAI ChatGPT   3) Google Gemini")
-        print("  4) NVIDIA NIM         5) Mistral          6) Lokal (Ollama)")
-        p = input("Wahl (1-6): ").strip()
+        print("  4) NVIDIA NIM         5) Mistral          6) Local (Ollama)")
+        p = input("Choice (1-6): ").strip()
         providers = {"1": "anthropic", "2": "openai", "3": "gemini", "4": "nvidia", "5": "mistral", "6": "local"}
         config["api_provider"] = providers.get(p, "anthropic")
 
         if config["api_provider"] != "local":
-            config["api_key"] = input(f"\nAPI-Key für {config['api_provider']}: ").strip()
+            config["api_key"] = input(f"\nAPI key for {config['api_provider']}: ").strip()
         else:
             config["api_key"] = ""
-            config["local_url"] = input("Ollama URL (z.B. http://localhost:11434): ").strip() or "http://localhost:11434"
-            config["local_model"] = input("Modell (z.B. llama3): ").strip() or "llama3"
+            config["local_url"] = input("Ollama URL (e.g. http://localhost:11434): ").strip() or "http://localhost:11434"
+            config["local_model"] = input("Model (e.g. llama3): ").strip() or "llama3"
 
-        ort = input("\nWohnort für Wetter (z.B. Wien, Österreich): ").strip()
-        if ort:
-            config["wohnort"] = ort
+        place = input("\nLocation for the weather (e.g. Vienna, Austria): ").strip()
+        if place:
+            config["location"] = place
 
         Config.save(config)
-        print("\n✅ Konfiguration gespeichert! (API-Key verschlüsselt)\n")
+        print("\n✅ Configuration saved! (the API key is encrypted)\n")
         return config

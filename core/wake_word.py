@@ -1,8 +1,8 @@
 """
-JARVIS Wake Word & Clap Detection
-- Wake Word: "Hey Jarvis" per speech_recognition (Fallback) oder pvporcupine
-- Clap Detection: 2x Klatschen per Amplitude-Analyse
-- Gemeinsamer Audio-Thread um Mikrofon-Konflikte zu vermeiden
+My Jarvis wake word & clap detection
+- wake word: "Hey Jarvis" via speech_recognition (fallback) or pvporcupine
+- clap detection: two claps, via amplitude analysis
+- one shared audio thread, to avoid microphone conflicts
 """
 import threading
 import time
@@ -75,7 +75,7 @@ class WakeWordListener:
         try:
             self._try_porcupine()
         except Exception as e:
-            logger.info("[WakeWord] Porcupine nicht verfügbar: %s", e)
+            logger.info("[WakeWord] Porcupine is not available: %s", e)
             self._use_porcupine = False
 
         if self._use_porcupine:
@@ -103,7 +103,7 @@ class WakeWordListener:
         try:
             import pyaudio
         except ImportError:
-            logger.warning("[WakeWord] pyaudio fehlt für Porcupine-Modus")
+            logger.warning("[WakeWord] pyaudio is missing for Porcupine mode")
             self._use_porcupine = False
             self._run_fallback_loop()
             return
@@ -176,7 +176,7 @@ class WakeWordListener:
 
                 try:
                     text = recognizer.recognize_google(
-                        audio, language=self.config.get("sprache", "de-DE")
+                        audio, language=self.config.get("language", "de-DE")
                     ).lower()
                     if any(phrase in text for phrase in WAKE_PHRASES):
                         logger.info("[WakeWord] '%s' erkannt (Fallback)", text)
@@ -258,7 +258,7 @@ class WakeWordListener:
         except ImportError:
             return CLAP_THRESHOLD_DEFAULT
 
-        logger.info("[WakeWord] Kalibriere Hintergrundlärm (%ss)...", duration)
+        logger.info("[WakeWord] Calibrating the background noise (%ss)...", duration)
         try:
             samples = int(SAMPLE_RATE * duration)
             audio = sd.rec(samples, samplerate=SAMPLE_RATE,

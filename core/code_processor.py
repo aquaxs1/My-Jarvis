@@ -59,10 +59,10 @@ def _test_python(code: str) -> tuple:
     except subprocess.TimeoutExpired:
         return False, "Syntax-Check Timeout"
     except FileNotFoundError as e:
-        logger.error("[CodeProcessor] Python-Interpreter nicht verfügbar: %s", e)
-        return False, f"Python-Interpreter nicht verfügbar: {e}"
+        logger.error("[CodeProcessor] The Python interpreter is not available: %s", e)
+        return False, f"The Python interpreter is not available: {e}"
     except OSError as e:
-        logger.error("[CodeProcessor] OS-Fehler beim Python-Check: %s", e)
+        logger.error("[CodeProcessor] OS error during the Python check: %s", e)
         return False, f"Python-Syntax-Check fehlgeschlagen: {e}"
     finally:
         try:
@@ -73,7 +73,7 @@ def _test_python(code: str) -> tuple:
 
 def _test_javascript(code: str) -> tuple:
     if not shutil.which("node"):
-        logger.info("[CodeProcessor] node nicht installiert – JS-Check übersprungen.")
+        logger.info("[CodeProcessor] node is not installed – the JS check was skipped.")
         return True, ""
     fd, path = tempfile.mkstemp(suffix=".js")
     try:
@@ -91,9 +91,9 @@ def _test_javascript(code: str) -> tuple:
         return False, "Syntax-Check Timeout"
     except FileNotFoundError as e:
         logger.error("[CodeProcessor] node nicht aufrufbar: %s", e)
-        return False, f"node nicht verfügbar: {e}"
+        return False, f"node is not available: {e}"
     except OSError as e:
-        logger.error("[CodeProcessor] OS-Fehler beim JS-Check: %s", e)
+        logger.error("[CodeProcessor] OS error during the JS check: %s", e)
         return False, f"JS-Syntax-Check fehlgeschlagen: {e}"
     finally:
         try:

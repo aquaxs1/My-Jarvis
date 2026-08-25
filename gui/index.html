@@ -619,12 +619,12 @@ body.light .st-btn-primary{color:#FFFFFF;}
           <div class="st-row top">
             <div><div class="st-row-label">Sprache</div><div class="st-row-hint">Sprache der Antworten und Sprachausgabe.</div></div>
             <div class="st-row-val">
-              <div class="chip on" data-f="sprache" data-v="de-DE">Deutsch</div>
-              <div class="chip" data-f="sprache" data-v="en-US">English</div>
-              <div class="chip" data-f="sprache" data-v="fr-FR">Francais</div>
-              <div class="chip" data-f="sprache" data-v="es-ES">Espanol</div>
-              <div class="chip" data-f="sprache" data-v="it-IT">Italiano</div>
-              <div class="chip" data-f="sprache" data-v="tr-TR">Turkce</div>
+              <div class="chip on" data-f="language" data-v="de-DE">Deutsch</div>
+              <div class="chip" data-f="language" data-v="en-US">English</div>
+              <div class="chip" data-f="language" data-v="fr-FR">Francais</div>
+              <div class="chip" data-f="language" data-v="es-ES">Espanol</div>
+              <div class="chip" data-f="language" data-v="it-IT">Italiano</div>
+              <div class="chip" data-f="language" data-v="tr-TR">Turkce</div>
             </div>
           </div>
           <div class="st-row">
@@ -661,21 +661,21 @@ body.light .st-btn-primary{color:#FFFFFF;}
           <div class="st-section">ANREDE &amp; STIL</div>
           <div class="st-row top">
             <div><div class="st-row-label">Anrede</div><div class="st-row-hint">Wie Jarvis dich anspricht.</div></div>
-            <div class="st-row-val" id="anrede-row">
-              <div class="chip on" data-f="anrede" data-v="Sir">Sir</div>
-              <div class="chip" data-f="anrede" data-v="Chef">Chef</div>
-              <div class="chip" data-f="anrede" data-v="Bro">Bro</div>
-              <div class="chip" data-f="anrede" data-v="Ma'am">Ma'am</div>
-              <div class="chip" data-f="anrede" data-v="">Kein</div>
+            <div class="st-row-val" id="salutation-row">
+              <div class="chip on" data-f="salutation" data-v="Sir">Sir</div>
+              <div class="chip" data-f="salutation" data-v="Chef">Chef</div>
+              <div class="chip" data-f="salutation" data-v="Bro">Bro</div>
+              <div class="chip" data-f="salutation" data-v="Ma'am">Ma'am</div>
+              <div class="chip" data-f="salutation" data-v="">Kein</div>
               <div class="chip-add" onclick="openCustomAnrede()" title="Eigene Anrede">+</div>
             </div>
           </div>
           <div class="st-row top">
             <div><div class="st-row-label">Redeart</div><div class="st-row-hint">Sprachstil der Antworten.</div></div>
             <div class="st-row-val">
-              <div class="chip on" data-f="redeart" data-v="professionell">Professionell</div>
-              <div class="chip" data-f="redeart" data-v="normal">Normal</div>
-              <div class="chip" data-f="redeart" data-v="jugendlich">Jugendlich</div>
+              <div class="chip on" data-f="tone" data-v="professional">Professionell</div>
+              <div class="chip" data-f="tone" data-v="normal">Normal</div>
+              <div class="chip" data-f="tone" data-v="casual">Jugendlich</div>
             </div>
           </div>
           <div class="st-savebar">
@@ -1141,19 +1141,19 @@ body.light .st-btn-primary{color:#FFFFFF;}
     <div class="sm-sect">
       <label class="sm-label">Anrede</label>
       <div class="sm-row">
-        <div class="chip on" data-f="anrede" data-v="Sir">Sir</div>
-        <div class="chip" data-f="anrede" data-v="Chef">Chef</div>
-        <div class="chip" data-f="anrede" data-v="Bro">Bro</div>
-        <div class="chip" data-f="anrede" data-v="Ma'am">Ma'am</div>
-        <div class="chip" data-f="anrede" data-v="">Kein</div>
+        <div class="chip on" data-f="salutation" data-v="Sir">Sir</div>
+        <div class="chip" data-f="salutation" data-v="Chef">Chef</div>
+        <div class="chip" data-f="salutation" data-v="Bro">Bro</div>
+        <div class="chip" data-f="salutation" data-v="Ma'am">Ma'am</div>
+        <div class="chip" data-f="salutation" data-v="">Kein</div>
       </div>
     </div>
     <div class="sm-sect">
       <label class="sm-label">Redeart</label>
       <div class="sm-row">
-        <div class="chip on" data-f="redeart" data-v="professionell">Professionell</div>
-        <div class="chip" data-f="redeart" data-v="normal">Normal</div>
-        <div class="chip" data-f="redeart" data-v="jugendlich">Jugendlich</div>
+        <div class="chip on" data-f="tone" data-v="professional">Professionell</div>
+        <div class="chip" data-f="tone" data-v="normal">Normal</div>
+        <div class="chip" data-f="tone" data-v="casual">Jugendlich</div>
       </div>
     </div>
     <div class="sm-sect">
@@ -1188,13 +1188,13 @@ body.light .st-btn-primary{color:#FFFFFF;}
 </div>
 
 <!-- CUSTOM ANREDE MODAL -->
-<div id="anrede-modal" class="modal">
+<div id="salutation-modal" class="modal">
   <div class="sm-panel" style="width:360px">
     <button class="sm-close" onclick="closeCustomAnrede()">✕</button>
     <div class="sm-title" style="font-size:13px">EIGENE ANREDE</div>
     <div class="sm-sub">Wie soll JARVIS Sie nennen?</div>
     <div class="sm-sect">
-      <input class="sm-input" id="custom-anrede-input" type="text" placeholder="z.B. Boss, Meister, Captain..." maxlength="20">
+      <input class="sm-input" id="custom-salutation-input" type="text" placeholder="z.B. Boss, Meister, Captain..." maxlength="20">
     </div>
     <button class="sm-save" onclick="saveCustomAnrede()">HINZUFÜGEN</button>
   </div>
@@ -1422,7 +1422,7 @@ const S={
   cfg:JSON.parse(localStorage.getItem('jcfg')||'null'),
   ws:null,listening:false,actionCount:0,typingEl:null,
   todoItems:[],todoRunning:false,killActive:false,
-  customAnreden:JSON.parse(localStorage.getItem('jcustomanrede')||'[]'),
+  customSalutations:JSON.parse(localStorage.getItem('jcustomsalutation')||'[]'),
 };
 
 // ══ LAUNCH ═══════════════════════════════════════════════════════════════════
@@ -1440,27 +1440,27 @@ function startApp(){
 
 // ══ CUSTOM ANREDE ════════════════════════════════════════════════════════════
 function restoreCustomAnreden(){
-  const row=document.getElementById('anrede-row');if(!row)return;
+  const row=document.getElementById('salutation-row');if(!row)return;
   const addBtn=row.querySelector('.chip-add');
-  S.customAnreden.forEach(a=>{
+  S.customSalutations.forEach(a=>{
     if(!row.querySelector(`.chip[data-v="${CSS.escape(a)}"]`)){
-      const c=document.createElement('div');c.className='chip';c.dataset.f='anrede';c.dataset.v=a;c.textContent=a;
+      const c=document.createElement('div');c.className='chip';c.dataset.f='salutation';c.dataset.v=a;c.textContent=a;
       row.insertBefore(c,addBtn);
     }
   });
 }
-function openCustomAnrede(){document.getElementById('anrede-modal').classList.add('show');setTimeout(()=>document.getElementById('custom-anrede-input').focus(),100);}
-function closeCustomAnrede(){document.getElementById('anrede-modal').classList.remove('show');}
+function openCustomAnrede(){document.getElementById('salutation-modal').classList.add('show');setTimeout(()=>document.getElementById('custom-salutation-input').focus(),100);}
+function closeCustomAnrede(){document.getElementById('salutation-modal').classList.remove('show');}
 function saveCustomAnrede(){
-  const val=document.getElementById('custom-anrede-input').value.trim();
+  const val=document.getElementById('custom-salutation-input').value.trim();
   if(!val){notify('Bitte etwas eingeben','err');return;}
-  if(!S.customAnreden.includes(val)){S.customAnreden.push(val);localStorage.setItem('jcustomanrede',JSON.stringify(S.customAnreden));}
-  const row=document.getElementById('anrede-row');const addBtn=row.querySelector('.chip-add');
-  row.querySelectorAll('.chip[data-f="anrede"]').forEach(x=>x.classList.remove('on'));
-  const c=document.createElement('div');c.className='chip on';c.dataset.f='anrede';c.dataset.v=val;c.textContent=val;
-  c.addEventListener('click',()=>{row.querySelectorAll('.chip[data-f="anrede"]').forEach(x=>x.classList.remove('on'));c.classList.add('on');});
+  if(!S.customSalutations.includes(val)){S.customSalutations.push(val);localStorage.setItem('jcustomsalutation',JSON.stringify(S.customSalutations));}
+  const row=document.getElementById('salutation-row');const addBtn=row.querySelector('.chip-add');
+  row.querySelectorAll('.chip[data-f="salutation"]').forEach(x=>x.classList.remove('on'));
+  const c=document.createElement('div');c.className='chip on';c.dataset.f='salutation';c.dataset.v=val;c.textContent=val;
+  c.addEventListener('click',()=>{row.querySelectorAll('.chip[data-f="salutation"]').forEach(x=>x.classList.remove('on'));c.classList.add('on');});
   row.insertBefore(c,addBtn);
-  document.getElementById('custom-anrede-input').value='';
+  document.getElementById('custom-salutation-input').value='';
   closeCustomAnrede();notify('Anrede hinzugefügt');
 }
 
@@ -1491,18 +1491,18 @@ document.getElementById('setup-done-btn').addEventListener('click',()=>{
   const keyMap={anthropic:'sk-anthropic',openai:'sk-openai',gemini:'sk-gemini',nvidia:'sk-nvidia',mistral:'sk-mistral'};
   const key=p!=='local'?(document.getElementById(keyMap[p])?.value.trim()||''):'';
   if(!key&&p!=='local'){notify('Bitte API-Key eingeben.','err');return;}
-  const anrede=document.querySelector('#setup-modal .chip[data-f="anrede"].on')?.dataset.v||'Sir';
-  const redeart=document.querySelector('#setup-modal .chip[data-f="redeart"].on')?.dataset.v||'professionell';
+  const salutation=document.querySelector('#setup-modal .chip[data-f="salutation"].on')?.dataset.v||'Sir';
+  const tone=document.querySelector('#setup-modal .chip[data-f="tone"].on')?.dataset.v||'professional';
   const extra={};
   if(p==='nvidia')extra.nvidia_model=document.getElementById('sm-nvidia')?.value.trim()||'meta/llama-3.1-70b-instruct';
   if(p==='local'){extra.local_url=document.getElementById('su-local')?.value.trim()||'http://localhost:11434';extra.local_model=document.getElementById('sm-local')?.value.trim()||'llama3';}
-  S.cfg={anrede,redeart,api_provider:p,api_key:key,sprache:'de-DE',
-    wohnort:document.getElementById('setup-loc')?.value.trim()||'Wien',
+  S.cfg={salutation,tone,api_provider:p,api_key:key,language:'de-DE',
+    location:document.getElementById('setup-loc')?.value.trim()||'Wien',
     tts_enabled:true,suggestions_enabled:true,...extra};
   localStorage.setItem('jcfg',JSON.stringify(S.cfg));
   document.getElementById('setup-modal').classList.remove('show');
   startApp();sendWS('save_config',S.cfg);
-  addMsg('jarvis',`Willkommen${anrede?', '+anrede:''}. JARVIS v2.8 bereit.`);
+  addMsg('jarvis',`Willkommen${salutation?', '+salutation:''}. JARVIS v2.8 bereit.`);
 });
 
 // ══ SETTINGS ══════════════════════════════════════════════════════════════════
@@ -1623,13 +1623,13 @@ function loadCfgIntoSettings(){
   if(!S.cfg)return;
   restoreCustomAnreden();
   const p=S.cfg.api_provider||'anthropic';
-  document.querySelectorAll('#settings-modal .chip[data-f="anrede"]').forEach(c=>c.classList.toggle('on',c.dataset.v===(S.cfg.anrede||'')));
-  document.querySelectorAll('#settings-modal .chip[data-f="redeart"]').forEach(c=>c.classList.toggle('on',c.dataset.v===(S.cfg.redeart||'professionell')));
-  document.querySelectorAll('#settings-modal .chip[data-f="sprache"]').forEach(c=>c.classList.toggle('on',c.dataset.v===(S.cfg.sprache||'de-DE')));
+  document.querySelectorAll('#settings-modal .chip[data-f="salutation"]').forEach(c=>c.classList.toggle('on',c.dataset.v===(S.cfg.salutation||'')));
+  document.querySelectorAll('#settings-modal .chip[data-f="tone"]').forEach(c=>c.classList.toggle('on',c.dataset.v===(S.cfg.tone||'professional')));
+  document.querySelectorAll('#settings-modal .chip[data-f="language"]').forEach(c=>c.classList.toggle('on',c.dataset.v===(S.cfg.language||'de-DE')));
   document.querySelectorAll('#settings-modal .ap').forEach(c=>c.classList.toggle('on',c.dataset.p===p));
   document.querySelectorAll('#settings-modal [id^="af-"]').forEach(f=>f.classList.remove('show'));
   document.getElementById('af-'+p)?.classList.add('show');
-  if(S.cfg.wohnort){const l=document.getElementById('s-loc');if(l)l.value=S.cfg.wohnort;}
+  if(S.cfg.location){const l=document.getElementById('s-loc');if(l)l.value=S.cfg.location;}
   if(S.cfg.nvidia_model){const m=document.getElementById('m-nvidia');if(m)m.value=S.cfg.nvidia_model;}
   const ttsOn=S.cfg.tts_enabled!==false;
   const ttsEl=document.getElementById('tgl-tts');
@@ -1682,10 +1682,10 @@ document.getElementById('sm-save-btn').addEventListener('click',()=>{
   const p=document.querySelector('#settings-modal .ap.on')?.dataset.p||'anthropic';
   const keyMap={anthropic:'k-anthropic',openai:'k-openai',gemini:'k-gemini',nvidia:'k-nvidia',mistral:'k-mistral'};
   const key=p!=='local'?(document.getElementById(keyMap[p])?.value.trim()||''):'';
-  const anrede=document.querySelector('#settings-modal .chip[data-f="anrede"].on')?.dataset.v??S.cfg?.anrede??'';
-  const redeart=document.querySelector('#settings-modal .chip[data-f="redeart"].on')?.dataset.v||S.cfg?.redeart||'professionell';
-  const sprache=document.querySelector('#settings-modal .chip[data-f="sprache"].on')?.dataset.v||S.cfg?.sprache||'de-DE';
-  const wohnort=document.getElementById('s-loc')?.value.trim()||S.cfg?.wohnort||'';
+  const salutation=document.querySelector('#settings-modal .chip[data-f="salutation"].on')?.dataset.v??S.cfg?.salutation??'';
+  const tone=document.querySelector('#settings-modal .chip[data-f="tone"].on')?.dataset.v||S.cfg?.tone||'professional';
+  const language=document.querySelector('#settings-modal .chip[data-f="language"].on')?.dataset.v||S.cfg?.language||'de-DE';
+  const location=document.getElementById('s-loc')?.value.trim()||S.cfg?.location||'';
   const tts_enabled=document.getElementById('tgl-tts').classList.contains('on')?true:false;
   const suggestions_enabled=document.getElementById('tgl-sug').classList.contains('on')?true:false;
   const tts_voice=document.getElementById('voice-select')?.value||'';
@@ -1708,7 +1708,7 @@ document.getElementById('sm-save-btn').addEventListener('click',()=>{
   // Account / name
   const user_name=document.getElementById('s-name')?.value.trim()||S.cfg?.user_name||S.cfg?.name||'';
   if(!S.cfg)S.cfg={};
-  Object.assign(S.cfg,{anrede,redeart,sprache,api_provider:p,wohnort,tts_enabled:tts_enabled,suggestions_enabled:suggestions_enabled,tts_voice,wake_word_enabled,clap_enabled,clap_threshold,memory_history,memory_auto,vision_allowed,telemetry_enabled,code_check,code_format,code_retries,user_name,...extra});
+  Object.assign(S.cfg,{salutation,tone,language,api_provider:p,location,tts_enabled:tts_enabled,suggestions_enabled:suggestions_enabled,tts_voice,wake_word_enabled,clap_enabled,clap_threshold,memory_history,memory_auto,vision_allowed,telemetry_enabled,code_check,code_format,code_retries,user_name,...extra});
   if(key)S.cfg.api_key=key;
   localStorage.setItem('jcfg',JSON.stringify(S.cfg));
   sendWS('save_config',S.cfg);
@@ -2067,7 +2067,7 @@ function initInputs(){
   document.getElementById('visionbtn').addEventListener('click',()=>{if(S.killActive){notify('Kill-Switch aktiv.','err');return;}sendWS('toggle_live_vision',{});});
   document.getElementById('copilotbtn').addEventListener('click',openCopilotModal);
   document.getElementById('copilot-task-input')?.addEventListener('keydown',e=>{if(e.key==='Enter')startCopilot();});
-  document.getElementById('custom-anrede-input')?.addEventListener('keydown',e=>{if(e.key==='Enter')saveCustomAnrede();});
+  document.getElementById('custom-salutation-input')?.addEventListener('keydown',e=>{if(e.key==='Enter')saveCustomAnrede();});
   document.getElementById('todo-input')?.addEventListener('keydown',e=>{if(e.key==='Enter')saveTodoFromModal();});
   const tinp=document.getElementById('tinp');
   tinp.addEventListener('input',()=>{
@@ -2115,7 +2115,7 @@ async function startScreenshot(query){
 async function processOffline(text){
   const cfg=S.cfg;if(!cfg?.api_key){addMsg('jarvis','Kein API-Key — Einstellungen öffnen.');openSettings();return;}
   showTyping();
-  const sys={professionell:'Du bist JARVIS. Präzise, Fachbegriffe, Deutsch.',normal:'Du bist JARVIS. Freundlich, klar, Deutsch.',jugendlich:'Du bist JARVIS. Jugendslang (bro, gng, wallah). Deutsch.'}[cfg.redeart||'normal']+(cfg.anrede?` Anrede: ${cfg.anrede}.`:'')+(cfg.wohnort?` Standort des Nutzers: ${cfg.wohnort}. Nutze diesen ohne nachzufragen.`:'');
+  const sys={professionell:'Du bist JARVIS. Präzise, Fachbegriffe, Deutsch.',normal:'Du bist JARVIS. Freundlich, klar, Deutsch.',jugendlich:'Du bist JARVIS. Jugendslang (bro, gng, wallah). Deutsch.'}[cfg.tone||'normal']+(cfg.salutation?` Anrede: ${cfg.salutation}.`:'')+(cfg.location?` Standort des Nutzers: ${cfg.location}. Nutze diesen ohne nachzufragen.`:'');
   try{
     let reply='';
     if(cfg.api_provider==='anthropic'){
@@ -2154,7 +2154,7 @@ function speak(text){
   if(S.cfg?.tts_enabled===false)return;
   let clean=text.replace(/```[\s\S]*?```/g,' Codeblock. ').replace(/\s+/g,' ').trim();
   window.speechSynthesis.cancel();
-  const lang=S.cfg?.sprache||'de-DE';
+  const lang=S.cfg?.language||'de-DE';
   const chunks=clean.match(/[^.!?]+[.!?]*/g)||[clean];
   const voices=window.speechSynthesis.getVoices();
   const selectedName=S.cfg?.tts_voice||'';

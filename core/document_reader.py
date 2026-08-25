@@ -1,7 +1,7 @@
 """
-JARVIS Document Reader
-- PDF, DOCX, TXT, MD lesen
-- Chunking für lange Dokumente
+My Jarvis document reader
+- reads PDF, DOCX, TXT, MD
+- chunking for long documents
 """
 import os
 import logging
@@ -30,7 +30,7 @@ class DocumentReader:
             else:
                 return self._read_text(path)
         except Exception as e:
-            logger.error("[DocReader] Fehler beim Lesen von %s: %s", filepath, e)
+            logger.error("[DocReader] Error reading %s: %s", filepath, e)
             return None
 
     def _read_pdf(self, path: Path) -> Optional[str]:
@@ -45,7 +45,7 @@ class DocumentReader:
             if text_parts:
                 return "\n\n".join(text_parts)
         except ImportError:
-            logger.debug("[DocReader] pdfplumber nicht installiert, versuche pypdf")
+            logger.debug("[DocReader] pdfplumber is not installed, trying pypdf")
         except Exception as e:
             logger.debug("[DocReader] pdfplumber Fehler: %s", e)
 

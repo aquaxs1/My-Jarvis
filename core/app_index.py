@@ -1,21 +1,21 @@
 """
-JARVIS App-Index — universelle Programm- & Browser-Erkennung (v2.9)
-===================================================================
-Ziel (Spec v2.9, Teil 1 + 3): JARVIS soll JEDES installierte oder laufende
-Programm finden — nicht nur eine feste Liste.
+My Jarvis app index — universal program & browser detection (v2.9)
+==================================================================
+Goal (spec v2.9, parts 1 + 3): My Jarvis should find ANY installed or running
+program — not just a fixed list.
 
-Drei Bausteine:
-- **Laufende Prozesse** dynamisch durchsuchen (psutil) — Teil 1a
-- **Installierte Programme** aus drei Quellen scannen, cachen — Teil 1b
-    1. Windows-Registry (Uninstall-Keys, zuverlässigste Quelle)
-    2. Startmenü-Verknüpfungen (*.lnk)
-    3. Bekannte Installations-Ordner (Program Files, LocalAppData)
-- **Unscharfe Suche** (difflib + Substring-Fallback) — Teil 1c
-- **Universelle Browser-Erkennung** (Registry-Default + psutil + Edge) — Teil 3
+Building blocks:
+- **Running processes** searched dynamically (psutil) — part 1a
+- **Installed programs** scanned from three sources and cached — part 1b
+    1. the Windows registry (uninstall keys, the most reliable source)
+    2. Start-menu shortcuts (*.lnk)
+    3. the usual install folders (Program Files, LocalAppData)
+- **Fuzzy search** (difflib + a substring fallback) — part 1c
+- **Universal browser detection** (registry default + psutil + Edge) — part 3
 
-Alles defensiv: schlägt eine Quelle fehl (fehlende Rechte, kein Windows,
-kein psutil), wird sie still übersprungen statt den Aufruf zu sprengen.
-Der Cache liegt in ~/.jarvis/installed_apps.json und wird alle 24h erneuert.
+Everything is defensive: if a source fails (missing rights, not Windows, no
+psutil) it is skipped quietly instead of blowing up the call.
+The cache lives in ~/.jarvis/installed_apps.json and is refreshed every 24h.
 """
 
 from __future__ import annotations
@@ -31,11 +31,11 @@ from difflib import get_close_matches
 
 logger = logging.getLogger("jarvis.app_index")
 
-# ── Konstanten ───────────────────────────────────────────────────────────────
-CACHE_TTL          = 24 * 3600          # Cache 24h gültig
-FUZZY_CUTOFF       = 0.4                 # Spec 1c: difflib-Schwelle
-FUZZY_N            = 5                   # max. Treffer aus difflib
-_IGNORE_EXES       = {                    # uninteressante/technische .exe ausblenden
+# ── constants ────────────────────────────────────────────────────────────────
+CACHE_TTL          = 24 * 3600          # the cache is valid for 24h
+FUZZY_CUTOFF       = 0.4                 # spec 1c: the difflib threshold
+FUZZY_N            = 5                   # max hits from difflib
+_IGNORE_EXES       = {                    # hide uninteresting/technical .exe files
     "unins000.exe", "uninstall.exe", "uninst.exe", "setup.exe",
     "update.exe", "updater.exe", "crashpad_handler.exe", "crashreporter.exe",
     "vcredist.exe", "vc_redist.exe", "dxsetup.exe", "python.exe", "pythonw.exe",
@@ -103,7 +103,7 @@ def _clean_icon_path(raw: str) -> str:
 
 
 def _scan_registry() -> list:
-    """Liest installierte Programme aus den Uninstall-Keys (HKLM + HKCU,
+    """Reads installed programs from the uninstall keys (HKLM + HKCU,
     32- und 64-Bit-View). Liefert [{name, path, source}]."""
     if platform.system() != "Windows":
         return []
@@ -114,7 +114,7 @@ def _scan_registry() -> list:
 
     apps: list = []
     uninstall = r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
-    # (root, zusätzliche access-flags) — beide Registry-Views abdecken
+    # (root, extra access flags) — cover both registry views
     roots = [
         (winreg.HKEY_LOCAL_MACHINE, winreg.KEY_WOW64_64KEY),
         (winreg.HKEY_LOCAL_MACHINE, winreg.KEY_WOW64_32KEY),
@@ -177,10 +177,10 @@ def _reg_int(winreg, key, value: str) -> int:
         return -1
 
 
-# ── Quelle 2: Startmenü-Verknüpfungen (*.lnk) ────────────────────────────────
+# ── source 2: Start-menu shortcuts (*.lnk) ───────────────────────────────────
 def _scan_start_menu() -> list:
-    """Sammelt *.lnk aus den beiden Startmenü-Ordnern. os.startfile() kann
-    .lnk direkt starten, daher ist der .lnk-Pfad ein gültiges Start-Ziel."""
+    """Collects *.lnk from both Start-menu folders. os.startfile() can launch a
+    .lnk directly, so the .lnk path is a valid launch target."""
     if platform.system() != "Windows":
         return []
     roots = [
@@ -205,9 +205,9 @@ def _scan_start_menu() -> list:
     return apps
 
 
-# ── Quelle 3: Bekannte Installations-Ordner (.exe eine Ebene tief) ───────────
+# ── source 3: the usual install folders (.exe one level deep) ────────────────
 def _scan_program_dirs() -> list:
-    """Listet .exe-Dateien eine Ebene tief in den üblichen Programm-Ordnern."""
+    """Lists .exe files one level deep in the usual program folders."""
     if platform.system() != "Windows":
         return []
     la = os.environ.get("LOCALAPPDATA", "")
@@ -255,31 +255,33 @@ def _add_exe(apps: list, path: str, folder: str = "") -> None:
         apps.append({"name": name, "path": path, "source": "programdir"})
 
 
-# Häufige Windows-Bordmittel (liegen in System32, nicht in Program Files).
-# Friendly-Name → exe in %WINDIR%\System32. Bewusst OHNE cmd/powershell/regedit
-# (die sind in der Executor-Blockliste und nicht zum Starten gedacht).
+# Common Windows built-ins (they live in System32, not in Program Files).
+# Friendly name → exe in %WINDIR%\System32. Deliberately WITHOUT
+# cmd/powershell/regedit (those are on the executor block list and are not meant
+# to be launched). Some entries are the localised display names Windows itself
+# shows on a non-English install, so those names are matched too.
 _WINDOWS_BUILTINS = {
     "Notepad":        "notepad.exe",
-    "Editor":         "notepad.exe",      # dt. Anzeigename
+    "Editor":         "notepad.exe",      # German Windows display name
     "Calculator":     "calc.exe",
-    "Rechner":        "calc.exe",          # dt. Anzeigename
+    "Rechner":        "calc.exe",          # German Windows display name
     "Paint":          "mspaint.exe",
     "WordPad":        "write.exe",
     "Explorer":       "explorer.exe",
-    "Datei-Explorer": "explorer.exe",
+    "Datei-Explorer": "explorer.exe",      # German Windows display name
     "Task Manager":   "Taskmgr.exe",
-    "Task-Manager":   "Taskmgr.exe",
+    "Task-Manager":   "Taskmgr.exe",       # German Windows display name
     "Snipping Tool":  "SnippingTool.exe",
     "Character Map":  "charmap.exe",
     "Control Panel":  "control.exe",
-    "Systemsteuerung":"control.exe",
+    "Systemsteuerung":"control.exe",       # German Windows display name
     "Magnifier":      "magnify.exe",
     "On-Screen Keyboard": "osk.exe",
 }
 
 
 def _scan_windows_builtins() -> list:
-    """Bekannte Windows-Bordmittel mit ihren System32-Pfaden (wenn vorhanden)."""
+    """Known Windows built-ins with their System32 paths (where present)."""
     if platform.system() != "Windows":
         return []
     sysroot = os.environ.get("WINDIR", r"C:\Windows")
@@ -292,10 +294,10 @@ def _scan_windows_builtins() -> list:
     return apps
 
 
-# ── Scan + Dedup + Cache ──────────────────────────────────────────────────────
+# ── scan + dedup + cache ──────────────────────────────────────────────────────
 def _dedup(apps: list) -> list:
-    """Duplikate (gleicher Name, case-insensitiv) zusammenführen. Einträge mit
-    echtem .exe/.lnk-Pfad werden bevorzugt."""
+    """Merges duplicates (the same name, case-insensitively). Entries with a real
+    .exe/.lnk path win."""
     best: dict = {}
     for a in apps:
         name = (a.get("name") or "").strip()
@@ -335,7 +337,7 @@ def scan_installed_apps() -> list:
 
 
 def _load_cache() -> tuple[list | None, float]:
-    """(apps, mtime) aus der Cache-Datei – oder (None, 0) wenn nicht vorhanden."""
+    """(apps, mtime) from the cache file – or (None, 0) when it is not there."""
     p = _cache_path()
     try:
         if not os.path.isfile(p):
@@ -357,44 +359,44 @@ def _save_cache(apps: list) -> None:
             json.dump({"version": "2.9", "scanned_at": time.time(),
                        "apps": apps}, f, ensure_ascii=False, indent=1)
     except OSError as e:
-        logger.debug("[AppIndex] Cache nicht schreibbar: %s", e)
+        logger.debug("[AppIndex] Cache is not writable: %s", e)
 
 
 def get_installed_apps(force_refresh: bool = False) -> list:
-    """Installierte Programme zurückgeben – aus Cache, sonst frisch scannen.
+    """Returns the installed programs – from the cache, otherwise a fresh scan.
 
-    Cache (Disk + Prozess-Speicher) wird alle 24h oder bei force_refresh erneuert.
-    Thread-safe.
+    The cache (on disk + in process memory) is refreshed every 24h, or on
+    force_refresh. Thread-safe.
     """
     global _MEM_CACHE, _MEM_CACHE_TS
     with _LOCK:
         now = time.time()
-        # 1. In-Process-Cache
+        # 1. the in-process cache
         if (not force_refresh and _MEM_CACHE is not None
                 and (now - _MEM_CACHE_TS) < CACHE_TTL):
             return _MEM_CACHE
-        # 2. Disk-Cache
+        # 2. the disk cache
         if not force_refresh:
             apps, mtime = _load_cache()
             if apps is not None and (now - mtime) < CACHE_TTL:
                 _MEM_CACHE, _MEM_CACHE_TS = apps, now
                 return apps
-        # 3. Frisch scannen
+        # 3. a fresh scan
         apps = scan_installed_apps()
-        if apps:                       # leeres Ergebnis nicht persistieren
+        if apps:                       # never persist an empty result
             _save_cache(apps)
         _MEM_CACHE, _MEM_CACHE_TS = apps, now
         return apps
 
 
 def refresh_installed_apps() -> list:
-    """Erzwingt einen Neu-Scan und aktualisiert den Cache."""
+    """Forces a re-scan and refreshes the cache."""
     return get_installed_apps(force_refresh=True)
 
 
 def prewarm(background: bool = True) -> None:
-    """Beim Start einmalig scannen (Spec). Standardmäßig im Hintergrund-Thread,
-    damit der Programmstart nicht blockiert."""
+    """Scan once at startup (per the spec). By default in a background thread, so
+    that starting the program does not block."""
     if not background:
         get_installed_apps()
         return
@@ -416,11 +418,11 @@ def find_best_match(user_term: str, all_apps: list | None = None,
     'vlc' → 'VLC media player', 'edge' → 'Microsoft Edge', 'photo' → 'Photoshop'.
     [{name,path,source}].
 
-    Ranking (gute Treffer schlagen unscharfes difflib-Rauschen):
-      0. exakter Name                        ("edge" == "edge")
-      1. Name/Wort beginnt mit dem Begriff   ("photo" → "Photoshop")
-      2. Begriff ist Teilstring              ("edge" → "Microsoft Edge")
-      3. difflib-Ähnlichkeit (füllt auf)     ("chrom" → "Chrome")
+    Ranking (good hits beat fuzzy difflib noise):
+      0. an exact name                       ("edge" == "edge")
+      1. name/word starts with the term      ("photo" → "Photoshop")
+      2. the term is a substring             ("edge" → "Microsoft Edge")
+      3. difflib similarity (fills the rest) ("chrom" → "Chrome")
     """
     term = (user_term or "").strip().lower()
     if not term:
@@ -443,11 +445,11 @@ def find_best_match(user_term: str, all_apps: list | None = None,
             seen.add(name)
             ordered.append(by_name[name])
 
-    # 0. exakter Treffer
+    # 0. an exact hit
     if term in by_name:
         take(term)
 
-    # 1. Präfix: Name oder ein Wort darin beginnt mit dem Begriff (kürzere zuerst)
+    # 1. prefix: the name or a word in it starts with the term (shorter first)
     prefix = sorted(
         (n for n in names
          if n.startswith(term) or any(w.startswith(term) for w in n.split())),
@@ -455,22 +457,22 @@ def find_best_match(user_term: str, all_apps: list | None = None,
     for n in prefix:
         take(n)
 
-    # 2. Substring: Begriff kommt irgendwo im Namen vor (kürzere zuerst)
+    # 2. substring: the term appears somewhere in the name (shorter first)
     substr = sorted((n for n in names if term in n), key=len)
     for n in substr:
         take(n)
 
-    # 3. difflib-Ähnlichkeit füllt die restlichen Plätze
+    # 3. difflib similarity fills the remaining slots
     for m in get_close_matches(term, names, n=FUZZY_N, cutoff=FUZZY_CUTOFF):
         take(m)
 
     return ordered[:limit]
 
 
-# ── Teil 1a: Laufende Prozesse dynamisch durchsuchen (psutil) ─────────────────
+# ── part 1a: search running processes dynamically (psutil) ───────────────────
 def list_running_processes() -> list:
-    """Alle laufenden Prozesse (deduped nach Name). [{name, exe, pid}].
-    Dient als Kandidatenliste für das Modell ('welcher passt zu X?')."""
+    """Every running process (deduped by name). [{name, exe, pid}].
+    Serves as the candidate list for the model ('which one matches X?')."""
     try:
         import psutil
     except Exception:  # noqa: BLE001
@@ -482,7 +484,7 @@ def list_running_processes() -> list:
             name = (info.get("name") or "").strip()
             if not name or name.lower() in _IGNORE_EXES:
                 continue
-            # je Prozessname nur einmal (erste PID reicht zum Fokussieren)
+            # once per process name (the first PID is enough to focus it)
             key = name.lower()
             if key not in out:
                 out[key] = {"name": name, "exe": info.get("exe") or "",
@@ -493,10 +495,10 @@ def list_running_processes() -> list:
 
 
 def find_running_processes(user_term: str, limit: int = 5) -> list:
-    """Laufende Prozesse, die unscharf zu user_term passen. [{name, exe, pid}].
+    """Running processes that fuzzily match user_term. [{name, exe, pid}].
 
-    Reine Python-Heuristik (Substring + difflib) — ohne Modell. Der Copilot kann
-    das Ergebnis zusätzlich vom Modell entscheiden lassen (Spec 1a)."""
+    A pure Python heuristic (substring + difflib) — no model involved. The copilot
+    can additionally have the model pick from the result (spec 1a)."""
     term = (user_term or "").strip().lower()
     if not term:
         return []
@@ -529,7 +531,7 @@ def find_running_processes(user_term: str, limit: int = 5) -> list:
 
 # ── Teil 3: universelle Browser-Erkennung ─────────────────────────────────────
 def get_default_browser_from_registry() -> dict | None:
-    """Standard-Browser aus der Windows-Registry. {name, progid} oder None.
+    """The default browser from the Windows registry. {name, progid}, or None.
 
     HKCU\\...\\Shell\\Associations\\UrlAssociations\\https\\UserChoice → ProgId.
     """
@@ -547,7 +549,7 @@ def get_default_browser_from_registry() -> dict | None:
     except OSError:
         return None
     progid = str(progid or "")
-    # ProgId → Anzeigename (auch Präfix-Matches abdecken)
+    # ProgId → display name (cover prefix matches too)
     name = _PROGID_BROWSER.get(progid)
     if not name:
         for pid_prefix, n in _PROGID_BROWSER.items():
@@ -560,7 +562,7 @@ def get_default_browser_from_registry() -> dict | None:
 
 
 def find_running_browser() -> dict | None:
-    """Erstbestes laufendes Browser-Fenster. {name, exe, pid} oder None."""
+    """The first running browser window found. {name, exe, pid}, or None."""
     try:
         import psutil
     except Exception:  # noqa: BLE001
@@ -578,39 +580,40 @@ def find_running_browser() -> dict | None:
 
 
 def find_any_browser() -> dict:
-    """Findet IRGENDEINEN nutzbaren Browser (Spec Teil 3).
+    """Finds ANY usable browser (spec part 3).
 
-    Reihenfolge:
-      1. Läuft schon ein Browser?     → den nutzen (Fenster fokussieren)
-      2. Standard-Browser (Registry)  → starten
-      3. Irgendeiner aus App-Liste    → starten
-      4. Letzter Ausweg: Edge (immer auf Windows vorhanden)
+    Order:
+      1. Is a browser already running?  → use it (focus the window)
+      2. The default browser (registry) → start it
+      3. Any browser from the app list  → start it
+      4. Last resort: Edge (always present on Windows)
 
-    Returns {name, path, running, pid?}. 'path' ist – wenn auflösbar – ein
-    startbarer .exe/.lnk-Pfad, sonst leer (dann reicht der Name für die Suche).
+    Returns {name, path, running, pid?}. 'path' is – where it can be resolved – a
+    launchable .exe/.lnk path, otherwise empty (the name alone is then enough for
+    the search).
     """
-    # 1. Bereits laufender Browser
+    # 1. a browser that is already running
     running = find_running_browser()
     if running:
         return running
 
     apps = get_installed_apps()
 
-    # 2. Standard-Browser aus Registry
+    # 2. the default browser from the registry
     default = get_default_browser_from_registry()
     if default:
         match = find_best_match(default["name"], apps, limit=1)
         path = match[0]["path"] if match and _is_launchable(match[0].get("path")) else ""
         return {"name": default["name"], "path": path, "running": False}
 
-    # 3. Irgendeinen installierten Browser (Präferenz-Reihenfolge)
+    # 3. any installed browser (in preference order)
     for label in ("Chrome", "Brave", "Opera", "Firefox", "Vivaldi", "Edge"):
         match = find_best_match(label, apps, limit=1)
         if match:
             path = match[0]["path"] if _is_launchable(match[0].get("path")) else ""
             return {"name": label, "path": path, "running": False}
 
-    # 4. Edge ist auf Windows immer vorhanden
+    # 4. Edge is always present on Windows
     return {"name": "Edge", "path": "", "running": False}
 
 

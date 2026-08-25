@@ -1,11 +1,11 @@
 """
-JARVIS GUI Server v2.8
-- start_listening / stop_listening vom Mic-Button gesteuert
-- Sprache läuft in eigenem Thread, blockiert nichts
+My Jarvis GUI server v2.8
+- start_listening / stop_listening driven by the mic button
+- speech runs in its own thread and blocks nothing
 - save_config, handle_text etc.
-- Port-Conflict-Handling mit Auto-Increment
-- Config-Validierung bei save_config
-- WebSocket-Disconnect-Logging
+- port-conflict handling with auto-increment
+- config validation in save_config
+- WebSocket disconnect logging
 """
 import json, queue, threading, webbrowser, time, os, asyncio, re, socket, hashlib
 from http.server import HTTPServer, SimpleHTTPRequestHandler
@@ -23,13 +23,13 @@ PORT_WS_DEFAULT   = 8766
 MAX_PORT_RETRIES  = 10
 MAX_EVENT_QUEUE   = 200
 
-# Aktive Ports (werden beim Start gesetzt)
+# the active ports (set at startup)
 PORT_HTTP = PORT_HTTP_DEFAULT
 PORT_WS   = PORT_WS_DEFAULT
 
-# Erlaubte Werte für Config-Validierung
+# values allowed by the config validation
 VALID_API_PROVIDERS = {"anthropic", "openai", "gemini", "nvidia", "mistral", "local"}
-SPRACHE_PATTERN = re.compile(r"^[a-z]{2}-[A-Z]{2}$")
+LANGUAGE_PATTERN = re.compile(r"^[a-z]{2}-[A-Z]{2}$")
 
 
 class GUIServer:
@@ -37,7 +37,7 @@ class GUIServer:
         self.jarvis            = jarvis_instance
         self.clients           = set()
         self.event_queue       = []
-        self._queue_lock       = threading.Lock()   # Bug 7: schützt event_queue
+        self._queue_lock       = threading.Lock()   # bug 7: guards event_queue
         self.loop              = None
         self.on_client_connect = None
         self._listen_thread    = None
@@ -58,14 +58,14 @@ class GUIServer:
                 if len(self.event_queue) >= MAX_EVENT_QUEUE:
                     self.event_queue.pop(0)
                 self.event_queue.append(message)
-        # Console-Fallback nur für wichtige Events
+        # console fallback, only for important events
         if event_type == "message":
             print(f"[{data.get('role','?').upper()}] {data.get('text','')[:80]}")
 
     async def _broadcast(self, message: str):
-        # Bug 8: über eine Momentaufnahme iterieren – die clients-Menge kann
-        # währenddessen (an await-Punkten) durch _handle_client mutiert werden,
-        # was sonst "Set changed size during iteration" auslöst.
+        # bug 8: iterate over a snapshot – the clients set can be mutated by
+        # _handle_client meanwhile (at await points), which would otherwise raise
+        # "Set changed size during iteration".
         dead = set()
         for ws in list(self.clients):
             try:
@@ -80,7 +80,7 @@ class GUIServer:
         self.clients.add(websocket)
         print("[GUI] Browser verbunden")
         # Bug 7: Queue atomar leeren (swap), damit parallele send_event-Appends
-        # zwischen Iteration und clear() nicht verloren gehen.
+        # are not lost between the iteration and clear().
         with self._queue_lock:
             pending = self.event_queue
             self.event_queue = []
@@ -88,12 +88,12 @@ class GUIServer:
             try:
                 await websocket.send(msg)
             except (ConnectionResetError, OSError) as e:
-                print(f"[GUI] Queued-Event-Sendefehler: {e}")
+                print(f"[GUI] Error sending a queued event: {e}")
                 break
-        # ── v2.8 Bug 5: aktuellen Kill-Switch-Status an den (neu) verbundenen
-        # Client senden. Ohne das zeigt ein neu geladenes/wieder verbundenes GUI
-        # fälschlich "Kill-Switch aus", während das Backend noch gestoppt ist –
-        # dann verweigert copilot_start mit "Kill-Switch ist aktiv".
+        # ── v2.8 bug 5: send the current kill-switch state to the (re)connected
+        # client. Without it a reloaded/reconnected GUI wrongly shows "kill switch
+        # off" while the backend is still stopped – copilot_start then refuses
+        # with "the kill switch is active".
         try:
             from jarvis import KILL_ACTIVE
             await websocket.send(json.dumps({
@@ -106,15 +106,15 @@ class GUIServer:
             try:
                 self.on_client_connect()
             except Exception as e:
-                print(f"[GUI] on_client_connect Fehler: {e}")
+                print(f"[GUI] on_client_connect error: {e}")
         try:
             async for raw in websocket:
                 try: await self._handle_msg(json.loads(raw))
-                except Exception as e: print(f"[GUI] Msg-Fehler: {e}")
+                except Exception as e: print(f"[GUI] Message error: {e}")
         except (ConnectionResetError, OSError):
             pass
         except Exception as e:
-            print(f"[GUI] WebSocket-Fehler: {e}")
+            print(f"[GUI] WebSocket error: {e}")
         finally:
             self.clients.discard(websocket)
             print("[GUI] Browser getrennt")
@@ -123,23 +123,23 @@ class GUIServer:
     async def _handle_msg(self, data: dict):
         t = data.get("type")
 
-        # ── Mikrofon EIN ─────────────────────────────────────────────────
+        # ── microphone ON ────────────────────────────────────────────────
         if t == "start_listening":
             if self._listen_thread and self._listen_thread.is_alive():
-                return  # läuft schon
+                return  # already running
             self._stop_listening.clear()
             self._listen_thread = threading.Thread(
                 target=self._do_listen, daemon=True)
             self._listen_thread.start()
 
-        # ── Mikrofon AUS ─────────────────────────────────────────────────
+        # ── microphone OFF ───────────────────────────────────────────────
         elif t == "stop_listening":
             self._stop_listening.set()
             self.jarvis.speech.stop()
 
-        # ── Text vom Chat-Eingabefeld ─────────────────────────────────────
-        # KEIN user_input Event zurückschicken – Frontend zeigt Nachricht
-        # bereits selbst an (verhindert doppelte Nachrichten)
+        # ── text from the chat input field ────────────────────────────────
+        # do NOT send a user_input event back – the frontend already shows the
+        # message itself (this prevents duplicates)
         elif t == "user_text":
             text = data.get("text","").strip()
             if text:
@@ -161,18 +161,18 @@ class GUIServer:
             self._todo_index = 0
             threading.Thread(target=self._run_todo, daemon=True).start()
 
-        # ── To-Do fortsetzen (nach "Problem gelöst") ───────────────────────
+        # ── continue the to-do list (after "problem solved") ───────────────
         elif t == "todo_continue":
             self.jarvis.brain.current_todo = data.get("items",[])
             threading.Thread(target=self._run_todo, daemon=True).start()
 
-        # ── Config speichern ──────────────────────────────────────────────
+        # ── save the config ───────────────────────────────────────────────
         elif t == "save_config":
             from core.config import Config
             cfg = Config.load()
-            for field in ["api_provider","api_key","anrede","redeart","sprache",
+            for field in ["api_provider","api_key","salutation","tone","language",
                           "nvidia_model","local_url","local_model",
-                          "openai_model","wohnort","tts_enabled","suggestions_enabled",
+                          "openai_model","location","tts_enabled","suggestions_enabled",
                           "tts_voice","wake_word_enabled","clap_enabled","clap_threshold",
                           "user_name","code_retries"]:
                 if field in data and data[field] != "":
@@ -184,8 +184,8 @@ class GUIServer:
                     elif field in ("tts_enabled", "suggestions_enabled"):
                         if not isinstance(value, bool):
                             continue
-                    elif field == "sprache":
-                        if not isinstance(value, str) or not SPRACHE_PATTERN.match(value):
+                    elif field == "language":
+                        if not isinstance(value, str) or not LANGUAGE_PATTERN.match(value):
                             continue
                     elif field == "code_retries":
                         try:
@@ -193,7 +193,7 @@ class GUIServer:
                         except (ValueError, TypeError):
                             continue
                     cfg[field] = value
-            # Booleans explizit (auch wenn False)
+            # booleans explicitly (even when False)
             for bfield in ["tts_enabled","suggestions_enabled","wake_word_enabled","clap_enabled",
                            "memory_history","memory_auto","vision_allowed","telemetry_enabled",
                            "code_check","code_format"]:
@@ -237,15 +237,15 @@ class GUIServer:
         elif t == "copilot_start":
             from jarvis import KILL_ACTIVE
             if KILL_ACTIVE.is_set():
-                # v2.8 Bug 4: GUI auf den echten (aktiven) Zustand re-synchronisieren.
-                # Verhindert die Falle "GUI zeigt Kill aus, Copilot meldet Kill aktiv":
-                # der Nutzer sieht den Kill-Switch jetzt korrekt als aktiv und kann
-                # ihn gezielt deaktivieren.
+                # v2.8 bug 4: re-sync the GUI to the real (active) state. This avoids
+                # the trap of "the GUI shows kill off while the copilot reports kill
+                # active": the user now correctly sees the kill switch as active and
+                # can deactivate it deliberately.
                 await self._broadcast(json.dumps({"type": "kill_switch", "data": {}}))
                 self.send_event("copilot_done", {"status": "stopped",
-                    "summary": "Kill-Switch ist aktiv – bitte zuerst deaktivieren."})
+                    "summary": "The kill switch is active – please deactivate it first."})
             elif self._copilot_thread and self._copilot_thread.is_alive():
-                self.send_event("copilot_status", {"text": "Copilot läuft bereits.", "phase": "busy"})
+                self.send_event("copilot_status", {"text": "The copilot is already running.", "phase": "busy"})
             else:
                 task = (data.get("task") or "").strip()
                 allow_all = bool(data.get("allow_all", False))
@@ -254,11 +254,11 @@ class GUIServer:
                     args=(task, allow_all), daemon=True)
                 self._copilot_thread.start()
 
-        # ── Copilot stoppen ───────────────────────────────────────────────
+        # ── stop the copilot ──────────────────────────────────────────────
         elif t == "copilot_stop":
             self.jarvis.copilot.stop()
 
-        # ── Copilot-Handshake (Bestätigung/Checkpoint/Nutzer-Eingabe) ─────
+        # ── copilot handshake (confirmation/checkpoint/user input) ────────
         elif t == "copilot_response":
             decision = (data.get("decision") or "").strip().lower()
             self.jarvis.copilot.resolve(decision)
@@ -334,11 +334,11 @@ class GUIServer:
                 self.jarvis.memory._save_json(self.jarvis.memory.history_file, [])
                 self.jarvis.memory._save_json(self.jarvis.memory.routines_file, [])
                 self.jarvis.memory._save_json(self.jarvis.memory.projects_file, [])
-                print("[Privacy] Alle Daten gelöscht.")
+                print("[Privacy] All data deleted.")
                 await self._broadcast(json.dumps({"type": "data_cleared", "data": {}}))
             except Exception as e:
-                print(f"[Privacy] Wipe fehlgeschlagen: {e}")
-                self.send_event("notify", {"text": f"Löschen fehlgeschlagen: {e}"})
+                print(f"[Privacy] Wipe failed: {e}")
+                self.send_event("notify", {"text": f"Deleting failed: {e}"})
 
         # ── Connectors: status / save / test ──────────────────────────────
         elif t == "get_connectors_status":
@@ -405,27 +405,27 @@ class GUIServer:
                     self.jarvis.speech.tts_queue.get_nowait()
                 except queue.Empty:
                     break
-            # v2.8 Bug 4: Backend ist die einzige Wahrheitsquelle – allen Clients
-            # den neuen Zustand bestätigen (sonst kann ein zweites Fenster oder ein
-            # Reconnect "Kill aus" zeigen während das Backend noch gestoppt ist).
+            # v2.8 bug 4: the backend is the single source of truth – confirm the
+            # new state to every client (otherwise a second window or a reconnect
+            # can show "kill off" while the backend is still stopped).
             await self._broadcast(json.dumps({"type": "kill_switch", "data": {}}))
         elif t == "kill_deactivate":
             from jarvis import KILL_ACTIVE
             KILL_ACTIVE.clear()
-            print("[KILL-SWITCH] Deaktiviert.")
-            # v2.8 Bug 4: Deaktivierung allen Clients bestätigen (vorher wurde gar
-            # kein Event gesendet → GUI und Backend konnten auseinanderlaufen).
+            print("[KILL SWITCH] Deactivated.")
+            # v2.8 bug 4: confirm the deactivation to every client (previously no
+            # event was sent at all → the GUI and the backend could drift apart).
             await self._broadcast(json.dumps({"type": "kill_deactivated", "data": {}}))
 
-    # ── Screenshot-Analyse ──────────────────────────────────────────────────
+    # ── screenshot analysis ─────────────────────────────────────────────────
     def _do_screenshot_analyze(self, query: str):
         self.send_event("thinking", {"status": True})
-        self.send_event("status", {"text": "Screenshot wird aufgenommen..."})
+        self.send_event("status", {"text": "Taking a screenshot..."})
         try:
             screenshot_b64 = self.jarvis.screen.take_screenshot()
             if not screenshot_b64:
                 self.send_event("message", {"role": "jarvis",
-                    "text": "Screenshot fehlgeschlagen. PyAutoGUI/PIL nicht verfügbar."})
+                    "text": "The screenshot failed. PyAutoGUI/PIL is not available."})
                 self.send_event("thinking", {"status": False})
                 return
 
@@ -436,17 +436,17 @@ class GUIServer:
         except Exception as e:
             self.send_event("message", {"role": "jarvis",
                 "text": f"Screenshot-Analyse fehlgeschlagen: {str(e)[:120]}"})
-            print(f"[Screenshot] Fehler: {e}")
+            print(f"[Screenshot] Error: {e}")
         finally:
             self.send_event("thinking", {"status": False})
             self.send_event("status", {"text": "BEREIT"})
 
-    # ── Live-Vision Loop ────────────────────────────────────────────────────
+    # ── live-vision loop ────────────────────────────────────────────────────
     def _vision_live_loop(self):
-        """Beobachtet den Bildschirm und gibt bei Änderungen Feedback."""
+        """Watches the screen and reports back whenever it changes."""
         from jarvis import KILL_ACTIVE
         last_hash = ""
-        self.send_event("status", {"text": "👁 LIVE-VISION AKTIV"})
+        self.send_event("status", {"text": "👁 LIVE VISION ACTIVE"})
 
         while not self._vision_stop.is_set():
             if KILL_ACTIVE.is_set():
@@ -466,76 +466,76 @@ class GUIServer:
             try:
                 reply = self.jarvis.brain.analyze_screenshot(
                     screenshot_b64,
-                    "Beschreibe kurz was sich auf dem Bildschirm geändert hat. Sei präzise und knapp."
+                    "Briefly describe what has changed on the screen. Be precise and short."
                 )
                 self.send_event("message", {"role": "jarvis", "text": reply})
                 self.jarvis.speech.speak(reply[:200])
             except Exception as e:
-                print(f"[LiveVision] Fehler: {e}")
+                print(f"[LiveVision] Error: {e}")
 
             self._vision_stop.wait(3)
 
         self.send_event("live_vision_status", {"active": False})
         self.send_event("status", {"text": "✅ BEREIT"})
-        print("[LiveVision] Gestoppt.")
+        print("[LiveVision] Stopped.")
 
-    # ── To-Do Abarbeitung ──────────────────────────────────────────────────
+    # ── working through the to-do list ─────────────────────────────────────
     def _run_todo(self):
-        """Arbeitet die To-Do Liste Schritt für Schritt ab."""
+        """Works through the to-do list step by step."""
         from jarvis import KILL_ACTIVE
         self._todo_cancel.clear()
         items = self.jarvis.brain.current_todo
 
         for item in items:
             if KILL_ACTIVE.is_set():
-                self.send_event("todo_error", {"message": "Kill-Switch wurde aktiviert."})
+                self.send_event("todo_error", {"message": "The kill switch was activated."})
                 return
             if self._todo_cancel.is_set():
                 self.send_event("todo_complete", {})
-                print("[To-Do] Abgebrochen.")
+                print("[To-Do] Cancelled.")
                 return
             if item.get("done"):
                 continue
 
-            # Aufgabe startet
+            # the task starts
             self.send_event("todo_running", {"id": item["id"]})
             self.send_event("user_input", {"text": f"To-Do: {item['text']}"})
 
             try:
                 result = self.jarvis.brain.run_todo_item(item["text"])
             except Exception as e:
-                self.send_event("todo_error", {"message": f"Fehler bei '{item['text']}': {str(e)[:120]}"})
+                self.send_event("todo_error", {"message": f"Error on '{item['text']}': {str(e)[:120]}"})
                 return
 
             if self._todo_cancel.is_set():
                 self.send_event("todo_complete", {})
-                print("[To-Do] Abgebrochen.")
+                print("[To-Do] Cancelled.")
                 return
 
-            # Fehler oder Erlaubnis nötig?
+            # an error, or is permission needed?
             if result and result.get("status") == "error":
                 self.send_event("todo_error", {
-                    "message": result.get("message", f"Problem bei: {item['text']}")
+                    "message": result.get("message", f"A problem with: {item['text']}")
                 })
-                return  # Stoppt – wartet auf "Problem gelöst"
+                return  # stops – waits for "problem solved"
 
-            # Aufgabe erledigt
+            # the task is done
             item["done"] = True
             self.send_event("todo_done_item", {"id": item["id"]})
 
-        # Alle erledigt
+        # everything is done
         self.send_event("todo_complete", {})
-        print("[To-Do] Alle Aufgaben abgeschlossen.")
+        print("[To-Do] Every task completed.")
 
-    # ── Sprach-Aufnahme Thread ─────────────────────────────────────────────
+    # ── speech recording thread ────────────────────────────────────────────
     def _do_listen(self):
-        """Läuft im Hintergrund – nimmt auf bis Text erkannt oder Stop."""
-        print("[STT] Aufnahme gestartet (Mic-Button)")
-        self.send_event("status", {"text": "HOERE ZU..."})
+        """Runs in the background – records until text is recognised, or a stop."""
+        print("[STT] Recording started (mic button)")
+        self.send_event("status", {"text": "LISTENING..."})
 
         text = self.jarvis.speech.listen(stop_event=self._stop_listening)
 
-        # Button zurücksetzen
+        # reset the button
         self.send_event("mic_done", {})
 
         if text and not self._stop_listening.is_set():
@@ -543,7 +543,7 @@ class GUIServer:
             self.send_event("user_input", {"text": text})
             self.jarvis.handle_text(text)
         else:
-            print("[STT] Keine Eingabe erkannt")
+            print("[STT] No input recognised")
             self.send_event("status", {"text": "BEREIT"})
 
     # ── Server start ──────────────────────────────────────────────────────
@@ -552,7 +552,7 @@ class GUIServer:
         # HTTP-Server mit Port-Retry starten
         PORT_HTTP = self._start_http_with_retry()
         if PORT_HTTP == 0:
-            print("[GUI] FEHLER: HTTP-Server konnte nicht gestartet werden.")
+            print("[GUI] ERROR: the HTTP server could not be started.")
             return
         if not WS_AVAILABLE:
             print("[GUI] websockets fehlt -> python -m pip install websockets")
@@ -577,7 +577,7 @@ class GUIServer:
                     print(f"[GUI] WebSocket Port {port} belegt: {e}")
                     port += 1
             else:
-                print(f"[GUI] FEHLER: Kein freier WebSocket-Port gefunden ({PORT_WS_DEFAULT}-{PORT_WS_DEFAULT + MAX_PORT_RETRIES - 1})")
+                print(f"[GUI] ERROR: no free WebSocket port found ({PORT_WS_DEFAULT}-{PORT_WS_DEFAULT + MAX_PORT_RETRIES - 1})")
                 return
 
             global PORT_WS
@@ -610,7 +610,7 @@ class GUIServer:
             except OSError as e:
                 print(f"[GUI] HTTP Port {port} belegt: {e}")
                 port += 1
-        print(f"[GUI] FEHLER: Kein freier HTTP-Port gefunden ({PORT_HTTP_DEFAULT}-{PORT_HTTP_DEFAULT + MAX_PORT_RETRIES - 1})")
+        print(f"[GUI] ERROR: no free HTTP port found ({PORT_HTTP_DEFAULT}-{PORT_HTTP_DEFAULT + MAX_PORT_RETRIES - 1})")
         return 0
 
     # ── Usage / Privacy helpers ────────────────────────────────────────────
@@ -665,48 +665,48 @@ class GUIServer:
         gcal_token = Path.home() / ".jarvis" / "google_token.json"
         status["calendar"] = {
             "connected": gcal_token.exists(),
-            "label": "Verbunden" if gcal_token.exists() else "Nicht verbunden",
+            "label": "Connected" if gcal_token.exists() else "Not connected",
         }
 
         # Todoist — api token in config
         td = bool(cfg.get("todoist_token"))
         status["todoist"] = {
             "connected": td,
-            "label": "Verbunden" if td else "Nicht verbunden",
+            "label": "Connected" if td else "Not connected",
         }
 
         # Notion — token + database id in config
         nt = bool(cfg.get("notion_token") and cfg.get("notion_database_id"))
         status["notion"] = {
             "connected": nt,
-            "label": "Verbunden" if nt else "Nicht verbunden",
+            "label": "Connected" if nt else "Not connected",
         }
 
         # Email — IMAP creds in config
         em = bool(cfg.get("email_address") and cfg.get("email_password") and cfg.get("email_imap"))
         status["email"] = {
             "connected": em,
-            "label": "Verbunden" if em else "Nicht verbunden",
+            "label": "Connected" if em else "Not connected",
         }
 
         # Home Assistant — url + token in config
         ha = bool(cfg.get("ha_url") and cfg.get("ha_token"))
         status["homeassistant"] = {
             "connected": ha,
-            "label": "Verbunden" if ha else "Nicht verbunden",
+            "label": "Connected" if ha else "Not connected",
         }
 
         # YouTube — always available (no key needed)
         status["youtube"] = {
             "connected": cfg.get("youtube_enabled", True) is not False,
-            "label": "Verfügbar",
+            "label": "Available",
         }
 
         # Research — topics list in config
         topics = cfg.get("research_topics") or []
         status["research"] = {
             "connected": bool(topics),
-            "label": f"{len(topics)} Themen" if topics else "Aus",
+            "label": f"{len(topics)} topics" if topics else "Off",
         }
 
         return status
@@ -763,7 +763,7 @@ class GUIServer:
         try:
             if name == "calendar":
                 from pathlib import Path as _P
-                return ((_P.home() / ".jarvis" / "google_token.json").exists(), "Token nicht vorhanden")
+                return ((_P.home() / ".jarvis" / "google_token.json").exists(), "No token present")
             if name == "todoist":
                 token = cfg.get("todoist_token")
                 if not token:
@@ -801,7 +801,7 @@ class GUIServer:
                     return False, str(e)[:80]
             if name == "email":
                 if not (cfg.get("email_address") and cfg.get("email_password") and cfg.get("email_imap")):
-                    return False, "Unvollständig"
+                    return False, "Incomplete"
                 try:
                     import imaplib
                     m = imaplib.IMAP4_SSL(cfg["email_imap"], timeout=8)
@@ -813,7 +813,7 @@ class GUIServer:
             if name == "homeassistant":
                 url = cfg.get("ha_url"); tok = cfg.get("ha_token")
                 if not (url and tok):
-                    return False, "Unvollständig"
+                    return False, "Incomplete"
                 try:
                     import urllib.request, urllib.error
                     req = urllib.request.Request(

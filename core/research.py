@@ -1,7 +1,7 @@
 """
-JARVIS Research Assistant
-- RSS-Feeds, arXiv, Hacker News abrufen
-- Tägliches Research-Briefing
+My Jarvis research assistant
+- fetches RSS feeds, arXiv and Hacker News
+- a daily research briefing
 """
 import logging
 import threading

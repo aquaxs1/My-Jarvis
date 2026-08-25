@@ -1,19 +1,19 @@
 """
-JARVIS Bildschirm-Beobachter
-Sieht was auf dem Bildschirm passiert
+My Jarvis screen watcher
+Sees what is happening on the screen
 """
 
 import base64
 import platform
 from typing import Optional
 
-# v3.0 Speed: Vision-Screenshots als JPEG statt PNG kodieren.
-# JPEG ist deutlich kleiner und schneller zu (de)kodieren/übertragen — bei
-# 1280px Breite typisch ~5-8x kleiner als PNG. Bei Quality 80 bleibt UI-Text
-# gut lesbar. Das beschleunigt vor allem den Copilot-Loop (viele Screenshots
-# pro Aufgabe) und die Bildschirm-Analyse spürbar. Die Modell-Media-Types in
-# core/brain.py (vision_decide / analyze_screenshot) sind passend auf JPEG
-# gesetzt – beides MUSS konsistent bleiben.
+# v3.0 speed: encode vision screenshots as JPEG instead of PNG.
+# JPEG is much smaller and faster to (de)code and transfer — at
+# 1280px wide, typically 5-8x smaller than PNG. At quality 80, UI text stays
+# clearly readable. This mainly speeds up the copilot loop (many screenshots
+# per task) and the screen analysis. The media types in core/brain.py
+# (vision_decide / analyze_screenshot) are set to JPEG to match — the two MUST
+# stay consistent.
 VISION_MEDIA_TYPE = "image/jpeg"
 VISION_JPEG_QUALITY = 80
 
@@ -31,7 +31,7 @@ class ScreenWatcher:
             self.pag = pyautogui
         except ImportError:
             self.available = False
-            print("[Screen] PyAutoGUI/PIL nicht verfügbar")
+            print("[Screen] PyAutoGUI/PIL is not available")
 
     def take_screenshot(self, max_width: int = 2560) -> Optional[str]:
         """Screenshot als Base64, optional verkleinert."""
@@ -76,7 +76,7 @@ class ScreenWatcher:
         except (OSError, ImportError, subprocess.SubprocessError) as e:
             print(f"[Screen] Fenstererkennung fehlgeschlagen: {e}")
         except Exception as e:
-            print(f"[Screen] Unerwarteter Fehler bei Fenstererkennung: {e}")
+            print(f"[Screen] Unexpected error detecting the window: {e}")
         return ""
 
     def get_screen_size(self) -> tuple:
@@ -85,18 +85,18 @@ class ScreenWatcher:
         return (1920, 1080)
 
     def capture_for_vision(self, target_width: int = 1280):
-        """Screenshot für den Copilot.
+        """A screenshot for the copilot.
 
-        Skaliert den Screenshot auf 'target_width' (Seitenverhältnis bleibt
-        erhalten) und liefert die Metadaten, die nötig sind um vom Bild-Raum
-        zurück in den echten Klick-Raum zu rechnen.
+        Scales the screenshot to 'target_width' (keeping the aspect ratio) and
+        returns the metadata needed to map back from image space into real
+        click space.
 
         Returns:
-            (b64_png, vision_w, vision_h, real_w, real_h) oder None.
+            (b64_jpeg, vision_w, vision_h, real_w, real_h), or None.
 
-        - vision_w/vision_h: Maße des Bildes, das das Modell sieht.
-        - real_w/real_h:     Klick-Koordinatenraum von PyAutoGUI (size()),
-                             unabhängig von der physischen Pixelauflösung.
+        - vision_w/vision_h: the size of the image the model sees.
+        - real_w/real_h:     PyAutoGUI's click coordinate space (size()),
+                             independent of the physical pixel resolution.
         """
         if not self.available:
             return None

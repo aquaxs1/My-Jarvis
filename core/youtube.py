@@ -1,7 +1,7 @@
 """
-JARVIS YouTube-Zusammenfassungen
-- Transkript abrufen (youtube-transcript-api)
-- Zusammenfassung generieren (über Brain)
+My Jarvis YouTube summaries
+- fetches the transcript (youtube-transcript-api)
+- generates a summary (through the brain)
 """
 import re
 import logging

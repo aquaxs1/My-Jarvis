@@ -1,7 +1,7 @@
 """
-JARVIS E-Mail Manager
-- IMAP für Lesen (ungelesene E-Mails)
-- SMTP für Antworten (nur nach Bestätigung)
+My Jarvis email manager
+- IMAP for reading (unread emails)
+- SMTP for replies (only after confirmation)
 """
 import imaplib
 import smtplib
@@ -75,7 +75,7 @@ class EmailManager:
             logger.error("[Email] IMAP Fehler: %s", e)
             return []
         except Exception as e:
-            logger.error("[Email] Fehler beim Abrufen: %s", e)
+            logger.error("[Email] Error fetching mail: %s", e)
             return []
 
     def send_reply(self, to: str, subject: str, body: str) -> bool:

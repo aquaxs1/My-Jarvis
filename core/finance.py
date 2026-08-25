@@ -1,8 +1,8 @@
 """
-JARVIS Finanz-Tracker
-- Ausgaben loggen
-- Budgets setzen und überwachen
-- Monatsübersicht
+My Jarvis finance tracker
+- log expenses
+- set and watch budgets
+- a monthly overview
 """
 import json
 import logging
@@ -32,7 +32,7 @@ class FinanceTracker:
             try:
                 return json.loads(FINANCE_PATH.read_text(encoding="utf-8"))
             except (json.JSONDecodeError, OSError) as e:
-                logger.warning("[Finance] Laden fehlgeschlagen: %s", e)
+                logger.warning("[Finance] Loading failed: %s", e)
         return {"expenses": [], "budgets": {}}
 
     def _save(self):
@@ -42,7 +42,7 @@ class FinanceTracker:
                 encoding="utf-8"
             )
         except OSError as e:
-            logger.error("[Finance] Speichern fehlgeschlagen: %s", e)
+            logger.error("[Finance] Saving failed: %s", e)
 
     def add_expense(self, amount: float, category: str,
                     description: str = "") -> dict:
@@ -114,9 +114,9 @@ class FinanceTracker:
 
     def format_summary_text(self, days: int = 30) -> str:
         summary = self.get_summary(days)
-        period = "diese Woche" if days <= 7 else f"letzte {days} Tage"
+        period = "this week" if days <= 7 else f"the last {days} days"
 
-        lines = [f"**Ausgaben ({period}):** {summary['total']:.2f}€ ({summary['count']} Einträge)\n"]
+        lines = [f"**Spending ({period}):** {summary['total']:.2f}€ ({summary['count']} entries)\n"]
 
         for cat, amount in sorted(summary["by_category"].items(),
                                   key=lambda x: x[1], reverse=True):

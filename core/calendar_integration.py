@@ -1,8 +1,8 @@
 """
-JARVIS Google Calendar Integration
-- OAuth2-Authentifizierung
-- Termine lesen und erstellen
-- Natürlichsprachliche Zeitangaben parsen
+My Jarvis Google Calendar integration
+- OAuth2 authentication
+- read and create appointments
+- parse times given in natural language
 """
 import os
 import json
@@ -53,7 +53,7 @@ class CalendarManager:
             try:
                 creds = Credentials.from_authorized_user_file(str(TOKEN_PATH), SCOPES)
             except Exception as e:
-                logger.warning("[Calendar] Token laden fehlgeschlagen: %s", e)
+                logger.warning("[Calendar] Loading the token failed: %s", e)
 
         if creds and creds.expired and creds.refresh_token:
             try:
@@ -149,7 +149,7 @@ class CalendarManager:
                 "link": event.get("htmlLink", ""),
             }
         except Exception as e:
-            logger.error("[Calendar] Termin erstellen fehlgeschlagen: %s", e)
+            logger.error("[Calendar] Creating the appointment failed: %s", e)
             return None
 
     def format_events_text(self, events: list) -> str:
@@ -183,9 +183,9 @@ def parse_datetime_natural(text: str) -> Optional[datetime]:
         )
         return parsed
     except ImportError:
-        logger.warning("[Calendar] dateparser nicht installiert, versuche einfaches Parsing")
+        logger.warning("[Calendar] dateparser is not installed, falling back to simple parsing")
     except Exception as e:
-        logger.debug("[Calendar] dateparser fehlgeschlagen: %s", e)
+        logger.debug("[Calendar] dateparser failed: %s", e)
 
     return _simple_parse(text)
 
@@ -195,12 +195,10 @@ def _simple_parse(text: str) -> Optional[datetime]:
     now = datetime.now()
     text_lower = text.lower().strip()
 
-    if "morgen" in text_lower:
-        base = now + timedelta(days=1)
-    elif "übermorgen" in text_lower:
+    if "day after tomorrow" in text_lower:
         base = now + timedelta(days=2)
-    elif "heute" in text_lower:
-        base = now
+    elif "tomorrow" in text_lower:
+        base = now + timedelta(days=1)
     else:
         base = now
 
@@ -209,7 +207,7 @@ def _simple_parse(text: str) -> Optional[datetime]:
         h, m = int(time_match.group(1)), int(time_match.group(2))
         return base.replace(hour=h, minute=m, second=0, microsecond=0)
 
-    time_match = re.search(r'(\d{1,2})\s*uhr', text_lower)
+    time_match = re.search(r'(\d{1,2})\s*(?:o\'clock|am|pm)', text_lower)
     if time_match:
         h = int(time_match.group(1))
         return base.replace(hour=h, minute=0, second=0, microsecond=0)
