@@ -85,24 +85,25 @@ jobs:
           done
           echo "$MISSING optional integrations missing from this build"
 
-      - name: Package
+      # The executable ships as-is, with no archive around it: PyInstaller
+      # already produces a single self-contained file, so a zip only added an
+      # unpacking step for a saving of about one percent.
+      - name: Name the executable for release
         shell: bash
-        run: |
-          cd dist
-          7z a "../my-jarvis-windows-x64.zip" "jarvis.exe"
+        run: cp dist/jarvis.exe my-jarvis-windows-x64.exe
 
       - name: Checksum
         shell: bash
         run: |
-          FILE="my-jarvis-windows-x64.zip"
+          FILE="my-jarvis-windows-x64.exe"
           certutil -hashfile "$FILE" SHA256 | sed -n '2p' | tr -d '\r' | awk -v f="$FILE" '{print $0"  "f}' > "$FILE.sha256"
 
       - uses: actions/upload-artifact@v4
         with:
           name: my-jarvis-windows-x64
           path: |
-            my-jarvis-windows-x64.zip
-            my-jarvis-windows-x64.zip.sha256
+            my-jarvis-windows-x64.exe
+            my-jarvis-windows-x64.exe.sha256
           if-no-files-found: error
 
   release:
@@ -140,19 +141,21 @@ jobs:
           name: My Jarvis ${{ steps.version.outputs.version }}
           generate_release_notes: true
           files: |
-            artifacts/*.zip
+            artifacts/*.exe
             artifacts/SHA256SUMS.txt
           body: |
             Windows build of My Jarvis ${{ steps.version.outputs.version }}.
-            No Python installation required — unpack and run `jarvis.exe`.
+            No Python installation required, and nothing to unpack — download
+            `my-jarvis-windows-x64.exe` and run it.
 
             On macOS and Linux, use the one-line install from the
             [README](https://github.com/${{ github.repository }}#readme)
             instead. My Jarvis needs accessibility and input permissions that
             an unsigned binary cannot request properly on those platforms.
 
-            This binary is **not code-signed**, so Windows SmartScreen will
-            warn on first launch — choose *More info → Run anyway*.
+            This binary is **not code-signed**, so your browser may warn while
+            downloading it, and Windows SmartScreen will warn on first launch —
+            choose *Keep* and then *More info → Run anyway*.
 
             You still need an API key from one of the supported providers, or
             a local Ollama model. Whatever you send My Jarvis — screenshots
