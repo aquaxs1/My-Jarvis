@@ -1742,11 +1742,19 @@ function applySuggestionVisibility(){
 
 // ══ WEBSOCKET ════════════════════════════════════════════════════════════════
 function initWS(){
+  // The backend moves to the next free port when 8766 is taken, so ask it
+  // which port it is on instead of assuming. /ports.json is served by the same
+  // HTTP server as this page; if it is unreachable, fall back to the default.
+  fetch('/ports.json',{cache:'no-store'})
+    .then(r=>r.ok?r.json():Promise.reject(r.status))
+    .then(p=>openWS(p.ws||8766))
+    .catch(()=>openWS(8766));
+}
+function openWS(wsPort){
   try{
     // Use the same host as current page to avoid localhost/127.0.0.1 mismatch
     const wsProto=window.location.protocol==='https:'?'wss:':'ws:';
     const wsHost=window.location.hostname;
-    const wsPort=8766;
     const wsUrl=`${wsProto}//${wsHost}:${wsPort}`;
     console.log('[WebSocket] Connecting to:', wsUrl);
     S.ws=new WebSocket(wsUrl);

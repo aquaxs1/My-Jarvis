@@ -118,18 +118,39 @@ These packages extend JARVIS with additional features. JARVIS starts without the
 
 ## Starting JARVIS
 
+On Windows, double-click:
+
 ```
-python jarvis.py
+start.bat
 ```
 
 On macOS/Linux:
 ```
-python3 jarvis.py
+./start.sh
 ```
 
-JARVIS starts a local web server and automatically opens the browser at `http://127.0.0.1:8765`. The boot screen shows the initialization progress.
+Or start it directly:
 
-If port 8765 is in use, JARVIS automatically tries the next ports (8766, 8767, ...).
+```
+python jarvis.py       (Windows)
+python3 jarvis.py      (macOS/Linux)
+```
+
+The launcher scripts do the same thing as `python jarvis.py`, except that they
+keep the console window open if something goes wrong. Started by double-click,
+`jarvis.py` closes its window the instant it fails, which makes a missing
+package look like "a black window opens and nothing happens".
+
+JARVIS starts a local web server and automatically opens the browser at `http://127.0.0.1:8765`. The boot screen shows the initialization progress. Leave the console window open while you use JARVIS — closing it stops the assistant.
+
+If port 8765 is in use, JARVIS automatically tries the next ports (8766, 8767, ...) for both the web server and the WebSocket, and the interface asks the backend which ports it settled on.
+
+The first-time configuration happens in the interface, not in the console. To
+run the console wizard instead:
+
+```
+python jarvis.py --setup
+```
 
 ---
 
@@ -503,6 +524,8 @@ jarvis/
   requirements.txt             Python dependencies
   install.bat                  Windows installer
   install.sh                   macOS/Linux installer
+  start.bat                    Windows launcher (keeps the window open on error)
+  start.sh                     macOS/Linux launcher
   core/
     config.py                  Configuration, encrypted key storage
     brain.py                   AI logic, request router, all agents
@@ -567,9 +590,27 @@ Check if TTS is enabled in settings. On Linux, install `espeak-ng` if needed:
 sudo apt-get install espeak-ng
 ```
 
+### A console window opens and nothing happens
+
+Start JARVIS through `start.bat` (Windows) or `./start.sh` (macOS/Linux)
+instead of double-clicking `jarvis.py`. The window then stays open and shows
+the cause. The usual ones:
+
+- **A required package is missing.** JARVIS names it and gives you the exact
+  `pip install` line. `cryptography` and `httpx` are the two that used to be
+  skipped by the installer; `install.bat` now installs and verifies both.
+- **The installer never finished.** Run `install.bat` again and read the
+  `[6/6]` check at the end — it now fails loudly instead of reporting success.
+- **An old JARVIS is still running.** Close the other console window, or see
+  "Port in use" below.
+
 ### Port in use
 
-JARVIS automatically tries the next ports. If problems persist: stop any other application using port 8765/8766.
+JARVIS automatically tries the next ports for both the web server and the
+WebSocket, and the interface reads the ports it actually got. If the interface
+opens but stays on `GETRENNT`/`OFFLINE`, close any other running JARVIS
+instance and start it again. If problems persist: stop any other application
+using ports 8765-8775.
 
 ### Google Calendar "credentials missing"
 

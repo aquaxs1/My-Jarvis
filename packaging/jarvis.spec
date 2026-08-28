@@ -45,6 +45,9 @@ hiddenimports = [
     "agents",
     # AI providers
     "anthropic",
+    # core/brain.py takes whichever of these the installed anthropic brought in.
+    "httpx",
+    "httpx2",
     "openai",
     "google.generativeai",
     # Voice

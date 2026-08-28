@@ -4,8 +4,15 @@ title My Jarvis v1.1 Installer
 color 0B
 echo.
 
-:: 1. Load the animated giant logo (call keeps the .bat from stopping here!)
-call npx oh-my-logo@latest "JARVIS" ocean --filled
+:: 1. The giant logo is a Node.js package. It is decoration, so it is only
+::    fetched when npx exists, and with --yes so a first run cannot stop at the
+::    "Ok to proceed?" prompt and leave the installer looking frozen.
+where npx >nul 2>&1
+if not errorlevel 1 (
+    call npx --yes oh-my-logo@latest "JARVIS" ocean --filled
+) else (
+    powershell -Command "Write-Host '   J A R V I S' -ForegroundColor Cyan"
+)
 
 :: 2. The personalised subtitle, in blue
 powershell -Command "Write-Host 'made by aquaxs-ai' -ForegroundColor Blue"
@@ -37,7 +44,7 @@ echo  [2/6] Making sure pip is there...
 %PYCMD% -m pip install --upgrade pip --quiet >nul 2>&1
 
 echo  [3/6] Installing the base packages...
-%PYCMD% -m pip install anthropic SpeechRecognition pyttsx3 pyautogui Pillow keyboard websockets requests numpy sounddevice openai google-generativeai --quiet
+%PYCMD% -m pip install anthropic httpx SpeechRecognition pyttsx3 pyautogui Pillow keyboard websockets requests numpy sounddevice openai google-generativeai cryptography keyring psutil --quiet
 if errorlevel 1 (
     echo  [WARNING] Some packages could not be installed.
     echo            Trying them one by one...
@@ -50,6 +57,10 @@ if errorlevel 1 (
     %PYCMD% -m pip install websockets --quiet
     %PYCMD% -m pip install requests numpy sounddevice --quiet
     %PYCMD% -m pip install openai google-generativeai --quiet
+    %PYCMD% -m pip install cryptography --quiet
+    %PYCMD% -m pip install keyring --quiet
+    %PYCMD% -m pip install psutil --quiet
+    %PYCMD% -m pip install httpx --quiet
 )
 echo  [3/6] Base packages done.
 
@@ -76,13 +87,35 @@ type nul > memory\__init__.py 2>nul
 type nul > agents\__init__.py 2>nul
 
 echo  [6/6] Checking the installation...
-%PYCMD% -c "import anthropic; print('  anthropic OK')"
-%PYCMD% -c "import keyboard; print('  keyboard OK')"
-%PYCMD% -c "import websockets; print('  websockets OK')"
-%PYCMD% -c "import pyautogui; print('  pyautogui OK')"
+set MISSING=
+for %%M in (anthropic httpx requests cryptography websockets) do (
+    %PYCMD% -c "import %%M" >nul 2>&1
+    if errorlevel 1 (
+        echo    %%M MISSING - My Jarvis cannot start without it
+        set MISSING=1
+    ) else (
+        echo    %%M OK
+    )
+)
+%PYCMD% -c "import keyboard" >nul 2>&1 && echo    keyboard OK || echo    keyboard missing - the Ctrl+Alt+J kill switch stays off
+%PYCMD% -c "import pyautogui" >nul 2>&1 && echo    pyautogui OK || echo    pyautogui missing - PC control stays off
 
-call npx oh-my-logo@latest "INSTALLATION\nCOMPLETE" forest --filled
-powershell -Command "Write-Host 'you can start with python jarvis.py' -ForegroundColor Green"
+if defined MISSING (
+    echo.
+    powershell -Command "Write-Host ' [ERROR] Required packages are missing - My Jarvis will not start.' -ForegroundColor Red"
+    echo  Try installing them by hand:
+    echo    %PYCMD% -m pip install -r requirements.txt
+    echo.
+    pause & exit /b 1
+)
+
+where npx >nul 2>&1
+if not errorlevel 1 (
+    call npx --yes oh-my-logo@latest "INSTALLATION\nCOMPLETE" forest --filled
+) else (
+    powershell -Command "Write-Host '   INSTALLATION COMPLETE' -ForegroundColor Green"
+)
+powershell -Command "Write-Host 'Start My Jarvis with start.bat (or: python jarvis.py)' -ForegroundColor Green"
 
 echo.
 pause
