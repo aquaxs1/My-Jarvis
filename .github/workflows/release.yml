@@ -17,8 +17,9 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Release tag (e.g. v2.8.0)"
-        required: true
+        description: "Release tag (e.g. v2.8.0). Leave empty for a build-only test run."
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -48,8 +49,26 @@ jobs:
         shell: bash
         run: pip install pyaudio || echo "PyAudio unavailable; the build falls back to sounddevice"
 
+      # Two more optional integrations that the spec lists as hidden imports
+      # but requirements.txt deliberately leaves out, because neither is
+      # needed to run My Jarvis. Installing them here means the packaged
+      # build ships them; a failure here is not a failure of the build.
+      - name: Install the remaining optional integrations (best effort)
+        shell: bash
+        run: |
+          pip install pvporcupine || echo "pvporcupine unavailable; wake word falls back to speech_recognition"
+          pip install phue || echo "phue unavailable; Hue control stays off in this build"
+
       - name: Build
         run: pyinstaller packaging/jarvis.spec --noconfirm --clean
+
+      # PyInstaller reports a missing hidden import as an error line but still
+      # exits 0, so a "successful" step can leave no executable behind. Check.
+      - name: Check the executable exists
+        shell: bash
+        run: |
+          test -f dist/jarvis.exe || { echo "::error::pyinstaller produced no dist/jarvis.exe"; exit 1; }
+          ls -lh dist/jarvis.exe
 
       # A hidden import that silently resolved to nothing would ship a binary
       # missing features the source install has. Fail loudly instead.
@@ -89,6 +108,9 @@ jobs:
   release:
     name: Publish release
     needs: build
+    # A dispatch without a tag is a build-only test run: it produces the
+    # workflow artifact so the build can be verified, and publishes nothing.
+    if: startsWith(github.ref, 'refs/tags/v') || github.event.inputs.tag != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
