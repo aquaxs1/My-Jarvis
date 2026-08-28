@@ -1,0 +1,23 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+
+# PyInstaller (see packaging/)
+build/
+dist/
+*.spec
+
+.pytest_cache/
+.coverage
+.ruff_cache/
+.mypy_cache/
+
+*.log
+
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
