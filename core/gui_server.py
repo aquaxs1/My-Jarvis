@@ -564,7 +564,16 @@ class GUIServer:
             nonlocal self
             port = PORT_WS_DEFAULT
             ws_server = None
-            for attempt in range(MAX_PORT_RETRIES):
+            attempts = 0
+            while attempts < MAX_PORT_RETRIES:
+                # The two ranges overlap: with 8765 taken the HTTP server moves
+                # to 8766, which is the WebSocket default. Binding is not the
+                # problem -- the interface would connect to the HTTP server,
+                # get no WebSocket handshake and sit there disconnected.
+                if port == PORT_HTTP:
+                    port += 1
+                    continue
+                attempts += 1
                 try:
                     ws_server = await websockets.serve(
                         self._handle_client,
@@ -584,7 +593,18 @@ class GUIServer:
             PORT_WS = port
             print(f"[GUI] WebSocket: ws://127.0.0.1:{PORT_WS}")
             await asyncio.sleep(0.8)
-            webbrowser.open(f"http://127.0.0.1:{PORT_HTTP}/index.html")
+            url = f"http://127.0.0.1:{PORT_HTTP}/index.html"
+            print(f"[GUI] Interface: {url}")
+            try:
+                opened = webbrowser.open(url)
+            except Exception as e:
+                print(f"[GUI] The browser could not be opened: {e}")
+                opened = False
+            if not opened:
+                # No default browser, or a headless session: the server is up
+                # either way, so say where it is instead of leaving the user
+                # with a console that looks idle.
+                print(f"[GUI] Please open this address manually: {url}")
             await asyncio.Future()
 
         self.loop.run_until_complete(_run())
@@ -595,6 +615,21 @@ class GUIServer:
 
         class Q(SimpleHTTPRequestHandler):
             def log_message(self, *a): pass
+
+            def do_GET(self):
+                # The interface has to be told which WebSocket port the backend
+                # actually settled on. Both servers move when a port is taken,
+                # and a hard-coded port in the page then points at nothing.
+                if self.path.split("?")[0] == "/ports.json":
+                    body = json.dumps({"http": PORT_HTTP, "ws": PORT_WS}).encode("utf-8")
+                    self.send_response(200)
+                    self.send_header("Content-Type", "application/json")
+                    self.send_header("Content-Length", str(len(body)))
+                    self.send_header("Cache-Control", "no-store")
+                    self.end_headers()
+                    self.wfile.write(body)
+                    return
+                return super().do_GET()
 
         port = PORT_HTTP_DEFAULT
         for attempt in range(MAX_PORT_RETRIES):

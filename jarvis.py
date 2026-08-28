@@ -2,14 +2,88 @@
 My Jarvis v2.8 - Just A Rather Very Intelligent System
 Event-driven: voice input ONLY while the mic button is pressed
 """
+import os
 import sys
 import threading
 import time
 import queue
+import traceback
 from datetime import datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
+
+# ── startup guard ──────────────────────────────────────────────────────────
+# My Jarvis is normally started by double-clicking (jarvis.exe, start.bat) and
+# a Windows console window closes the moment the process exits. A traceback
+# that is on screen for a tenth of a second is the same thing as no error
+# message at all -- which is why a missing package used to look like "a black
+# window opens and nothing happens". Every startup failure below therefore
+# prints a readable cause and then holds the window open.
+
+def _hold_console(code: int = 1):
+    """Keep a double-clicked console window open long enough to be read."""
+    # start.bat / start.sh pause on a non-zero exit themselves; holding here as
+    # well would ask the user to press Enter twice.
+    if os.environ.get("JARVIS_LAUNCHER") == "1":
+        sys.exit(code)
+    try:
+        if sys.stdin and sys.stdin.isatty():
+            input("\nPress Enter to close this window...")
+    except Exception:
+        pass
+    sys.exit(code)
+
+
+# Packages My Jarvis cannot start without: each one is imported at module level
+# somewhere below, so a missing one aborts the program before the interface can
+# open. Everything else is optional and guarded at its use site.
+REQUIRED_PACKAGES = [
+    # accepted import names        pip name         what stops working
+    (("anthropic",),               "anthropic",     "the AI providers"),
+    # anthropic 1.x depends on httpx2 rather than httpx, and core/brain.py
+    # works with either -- so either one satisfies this.
+    (("httpx", "httpx2"),          "httpx",         "the AI providers"),
+    (("requests",),                "requests",      "web access"),
+    (("cryptography",),            "cryptography",  "the encrypted key and memory storage"),
+    (("websockets",),              "websockets",    "the interface"),
+]
+
+
+def _check_requirements():
+    import importlib.util
+    missing = []
+    for modules, package, purpose in REQUIRED_PACKAGES:
+        found = False
+        for module in modules:
+            try:
+                if importlib.util.find_spec(module) is not None:
+                    found = True
+                    break
+            except (ImportError, ValueError):
+                continue
+        if not found:
+            missing.append((package, purpose))
+    if not missing:
+        return
+    print("\n  My Jarvis cannot start: required packages are missing.\n")
+    for package, purpose in missing:
+        print(f"    - {package:<16} needed for {purpose}")
+    if getattr(sys, "frozen", False):
+        # A packaged build bundles its dependencies, so a missing one means the
+        # build itself is incomplete -- there is no pip here to fix it with.
+        print("\n  This packaged build is incomplete. Download it again from the"
+              "\n  releases page, or run My Jarvis from source.\n")
+    else:
+        python = Path(sys.executable).name or "python"
+        print("\n  Install them with:\n")
+        print(f"    {python} -m pip install " + " ".join(p for p, _ in missing))
+        print("\n  Or install everything at once:\n")
+        print(f"    {python} -m pip install -r requirements.txt\n")
+    _hold_console(1)
+
+
+_check_requirements()
 
 # ── GUI-Logger ─────────────────────────────────────────────────────────────
 _log_queue = queue.Queue()
@@ -41,16 +115,32 @@ except ImportError:
     KEYBOARD_AVAILABLE = False
     print("[WARNING] 'keyboard' is missing → python -m pip install keyboard")
 
-from core.config     import Config
-from core.speech     import SpeechEngine
-from core.brain      import Brain
-from core.safety     import SafetyGuard
-from core.executor   import Executor
-from core.screen     import ScreenWatcher
-from core.wake_word  import WakeWordListener
-from core.copilot    import Copilot
-from memory.memory_store import MemoryStore
-from core.gui_server import GUIServer
+try:
+    from core.config     import Config
+    from core.speech     import SpeechEngine
+    from core.brain      import Brain
+    from core.safety     import SafetyGuard
+    from core.executor   import Executor
+    from core.screen     import ScreenWatcher
+    from core.wake_word  import WakeWordListener
+    from core.copilot    import Copilot
+    from memory.memory_store import MemoryStore
+    from core.gui_server import GUIServer
+except Exception as e:
+    # _check_requirements() above covers a package that is absent; this catches
+    # one that is present but broken (a half-finished install, a failed native
+    # extension, a moved file). Not every such failure is an ImportError --
+    # a broken 'cryptography' raises from its Rust bindings -- so catch
+    # everything and put the cause on screen instead of losing it with the
+    # window.
+    traceback.print_exc()
+    print(f"\n  My Jarvis could not load its own modules: {e}")
+    if getattr(sys, "frozen", False):
+        print("  This packaged build is incomplete - download it again.\n")
+    else:
+        print("  Run the installer again, or: "
+              f"{Path(sys.executable).name or 'python'} -m pip install -r requirements.txt\n")
+    _hold_console(1)
 
 # ── kill switch ────────────────────────────────────────────────────────────
 KILL_ACTIVE = threading.Event()
@@ -259,15 +349,29 @@ class JARVIS:
 
 
 if __name__ == "__main__":
-    # bug 7: if no configuration exists, initialise it now
-    # (interactively on a TTY, otherwise save the defaults via the TTY guard in
-    # first_setup)
-    if not Config.exists():
-        print("[My Jarvis] No configuration found – initialising the defaults.")
+    # The first-time setup belongs in the interface (the needs_setup event and
+    # the settings panel collect provider and API key). Running the console
+    # wizard here blocked startup on input(): the browser never opened, so a
+    # user who started My Jarvis by double-clicking saw a console that appeared
+    # to hang. Pass --setup to get the console wizard on purpose.
+    if "--setup" in sys.argv:
         try:
             Config.first_setup()
         except Exception as e:
             print(f"[My Jarvis] Setup error: {e} – continuing with the defaults.")
+    elif not Config.exists():
+        print("[My Jarvis] No configuration found – writing the defaults.")
+        try:
             Config.save(Config.load())
-        print("[My Jarvis] Please enter the API key in the interface afterwards.")
-    JARVIS().run()
+        except Exception as e:
+            print(f"[My Jarvis] The configuration could not be written: {e}")
+        print("[My Jarvis] Enter your API key in the interface.")
+
+    try:
+        JARVIS().run()
+    except KeyboardInterrupt:
+        print("[My Jarvis] Shutting down...")
+    except Exception:
+        traceback.print_exc()
+        print("\n  My Jarvis stopped because of the error above.")
+        _hold_console(1)

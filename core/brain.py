@@ -7,7 +7,18 @@ JARVIS Brain v2.8 – synchron
 - v2.0: Specific exceptions, timeouts, response validation,
         configurable models, constants
 """
-import json, logging, time, requests, anthropic, httpx
+import json, logging, time, requests, anthropic
+
+# httpx supplies the client timeout and the transport errors caught below. It
+# used to arrive as a dependency of anthropic; anthropic 1.x depends on httpx2
+# (the same library, 2.x line) instead, so a plain `import httpx` started
+# failing at startup on a fresh install. Either name works here, and
+# requirements.txt now asks for httpx explicitly rather than relying on
+# whatever anthropic happens to pull in.
+try:
+    import httpx
+except ImportError:  # anthropic >= 1.0 ships httpx2
+    import httpx2 as httpx
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
