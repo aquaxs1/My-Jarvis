@@ -61,3 +61,25 @@ vercel --prod   # production
 
 On the first run the CLI asks for a project name and settings — leave build command
 and output directory empty.
+
+## The Content-Security-Policy and the inline script
+
+`vercel.json` sends a strict CSP. `script-src` allows `'self'` plus one SHA-256
+hash, which covers the single inline one-liner in every page's `<head>`:
+
+```html
+<script>document.documentElement.className += " js";</script>
+```
+
+It has to stay inline — it runs before the first paint so the no-JS styles never
+flash — so a hash is used instead of `'unsafe-inline'`. **Change that line by even
+one character and the browser silently refuses to run it**, and the `js` class
+never lands on `<html>`. If you edit it, recompute the hash and update the
+`Content-Security-Policy` value in `vercel.json`:
+
+```sh
+printf '%s' 'document.documentElement.className += " js";' \
+  | openssl dgst -sha256 -binary | openssl base64
+```
+
+Inline `style="…"` attributes are covered by `'unsafe-inline'` in `style-src`.
