@@ -54,7 +54,7 @@
     <a class="brand" href="./">
       <img class="brand__mark" src="assets/img/logo.svg" alt="" width="26" height="26">
       My Jarvis
-      <span class="brand__ver">v2.8</span>
+      <span class="brand__ver">v2.8.2</span>
     </a>
 
     <nav class="nav__links" id="nav-links" aria-label="Main">
@@ -124,7 +124,7 @@
       <div class="terminal" aria-hidden="true">
         <div class="terminal__bar">
           <i></i><i></i><i></i>
-          <span>jarvis — python jarvis.py</span>
+          <span>jarvis — start.sh</span>
         </div>
         <div class="terminal__body" id="terminal-body"></div>
       </div>
@@ -216,7 +216,10 @@
           <svg><use href="#i-down"/></svg> Download for Windows
         </a>
       </div>
-      <p class="note">Run the file you just downloaded — no Python, nothing to unpack.
+      <p class="note">Latest build:
+        <a href="https://github.com/aquaxs1/My-Jarvis/releases/latest"><b>v2.8.2</b></a>
+        — fixes the startup failure where a console window opened and nothing happened.
+        Run the file you just downloaded — no Python, nothing to unpack.
         Unsigned, so your browser may ask you to keep it and SmartScreen warns once:
         <b>More info → Run anyway</b>. Prefer the source install? It is the same command
         as the other tab.</p>
@@ -225,10 +228,12 @@
     <div class="tabpanel" data-tabgroup="os" data-tabpanel="unix" hidden>
       <div class="code">
         <div class="code__head"><span class="code__label">Terminal</span><button class="copy" type="button">COPY</button></div>
-<pre><span class="p">git clone</span> https://github.com/aquaxs1/My-Jarvis.git jarvis &amp;&amp; <span class="p">cd</span> jarvis &amp;&amp; <span class="p">chmod</span> +x install.sh &amp;&amp; ./install.sh &amp;&amp; <span class="p">python3</span> jarvis.py</pre>
+<pre><span class="p">git clone</span> https://github.com/aquaxs1/My-Jarvis.git jarvis &amp;&amp; <span class="p">cd</span> jarvis &amp;&amp; <span class="p">chmod</span> +x install.sh start.sh &amp;&amp; ./install.sh &amp;&amp; ./start.sh</pre>
       </div>
-      <p class="note">On Windows the same works with <code class="inline">install.bat</code> instead
-        of <code class="inline">./install.sh</code>.</p>
+      <p class="note">On Windows the same works with <code class="inline">install.bat</code> and
+        <code class="inline">start.bat</code> instead of <code class="inline">./install.sh</code>
+        and <code class="inline">./start.sh</code>. Both launchers keep the console window open
+        if something goes wrong, so you can read the cause.</p>
     </div>
 
     <p class="note reveal">
@@ -434,7 +439,7 @@
 
 <footer class="footer">
   <div class="wrap footer__inner">
-    <div>© <span id="year">2026</span> AquAxs · MIT · My Jarvis v2.8</div>
+    <div>© <span id="year">2026</span> AquAxs · MIT · My Jarvis v2.8.2</div>
     <nav class="footer__links" aria-label="Footer">
       <a href="features.html">Features</a>
       <a href="#install">Install</a>
