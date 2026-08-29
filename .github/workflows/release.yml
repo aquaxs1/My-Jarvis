@@ -94,9 +94,35 @@ jobs:
         shell: bash
         run: |
           mv dist/jarvis dist/my-jarvis
-          powershell -Command "Compress-Archive -Path 'dist/my-jarvis' -DestinationPath 'my-jarvis-windows-x64.zip' -CompressionLevel Optimal"
+          # 7-Zip rather than PowerShell's Compress-Archive. `powershell` on
+          # this runner is Windows PowerShell 5.1, whose Compress-Archive
+          # writes Windows path separators into the archive -- the ZIP spec
+          # requires forward slashes (APPNOTE 4.4.17.1). Explorer reads its own
+          # output back, but 7-Zip, WinRAR and every non-Windows extractor can
+          # turn it into thousands of files literally named
+          # "my-jarvis\_internal\...". That is what v2.8.3 shipped. 7z is
+          # preinstalled here, writes conforming names, and is much faster.
+          (cd dist && 7z a -tzip -mx=7 ../my-jarvis-windows-x64.zip my-jarvis) > /dev/null
           test -f my-jarvis-windows-x64.zip || { echo "::error::no zip produced"; exit 1; }
           ls -lh my-jarvis-windows-x64.zip
+
+      # A malformed archive still unpacks in Explorer, so it survives a spot
+      # check. Assert the separators and the entry point instead.
+      - name: Verify the archive layout
+        shell: bash
+        run: |
+          python - <<'PY'
+          import sys, zipfile
+
+          names = zipfile.ZipFile("my-jarvis-windows-x64.zip").namelist()
+          bad = [n for n in names if "\\" in n]
+          if bad:
+              sys.exit(f"::error::{len(bad)} of {len(names)} entries use backslash "
+                       f"separators, e.g. {bad[0]!r}")
+          if "my-jarvis/jarvis.exe" not in names:
+              sys.exit("::error::my-jarvis/jarvis.exe is not in the archive")
+          print(f"{len(names)} entries, forward slashes, jarvis.exe at the folder root")
+          PY
 
       - name: Checksum
         shell: bash
