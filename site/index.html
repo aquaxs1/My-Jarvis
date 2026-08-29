@@ -59,16 +59,16 @@
 
     <nav class="nav__links" id="nav-links" aria-label="Main">
       <a href="features.html">Features</a>
-      <a href="#install">Install</a>
-      <a href="#usage">Usage</a>
-      <a href="#help">Help</a>
+      <a href="setup.html">Setup</a>
+      <a href="download.html">Download</a>
+      <a href="index.html#help">Help</a>
     </nav>
 
     <div class="nav__cta">
       <a class="btn btn--ghost btn--sm" href="https://github.com/aquaxs1/My-Jarvis" target="_blank" rel="noopener">
         <svg><use href="#i-gh"/></svg> GitHub
       </a>
-      <a class="btn btn--primary btn--sm" href="#install">Install</a>
+      <a class="btn btn--primary btn--sm" href="download.html">Download</a>
       <button class="nav__burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav-links">
         <svg width="20" height="20"><use href="#i-menu"/></svg>
       </button>
@@ -101,7 +101,7 @@
       </p>
 
       <div class="hero__actions">
-        <a class="btn btn--primary" href="#install"><svg><use href="#i-down"/></svg> Install</a>
+        <a class="btn btn--primary" href="download.html"><svg><use href="#i-down"/></svg> Download</a>
         <a class="btn btn--ghost" href="features.html"><svg><use href="#i-zap"/></svg> See features</a>
       </div>
 
@@ -197,156 +197,8 @@
 </section>
 
 <!-- ============================================================= Install -->
-<section class="section section--alt" id="install">
-  <div class="wrap">
-    <div class="section__head reveal">
-      <span class="eyebrow">Install</span>
-      <h2>One download, or one command</h2>
-      <p>Windows gets a ready-made binary. Everywhere else, one line — needs Python 3.10+ and git.</p>
-    </div>
-
-    <div class="tabs reveal" data-tabs="os" role="tablist" aria-label="Choose your system">
-      <button role="tab" data-tab="windows" aria-selected="true" type="button">Windows</button>
-      <button role="tab" data-tab="unix" aria-selected="false" type="button">macOS &amp; Linux</button>
-    </div>
-
-    <div class="tabpanel" data-tabgroup="os" data-tabpanel="windows">
-      <div class="more" style="justify-content:flex-start">
-        <a class="btn btn--primary" href="https://github.com/aquaxs1/My-Jarvis/releases/latest/download/my-jarvis-windows-x64.zip">
-          <svg><use href="#i-down"/></svg> Download for Windows
-        </a>
-      </div>
-      <p class="note">Latest build:
-        <a href="https://github.com/aquaxs1/My-Jarvis/releases/latest"><b>v2.8.4</b></a>
-        — no Python needed. Unpack the zip and run <code class="inline">jarvis.exe</code>
-        from the folder; keep the folder together, the program loads the rest of it at
-        startup. It is unsigned, so your browser may ask you to keep the file and
-        SmartScreen warns once: <b>More info → Run anyway</b>.
-        Prefer the source install? It is the same command as the other tab.</p>
-
-      <p class="note">Earlier builds shipped as a single self-extracting
-        <code class="inline">.exe</code>, which Microsoft Defender flagged as
-        <code class="inline">Trojan:Win32/Sabsik.TE.A!ml</code> — a false positive on the
-        packing format, which unpacked itself into <code class="inline">%TEMP%</code> at
-        every start. This build is a plain folder and does not do that. Every build is
-        made in public from public source, and the release page carries a
-        <code class="inline">SHA256SUMS.txt</code> so you can check your download against
-        what the build produced.</p>
-    </div>
-
-    <div class="tabpanel" data-tabgroup="os" data-tabpanel="unix" hidden>
-      <div class="code">
-        <div class="code__head"><span class="code__label">Terminal</span><button class="copy" type="button">COPY</button></div>
-<pre><span class="p">git clone</span> https://github.com/aquaxs1/My-Jarvis.git jarvis &amp;&amp; <span class="p">cd</span> jarvis &amp;&amp; <span class="p">chmod</span> +x install.sh start.sh &amp;&amp; ./install.sh &amp;&amp; ./start.sh</pre>
-      </div>
-      <p class="note">On Windows the same works with <code class="inline">install.bat</code> and
-        <code class="inline">start.bat</code> instead of <code class="inline">./install.sh</code>
-        and <code class="inline">./start.sh</code>. Both launchers keep the console window open
-        if something goes wrong, so you can read the cause.</p>
-    </div>
-
-    <p class="note reveal">
-      The browser opens at <code class="inline">127.0.0.1:8765</code>. Pick a provider, paste your API key,
-      click <b>START JARVIS</b>. The key is stored encrypted, never in plain text.
-    </p>
-
-    <div class="table-wrap reveal">
-      <table>
-        <thead><tr><th>Provider</th><th>Model</th><th>Key</th></tr></thead>
-        <tbody>
-          <tr><td>Anthropic Claude</td><td class="muted">claude-sonnet-4-20250514</td><td><code>sk-ant-api03-…</code></td></tr>
-          <tr><td>OpenAI ChatGPT</td><td class="muted">gpt-4o-mini</td><td><code>sk-…</code></td></tr>
-          <tr><td>Google Gemini</td><td class="muted">gemini-1.5-flash</td><td><code>AIza…</code></td></tr>
-          <tr><td>NVIDIA NIM</td><td class="muted">llama-3.1-70b</td><td><code>nvapi-…</code></td></tr>
-          <tr><td>Mistral AI</td><td class="muted">mistral-large-latest</td><td><code>API key</code></td></tr>
-          <tr><td>Ollama (local)</td><td class="muted">llama3, mistral, …</td><td class="muted">none needed</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
 
 <!-- =============================================================== Usage -->
-<section class="section" id="usage">
-  <div class="wrap">
-    <div class="section__head reveal">
-      <span class="eyebrow">Usage</span>
-      <h2>Three panels, one input bar</h2>
-    </div>
-
-    <div class="ui-map reveal">
-      <div class="ui-map__col">
-        <h4>Left</h4>
-        <ul>
-          <li>Thought process, live</li>
-          <li>Tokens, memories, routines</li>
-          <li>Settings</li>
-        </ul>
-      </div>
-      <div class="ui-map__col ui-map__col--mid">
-        <h4>Center</h4>
-        <ul>
-          <li>Status orb and kill switch</li>
-          <li>Chat with tested code blocks</li>
-          <li>Mic · live vision · text · send</li>
-        </ul>
-      </div>
-      <div class="ui-map__col">
-        <h4>Right</h4>
-        <ul>
-          <li>To-dos My Jarvis runs itself</li>
-          <li>Stored memories</li>
-          <li>Suggestions</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="orbs reveal">
-      <span class="orb-chip"><i class="teal"></i> Teal — ready or listening</span>
-      <span class="orb-chip"><i class="amber"></i> Amber — thinking</span>
-      <span class="orb-chip"><i class="red"></i> Red — error or kill switch</span>
-    </div>
-
-    <h3 class="sub reveal">Try saying</h3>
-    <div class="grid grid--3">
-      <article class="card reveal">
-        <h3>Everyday</h3>
-        <ul>
-          <li>“Give me my briefing”</li>
-          <li>“What's on tomorrow?”</li>
-          <li>“Summarize my emails”</li>
-        </ul>
-      </article>
-      <article class="card reveal">
-        <h3>At the computer</h3>
-        <ul>
-          <li>“Look at my screen”</li>
-          <li>“Open Chrome and search for the weather”</li>
-          <li>“Summarize report.pdf”</li>
-        </ul>
-      </article>
-      <article class="card reveal">
-        <h3>Personal</h3>
-        <ul>
-          <li>“Remember that I prefer Python”</li>
-          <li>“I spent 45 euros on groceries”</li>
-          <li>“Turn on the lights”</li>
-        </ul>
-      </article>
-    </div>
-
-    <div class="table-wrap reveal shortcuts">
-      <table>
-        <thead><tr><th>Shortcut</th><th>Action</th></tr></thead>
-        <tbody>
-          <tr><td><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>J</kbd></td><td>Kill switch — stops speech, commands, vision, to-dos</td></tr>
-          <tr><td><kbd>Ctrl</kbd> + <kbd>K</kbd></td><td>Focus the input field</td></tr>
-          <tr><td><kbd>Ctrl</kbd> + <kbd>,</kbd></td><td>Open settings</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
 
 <!-- ============================================================ Security -->
 <section class="section section--alt" id="security">
@@ -437,7 +289,7 @@
     <div class="cta reveal">
       <h2>Talk to your computer</h2>
       <div class="cta__actions">
-        <a class="btn btn--primary" href="#install"><svg><use href="#i-down"/></svg> Install</a>
+        <a class="btn btn--primary" href="download.html"><svg><use href="#i-down"/></svg> Download</a>
         <a class="btn btn--ghost" href="https://github.com/aquaxs1/My-Jarvis" target="_blank" rel="noopener"><svg><use href="#i-gh"/></svg> Source on GitHub</a>
       </div>
     </div>
@@ -451,8 +303,8 @@
     <div>© <span id="year">2026</span> AquAxs · MIT · My Jarvis v2.8.4</div>
     <nav class="footer__links" aria-label="Footer">
       <a href="features.html">Features</a>
-      <a href="#install">Install</a>
-      <a href="#usage">Usage</a>
+      <a href="download.html">Download</a>
+      <a href="setup.html">Setup</a>
       <a href="terms.html">Terms &amp; Privacy</a>
       <a href="https://github.com/aquaxs1/My-Jarvis" target="_blank" rel="noopener">GitHub</a>
     </nav>

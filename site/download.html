@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Download — My Jarvis</title>
+<meta name="description" content="Download My Jarvis for Windows, or install it from source on macOS and Linux with one command.">
+<meta name="theme-color" content="#04060a">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/logo.svg">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Download — My Jarvis">
+<meta property="og:description" content="Download My Jarvis for Windows, or install it from source on macOS and Linux with one command.">
+<meta property="og:image" content="https://mybluejarvis.vercel.app/assets/img/og-image.png">
+<meta property="og:url" content="https://mybluejarvis.vercel.app/download.html">
+<link rel="canonical" href="https://mybluejarvis.vercel.app/download.html">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<link rel="stylesheet" href="assets/css/style.css">
+<script>document.documentElement.className += " js";</script>
+</head>
+<body>
+
+<!-- ========================================================== Icon sprite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0v-6a3 3 0 0 1 3-3z"/><path d="M19 10.5v1a7 7 0 0 1-14 0v-1"/><path d="M12 18.5v3"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 3.5l6.5 17 2.4-6.6 6.6-2.4z"/><path d="M14 14l6 6"/></symbol>
+  <symbol id="i-db" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16.5" rx="2"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="8.5 12 11.5 15 20 5.5"/><path d="M20.5 12.5V19a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4.5" width="19" height="15" rx="2"/><polyline points="3 6.5 12 13 21 6.5"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8L6 18M18 6l1.8-1.8"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8z"/><polyline points="14 2.5 14 8 19.5 8"/><path d="M8 13h8M8 17h6"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5.5 9.8V20a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V9.8"/><path d="M10 21v-6h4v6"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="3.5"/><path d="M10.5 9.2l5 2.8-5 2.8z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20.5 20.5L16.2 16.2"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 7.5a2 2 0 0 1 2-2h11.5"/><rect x="3.5" y="7.5" width="17" height="12" rx="2"/><circle cx="16.5" cy="13.5" r="1.2"/></symbol>
+  <symbol id="i-mega" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5v3a1 1 0 0 0 1 1h3l7 4V5.5l-7 4H4a1 1 0 0 0-1 1z"/><path d="M18 9.2a4 4 0 0 1 0 5.6"/></symbol>
+  <symbol id="i-alarm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 9.5v4l2.5 2"/><path d="M5 3.5L2.6 5.8M19 3.5l2.4 2.3"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l8 3.4v5.7c0 4.8-3.3 9-8 10.2-4.7-1.2-8-5.4-8-10.2V5.9z"/><polyline points="9 12 11.3 14.3 15.5 10"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2.5L4.5 13.5H11L10 21.5 19.5 10H13z"/></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9.5 2.5v3.5M14.5 2.5v3.5M9.5 18v3.5M14.5 18v3.5M2.5 9.5H6M2.5 14.5H6M18 9.5h3.5M18 14.5h3.5"/></symbol>
+  <symbol id="i-scale" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5v17M5 7.5h14"/><path d="M7.5 7.5L4.5 14h6zM16.5 7.5L13.5 14h6z"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 18h5M10 21h4"/><path d="M12 2.5a6 6 0 0 0-3.5 10.9c.6.5.9 1.1 1 1.6h5c.1-.5.4-1.1 1-1.6A6 6 0 0 0 12 2.5z"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.8h.01"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><polyline points="7 10.5 12 15.5 17 10.5"/><path d="M4 19.5h16"/></symbol>
+  <symbol id="i-gh" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.6 5.6.6 11.9c0 5 3.3 9.3 7.8 10.8.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.1.1 1.7 1.2 1.7 1.2 1 1.8 2.7 1.3 3.4 1 .1-.7.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.2-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.9 1.2 1.9 1.2 3.2 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6a11.4 11.4 0 0 0 7.8-10.8C23.4 5.6 18.3.5 12 .5z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+</svg>
+
+<!-- ========================================================== Navigation -->
+<header class="nav is-stuck">
+  <div class="wrap nav__inner">
+    <a class="brand" href="./">
+      <img class="brand__mark" src="assets/img/logo.svg" alt="" width="26" height="26">
+      My Jarvis
+      <span class="brand__ver">v2.8.4</span>
+    </a>
+
+    <nav class="nav__links" id="nav-links" aria-label="Main">
+      <a href="features.html">Features</a>
+      <a href="setup.html">Setup</a>
+      <a href="download.html" class="is-active" aria-current="page">Download</a>
+      <a href="index.html#help">Help</a>
+    </nav>
+
+    <div class="nav__cta">
+      <a class="btn btn--ghost btn--sm" href="https://github.com/aquaxs1/My-Jarvis" target="_blank" rel="noopener">
+        <svg><use href="#i-gh"/></svg> GitHub
+      </a>
+      <a class="btn btn--primary btn--sm" href="download.html">Download</a>
+      <button class="nav__burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav-links">
+        <svg width="20" height="20"><use href="#i-menu"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="section section--alt" id="download">
+  <div class="wrap">
+    <div class="section__head reveal">
+      <span class="eyebrow">Download</span>
+      <h2>One download, or one command</h2>
+      <p>Windows gets a ready-made binary. Everywhere else, one line — needs Python 3.10+ and git.</p>
+    </div>
+
+    <div class="tabs reveal" data-tabs="os" role="tablist" aria-label="Choose your system">
+      <button role="tab" data-tab="windows" aria-selected="true" type="button">Windows</button>
+      <button role="tab" data-tab="unix" aria-selected="false" type="button">macOS &amp; Linux</button>
+    </div>
+
+    <div class="tabpanel" data-tabgroup="os" data-tabpanel="windows">
+      <div class="more" style="justify-content:flex-start">
+        <a class="btn btn--primary" href="https://github.com/aquaxs1/My-Jarvis/releases/latest/download/my-jarvis-windows-x64.zip">
+          <svg><use href="#i-down"/></svg> Download for Windows
+        </a>
+      </div>
+      <p class="note">Always the
+        <a href="https://github.com/aquaxs1/My-Jarvis/releases/latest"><b>latest release</b></a>
+        — no Python needed. Unpack the zip and run <code class="inline">jarvis.exe</code>
+        from the folder; keep the folder together, the program loads the rest of it at
+        startup. It is unsigned, so your browser may ask you to keep the file and
+        SmartScreen warns once: <b>More info → Run anyway</b>.
+        Prefer the source install? It is the same command as the other tab.</p>
+
+      <p class="note">Earlier builds shipped as a single self-extracting
+        <code class="inline">.exe</code>, which Microsoft Defender flagged as
+        <code class="inline">Trojan:Win32/Sabsik.TE.A!ml</code> — a false positive on the
+        packing format, which unpacked itself into <code class="inline">%TEMP%</code> at
+        every start. This build is a plain folder and does not do that. Every build is
+        made in public from public source, and the release page carries a
+        <code class="inline">SHA256SUMS.txt</code> so you can check your download against
+        what the build produced.</p>
+    </div>
+
+    <div class="tabpanel" data-tabgroup="os" data-tabpanel="unix" hidden>
+      <div class="code">
+        <div class="code__head"><span class="code__label">Terminal</span><button class="copy" type="button">COPY</button></div>
+<pre><span class="p">git clone</span> https://github.com/aquaxs1/My-Jarvis.git jarvis &amp;&amp; <span class="p">cd</span> jarvis &amp;&amp; <span class="p">chmod</span> +x install.sh start.sh &amp;&amp; ./install.sh &amp;&amp; ./start.sh</pre>
+      </div>
+      <p class="note">On Windows the same works with <code class="inline">install.bat</code> and
+        <code class="inline">start.bat</code> instead of <code class="inline">./install.sh</code>
+        and <code class="inline">./start.sh</code>. Both launchers keep the console window open
+        if something goes wrong, so you can read the cause.</p>
+    </div>
+
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <p class="note">Installed it? The <a href="setup.html">setup guide</a> covers the first
+      run, your provider key and the three panels.</p>
+  </div>
+</section>
+</main>
+
+
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <div>© <span id="year">2026</span> AquAxs · MIT · My Jarvis v2.8.4</div>
+    <nav class="footer__links" aria-label="Footer">
+      <a href="./">Home</a>
+      <a href="download.html">Download</a>
+      <a href="setup.html">Setup</a>
+      <a href="terms.html">Terms &amp; Privacy</a>
+      <a href="https://github.com/aquaxs1/My-Jarvis" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="assets/js/main.js" defer></script>
+</body>
+</html>
