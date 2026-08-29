@@ -615,6 +615,12 @@ at runtime, and the executable carries an icon and a version resource. What
 remains is the unsigned-binary warning, which only a code-signing certificate
 removes.
 
+**If you downloaded v2.8.3**, take v2.8.4 instead. The v2.8.3 zip was written
+with Windows path separators, which the ZIP format does not allow: Windows
+Explorer unpacks it correctly, but 7-Zip, WinRAR and non-Windows tools can turn
+it into thousands of files with backslashes in their names instead of a folder.
+Delete whatever it produced and unpack the new zip.
+
 If a scanner still objects:
 
 - Check the download against `SHA256SUMS.txt` on the release page. Every build
