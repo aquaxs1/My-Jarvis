@@ -54,7 +54,7 @@
     <a class="brand" href="./">
       <img class="brand__mark" src="assets/img/logo.svg" alt="" width="26" height="26">
       My Jarvis
-      <span class="brand__ver">v2.8.2</span>
+      <span class="brand__ver">v2.8.3</span>
     </a>
 
     <nav class="nav__links" id="nav-links" aria-label="Main">
@@ -212,17 +212,26 @@
 
     <div class="tabpanel" data-tabgroup="os" data-tabpanel="windows">
       <div class="more" style="justify-content:flex-start">
-        <a class="btn btn--primary" href="https://github.com/aquaxs1/My-Jarvis/releases/latest/download/my-jarvis-windows-x64.exe">
+        <a class="btn btn--primary" href="https://github.com/aquaxs1/My-Jarvis/releases/latest/download/my-jarvis-windows-x64.zip">
           <svg><use href="#i-down"/></svg> Download for Windows
         </a>
       </div>
       <p class="note">Latest build:
-        <a href="https://github.com/aquaxs1/My-Jarvis/releases/latest"><b>v2.8.2</b></a>
-        — fixes the startup failure where a console window opened and nothing happened.
-        Run the file you just downloaded — no Python, nothing to unpack.
-        Unsigned, so your browser may ask you to keep it and SmartScreen warns once:
-        <b>More info → Run anyway</b>. Prefer the source install? It is the same command
-        as the other tab.</p>
+        <a href="https://github.com/aquaxs1/My-Jarvis/releases/latest"><b>v2.8.3</b></a>
+        — no Python needed. Unpack the zip and run <code class="inline">jarvis.exe</code>
+        from the folder; keep the folder together, the program loads the rest of it at
+        startup. It is unsigned, so your browser may ask you to keep the file and
+        SmartScreen warns once: <b>More info → Run anyway</b>.
+        Prefer the source install? It is the same command as the other tab.</p>
+
+      <p class="note">Earlier builds shipped as a single self-extracting
+        <code class="inline">.exe</code>, which Microsoft Defender flagged as
+        <code class="inline">Trojan:Win32/Sabsik.TE.A!ml</code> — a false positive on the
+        packing format, which unpacked itself into <code class="inline">%TEMP%</code> at
+        every start. This build is a plain folder and does not do that. Every build is
+        made in public from public source, and the release page carries a
+        <code class="inline">SHA256SUMS.txt</code> so you can check your download against
+        what the build produced.</p>
     </div>
 
     <div class="tabpanel" data-tabgroup="os" data-tabpanel="unix" hidden>
@@ -439,7 +448,7 @@
 
 <footer class="footer">
   <div class="wrap footer__inner">
-    <div>© <span id="year">2026</span> AquAxs · MIT · My Jarvis v2.8.2</div>
+    <div>© <span id="year">2026</span> AquAxs · MIT · My Jarvis v2.8.3</div>
     <nav class="footer__links" aria-label="Footer">
       <a href="features.html">Features</a>
       <a href="#install">Install</a>
