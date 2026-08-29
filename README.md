@@ -45,7 +45,19 @@ JARVIS runs locally on your PC, opens a browser interface and connects to an AI 
 
 ## Installation
 
-### Windows (recommended)
+### Windows — ready-made build (no Python needed)
+
+Download [`my-jarvis-windows-x64.zip`](https://github.com/aquaxs1/My-Jarvis/releases/latest/download/my-jarvis-windows-x64.zip)
+from the [latest release](https://github.com/aquaxs1/My-Jarvis/releases/latest),
+unpack it, and run `jarvis.exe` from the folder. Keep the folder together —
+`jarvis.exe` loads the rest of it at startup.
+
+The build is not code-signed, so SmartScreen warns on first launch: choose
+**More info → Run anyway**. See
+[Windows Defender flags the download](#windows-defender-flags-the-download) if a
+scanner objects.
+
+### Windows — from source
 
 ```
 git clone <repository-url> jarvis
@@ -589,6 +601,30 @@ Check if TTS is enabled in settings. On Linux, install `espeak-ng` if needed:
 ```
 sudo apt-get install espeak-ng
 ```
+
+### Windows Defender flags the download
+
+Builds up to v2.8.2 shipped as a single self-extracting `.exe` and were flagged
+as `Trojan:Win32/Sabsik.TE.A!ml`. That was a false positive on the packing
+format rather than on anything in the code: PyInstaller's onefile mode unpacks
+the whole program into `%TEMP%` at every start, which is what a dropper does.
+The `!ml` suffix marks it as a machine-learning verdict, not a signature match.
+
+From v2.8.3 the download is a plain folder in a zip, so nothing unpacks itself
+at runtime, and the executable carries an icon and a version resource. What
+remains is the unsigned-binary warning, which only a code-signing certificate
+removes.
+
+If a scanner still objects:
+
+- Check the download against `SHA256SUMS.txt` on the release page. Every build
+  is produced by the public workflow in `.github/workflows/release.yml`, from
+  public source, and the run is linked on the release.
+- Report the false positive to Microsoft at
+  <https://www.microsoft.com/en-us/wdsi/filesubmission> — these are usually
+  cleared within a few days.
+- Or skip the binary entirely and install from source, which no scanner
+  objects to.
 
 ### A console window opens and nothing happens
 
