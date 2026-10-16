@@ -58,6 +58,19 @@ DEFAULT_CONFIG = {
     "suggestions_enabled": True,
 }
 
+# Version of the first-start notice in the interface: what My Jarvis sends
+# where (AI provider, Google speech recognition, weather and news sources) and
+# that it is an AI that makes mistakes. Until config["consent_version"] equals
+# this, nothing leaves the machine — no AI request, no microphone audio, no
+# screenshot. Raise it when the notice says something new; everyone is then
+# asked once more.
+CONSENT_VERSION = 1
+
+
+def consent_given(config: dict) -> bool:
+    """True once the current first-start notice has been accepted."""
+    return config.get("consent_version") == CONSENT_VERSION
+
 
 def _get_machine_secret() -> bytes:
     """Derive a machine-specific secret from hostname + username."""

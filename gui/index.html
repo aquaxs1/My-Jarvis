@@ -103,6 +103,9 @@ body::after{content:'';position:fixed;inset:0;background-image:
 .toggle.on{background:rgba(77,230,224,0.22);border-color:var(--jv-line-ion);}
 .toggle::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--jv-ink-3);transition:all 180ms var(--jv-ease);}
 .toggle.on::after{left:18px;background:var(--jv-ion);box-shadow:0 0 8px var(--jv-ion-glow);}
+.consent-list{margin:0 0 16px;padding-left:18px;display:flex;flex-direction:column;gap:9px;font-family:var(--fs);font-size:13px;line-height:1.55;color:var(--jv-ink-2);}
+.consent-list b,.consent-ai b{color:var(--jv-ink-1);font-weight:600;}
+.consent-ai{margin-bottom:18px;padding:12px 14px;border:1px solid var(--jv-line-ion);border-radius:var(--jv-r-2);background:var(--jv-slate);font-family:var(--fs);font-size:13px;line-height:1.55;color:var(--jv-ink-2);}
 .sm-save{width:100%;padding:12px;background:var(--jv-ion);border:none;color:#04060A;font-family:var(--fm);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all var(--jv-dur-2);font-weight:600;border-radius:var(--jv-r-2);}
 .sm-save:hover{background:var(--jv-ion-soft);box-shadow:0 0 24px var(--jv-ion-glow);}
 
@@ -1187,6 +1190,25 @@ body.light .st-btn-primary{color:#FFFFFF;}
   </div>
 </div>
 
+<!-- FIRST-START NOTICE: shown until the backend reports it accepted
+     (consent_status). Nothing leaves the machine before that. -->
+<div id="consent-modal" class="modal" style="z-index:600" role="dialog" aria-modal="true" aria-labelledby="consent-title">
+  <div class="sm-panel" style="width:540px">
+    <div class="sm-title" id="consent-title">Before you start</div>
+    <div class="sm-sub">What My Jarvis sends where</div>
+    <ul class="consent-list">
+      <li><b>Your AI provider</b> (Anthropic, OpenAI, Google, NVIDIA or Mistral) receives what you ask, the conversation so far and, for screen vision and Copilot, screenshots of your screen. A local Ollama model keeps this on your computer.</li>
+      <li><b>Voice input goes to Google.</b> Speech is turned into text by Google's speech recognition, even with a local AI model. With the wake word on and no Porcupine access key, everything said near the microphone is sent to Google in short snippets to catch "Hey Jarvis". Typing uses no Google service.</li>
+      <li><b>Briefings</b> fetch the weather for your location from wttr.in and headlines from tagesschau.de, ORF and Hacker News.</li>
+      <li><b>Integrations</b> you connect (Google Calendar, Todoist, Notion, your mail account, Home Assistant, Philips Hue) receive what those features need.</li>
+      <li><b>Everything else stays here:</b> settings, memories and API keys are stored encrypted in ~/.jarvis. There is no My Jarvis server and no telemetry.</li>
+    </ul>
+    <div class="consent-ai"><b>My Jarvis is an AI.</b> It is not extensively tested and it makes mistakes: it can misunderstand you, state wrong facts or click the wrong thing on your PC. Check anything important, keep backups, and stop it at once with the kill switch (Ctrl+Alt+J).</div>
+    <button class="sm-save" id="consent-accept-btn">Accept &amp; start</button>
+    <div class="sm-sub" style="margin:12px 0 0">Asked once — saved on this computer</div>
+  </div>
+</div>
+
 <!-- CUSTOM ANREDE MODAL -->
 <div id="salutation-modal" class="modal">
   <div class="sm-panel" style="width:360px">
@@ -1486,6 +1508,21 @@ document.addEventListener('DOMContentLoaded',setupChips);
 function toggleSwitch(id){document.getElementById(id).classList.toggle('on');}
 
 // ══ SETUP DONE ════════════════════════════════════════════════════════════════
+// ══ FIRST-START NOTICE ═════════════════════════════════════════════════════════
+// The backend decides: it reports consent_status on every connect and whenever a
+// request was held back, and stores the acceptance in ~/.jarvis.
+let consentVersion=null;
+function setConsent(d){
+  consentVersion=d.version;
+  const m=document.getElementById('consent-modal');
+  if(d.accepted){m.classList.remove('show');return;}
+  m.classList.add('show');
+  document.getElementById('consent-accept-btn').focus();
+}
+document.getElementById('consent-accept-btn').addEventListener('click',()=>{
+  if(consentVersion!=null)sendWS('accept_consent',{version:consentVersion});
+});
+
 document.getElementById('setup-done-btn').addEventListener('click',()=>{
   const p=document.querySelector('#setup-api-grid .ap.on')?.dataset.p||'anthropic';
   const keyMap={anthropic:'sk-anthropic',openai:'sk-openai',gemini:'sk-gemini',nvidia:'sk-nvidia',mistral:'sk-mistral'};
@@ -1792,6 +1829,7 @@ function handleMsg(m){
     routines_data:()=>{},
     needs_setup:()=>{document.getElementById('banner-txt').textContent=(data.reason||'The API key is missing')+'  — open the settings.';document.getElementById('setup-banner').classList.add('show');},
     config_update:()=>updateKeyStatusEl(data.api_key_set),
+    consent_status:()=>setConsent(data),
     config_saved:()=>{notify('Config confirmed');updateKeyStatusEl(!!data.key_preview);},
     mic_done:()=>{S.listening=false;document.getElementById('micbtn').classList.remove('on');setStatus('READY','');},
     screenshot_countdown:()=>startScreenshot(data.query),

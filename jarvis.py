@@ -116,7 +116,7 @@ except ImportError:
     print("[WARNING] 'keyboard' is missing → python -m pip install keyboard")
 
 try:
-    from core.config     import Config
+    from core.config     import Config, CONSENT_VERSION, consent_given
     from core.speech     import SpeechEngine
     from core.brain      import Brain
     from core.safety     import SafetyGuard
@@ -307,6 +307,12 @@ class JARVIS:
             return
         text = text.strip()
         if not text:
+            return
+
+        # Nothing goes to the AI provider before the first-start notice is
+        # accepted; the interface shows it again.
+        if not consent_given(self.config):
+            self.gui.send_event("consent_status", {"accepted": False, "version": CONSENT_VERSION})
             return
 
         if len(text) > 10000:

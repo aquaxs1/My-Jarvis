@@ -180,6 +180,16 @@ The API key is stored encrypted (Windows: DPAPI/Credential Manager, fallback: Fe
 
 Configuration is saved at `~/.jarvis/config.json`.
 
+### First-start notice
+
+Once the interface is connected, a **Before you start** window lists what My Jarvis sends where — your
+prompts and screenshots to the AI provider, voice input to Google's speech recognition (also the wake word
+fallback), weather and news sources, connected integrations — and that My Jarvis is an AI that makes
+mistakes. One click on **Accept & start** saves `consent_version` and `consent_accepted_at` in the config;
+it is not asked again. Until then the backend refuses everything that would leave the machine: chat, voice,
+screenshots, Copilot, the to-do runner, connector tests and the wake word. To show the notice to everyone
+again after it changes, raise `CONSENT_VERSION` in `core/config.py`.
+
 ---
 
 ## The Interface
