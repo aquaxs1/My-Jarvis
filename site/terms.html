@@ -63,7 +63,7 @@
     <div class="section__head">
       <span class="eyebrow">Legal</span>
       <h1>Terms of Use</h1>
-      <p>Last updated: 29 August 2026</p>
+      <p>Last updated: 16 October 2026</p>
     </div>
 
     <h2 id="scope">1. What these terms cover</h2>
@@ -92,28 +92,54 @@
     <p>
       There is no My Jarvis server, no account and no telemetry. Configuration,
       memories and API keys live encrypted in <code class="inline">~/.jarvis/</code>
-      on your own machine.
+      on your own machine. On first start the app lists what it sends where and
+      only starts sending after you accept that once.
     </p>
     <p>
-      <strong>Your AI provider is the exception.</strong> Whatever you send My
-      Jarvis — text, and screenshots when vision is on — is transmitted to the
-      provider you configured (Anthropic, OpenAI, Google, NVIDIA or Mistral) and
-      handled under that provider's terms and privacy policy, not these. Run a
-      local Ollama model if you want nothing to leave your machine.
+      <strong>Your AI provider</strong> receives what you send My Jarvis — text,
+      the conversation so far, and screenshots when vision or Copilot is in use —
+      and handles it under its own terms and privacy policy (Anthropic, OpenAI,
+      Google, NVIDIA or Mistral). A local Ollama model keeps this on your machine.
     </p>
     <p>
-      Optional integrations reach the services you connect them to: Google
-      Calendar, Todoist, Notion, your mail provider, Home Assistant, Philips Hue.
-      Each is off until you set it up.
+      <strong>Voice input goes to Google.</strong> Speech is turned into text by
+      Google's speech recognition, also when you use a local model. With the wake
+      word switched on and no Porcupine access key, everything said near the
+      microphone is sent to Google in short snippets to catch "Hey Jarvis" — so
+      only switch it on where nobody minds. Typed input uses no Google service.
+    </p>
+    <p>
+      Briefings fetch the weather for your location from wttr.in and headlines
+      from tagesschau.de, ORF and Hacker News. Optional integrations reach the
+      services you connect them to: Google Calendar, Todoist, Notion, your mail
+      provider, Home Assistant, Philips Hue. Each is off until you set it up.
     </p>
 
-    <h2 id="website">5. This website</h2>
+    <h2 id="ai">5. My Jarvis is an AI</h2>
     <p>
-      Static pages, no cookies, no analytics, no third-party scripts or fonts.
-      Nothing about your visit is stored or shared.
+      It is not extensively tested and it makes mistakes: it can misunderstand
+      you, state wrong facts or take the wrong action on your PC. Check anything
+      important before you rely on it.
     </p>
 
-    <h2 id="warranty">6. No warranty</h2>
+    <h2 id="website">6. This website</h2>
+    <p>
+      Static pages, no cookies, no analytics, no third-party scripts or fonts. It
+      is run by Sebi and hosted by Vercel Inc. (USA), which processes your IP
+      address, the time, the page requested and your browser details to deliver
+      the site and protect it against abuse (server logs; legitimate interest,
+      Art. 6(1)(f) GDPR). Vercel is certified under the EU-US Data Privacy
+      Framework. Nothing else about your visit is stored or shared.
+    </p>
+    <p>
+      You can ask for access to, correction or deletion of your data and object
+      to its processing (Art. 15–21 GDPR) by messaging Sebi on
+      <a href="https://t.me/aquaxs" rel="noopener">Telegram (@aquaxs)</a>, and you
+      can complain to a data protection authority — in Austria the
+      Datenschutzbehörde (<a href="https://www.dsb.gv.at" rel="noopener">dsb.gv.at</a>).
+    </p>
+
+    <h2 id="warranty">7. No warranty</h2>
     <p>
       My Jarvis is provided “as is”, without warranty of any kind. It executes
       commands and controls applications, so mistakes can cost you data or work.
@@ -124,7 +150,7 @@
       API charges.
     </p>
 
-    <h2 id="liability">7. Limitation of liability</h2>
+    <h2 id="liability">8. Limitation of liability</h2>
     <p>
       To the extent the law allows, the author is not liable for any loss or
       damage arising from use of My Jarvis, however it arises and whether or not
@@ -132,7 +158,7 @@
       assistant takes on your behalf, and charges billed by your AI provider.
     </p>
 
-    <h2 id="trademarks">8. Trademarks and affiliation</h2>
+    <h2 id="trademarks">9. Trademarks and affiliation</h2>
     <p>
       My Jarvis is an independent project. It is not affiliated with, endorsed
       by or sponsored by Anthropic, OpenAI, Google, NVIDIA, Mistral AI, Todoist,
@@ -140,16 +166,18 @@
       app. All trademarks remain with their owners.
     </p>
 
-    <h2 id="changes">9. Changes</h2>
+    <h2 id="changes">10. Changes</h2>
     <p>
       These terms may change as the project does. The version in the repository
       at the time you download is the one that applies to that copy, and the date
       above says when this page last moved.
     </p>
 
-    <h2 id="contact">10. Contact</h2>
+    <h2 id="contact">11. Contact</h2>
     <p>
-      Questions, bug reports and licence enquiries go through
+      My Jarvis is made by Sebi. Questions and anything about your data go to
+      <a href="https://t.me/aquaxs" rel="noopener">@aquaxs on Telegram</a>; bug
+      reports and licence enquiries to
       <a href="https://github.com/aquaxs1/My-Jarvis/issues">GitHub issues</a>.
     </p>
   </div>
@@ -164,6 +192,7 @@
       <a href="features.html">Features</a>
       <a href="download.html">Download</a>
       <a href="terms.html">Terms of Use</a>
+      <a href="terms.html#privacy">Privacy</a>
       <a href="https://github.com/aquaxs1/My-Jarvis" target="_blank" rel="noopener">GitHub</a>
     </nav>
   </div>

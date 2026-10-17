@@ -31,6 +31,16 @@ PORT_WS   = PORT_WS_DEFAULT
 VALID_API_PROVIDERS = {"anthropic", "openai", "gemini", "nvidia", "mistral", "local"}
 LANGUAGE_PATTERN = re.compile(r"^[a-z]{2}-[A-Z]{2}$")
 
+# Messages that send something off the machine — to the AI provider, to
+# Google's speech recognition, or to a connected service. They are refused
+# until the first-start notice is accepted (core.config.CONSENT_VERSION).
+CONSENT_GATED = {
+    "start_listening", "user_text", "suggestion_accepted",
+    "todo_start", "todo_continue", "screenshot_analyze",
+    "toggle_live_vision", "copilot_start", "toggle_wake_word",
+    "test_connector",
+}
+
 
 class GUIServer:
     def __init__(self, jarvis_instance):
@@ -102,6 +112,12 @@ class GUIServer:
             }))
         except Exception as e:
             print(f"[GUI] syncing the kill state failed: {e}")
+        # Every (re)connected client learns whether the first-start notice
+        # still has to be shown.
+        try:
+            await websocket.send(json.dumps(self._consent_event()))
+        except Exception as e:
+            print(f"[GUI] sending the consent state failed: {e}")
         if self.on_client_connect:
             try:
                 self.on_client_connect()
@@ -120,8 +136,39 @@ class GUIServer:
             print("[GUI] Browser getrennt")
 
     # ── message router ────────────────────────────────────────────────────
+    def _consent_event(self) -> dict:
+        from core.config import CONSENT_VERSION, consent_given
+        return {"type": "consent_status",
+                "data": {"accepted": consent_given(self.jarvis.config),
+                         "version": CONSENT_VERSION}}
+
     async def _handle_msg(self, data: dict):
         t = data.get("type")
+
+        # ── first-start notice ───────────────────────────────────────────
+        if t == "accept_consent":
+            from core.config import CONSENT_VERSION, Config
+            if data.get("version") == CONSENT_VERSION:
+                accepted_at = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+                cfg = Config.load()
+                cfg["consent_version"] = CONSENT_VERSION
+                cfg["consent_accepted_at"] = accepted_at
+                Config.save(cfg)
+                # In place: the wake word listener holds the same dict.
+                self.jarvis.config["consent_version"] = CONSENT_VERSION
+                self.jarvis.config["consent_accepted_at"] = accepted_at
+                print("[Consent] First-start notice accepted.")
+                # A wake word switched on earlier was held back until now.
+                if self.jarvis.config.get("wake_word_enabled") or self.jarvis.config.get("clap_enabled"):
+                    self.jarvis.wake_word.start()
+            await self._broadcast(json.dumps(self._consent_event()))
+            return
+
+        if t in CONSENT_GATED:
+            from core.config import consent_given
+            if not consent_given(self.jarvis.config):
+                await self._broadcast(json.dumps(self._consent_event()))
+                return
 
         # ── microphone ON ────────────────────────────────────────────────
         if t == "start_listening":
@@ -530,6 +577,13 @@ class GUIServer:
     # ── speech recording thread ────────────────────────────────────────────
     def _do_listen(self):
         """Runs in the background – records until text is recognised, or a stop."""
+        # Recognition goes through Google; this also covers recordings started
+        # by the wake word or a clap rather than the mic button.
+        from core.config import consent_given
+        if not consent_given(self.jarvis.config):
+            self.send_event("mic_done", {})
+            self.send_event("consent_status", self._consent_event()["data"])
+            return
         print("[STT] Recording started (mic button)")
         self.send_event("status", {"text": "LISTENING..."})
 

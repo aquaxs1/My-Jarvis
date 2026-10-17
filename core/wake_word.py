@@ -34,7 +34,11 @@ class WakeWordListener:
 
     @property
     def wake_word_enabled(self) -> bool:
-        return self.config.get("wake_word_enabled", False)
+        # The fallback listener sends everything said near the microphone to
+        # Google's speech recognition, so it stays off until the first-start
+        # notice that says so has been accepted.
+        from core.config import consent_given
+        return self.config.get("wake_word_enabled", False) and consent_given(self.config)
 
     @property
     def clap_enabled(self) -> bool:
