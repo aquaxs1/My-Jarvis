@@ -242,7 +242,7 @@ class GUIServer:
                     cfg[field] = value
             # booleans explicitly (even when False)
             for bfield in ["tts_enabled","suggestions_enabled","wake_word_enabled","clap_enabled",
-                           "memory_history","memory_auto","vision_allowed","telemetry_enabled",
+                           "memory_history","memory_auto","vision_allowed",
                            "code_check","code_format"]:
                 if bfield in data:
                     value = data[bfield]

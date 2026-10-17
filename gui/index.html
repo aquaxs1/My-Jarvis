@@ -802,10 +802,6 @@ body.light .st-btn-primary{color:#FFFFFF;}
             <div><div class="st-row-label">Screen vision</div><div class="st-row-hint">Send screenshots to the vision API (only when needed).</div></div>
             <div class="st-row-val"><div class="toggle on" id="tgl-vision-allow" onclick="toggleSwitch('tgl-vision-allow')"></div></div>
           </div>
-          <div class="st-row">
-            <div><div class="st-row-label">Telemetry</div><div class="st-row-hint">Anonymous error reports, for diagnosis.</div></div>
-            <div class="st-row-val"><div class="toggle" id="tgl-telemetry" onclick="toggleSwitch('tgl-telemetry')"></div></div>
-          </div>
 
           <div class="st-section">STORAGE LOCATION</div>
           <div class="st-row">
@@ -1690,7 +1686,7 @@ function loadCfgIntoSettings(){
   const clapSlider=document.getElementById('clap-slider');
   if(clapSlider&&S.cfg.clap_threshold){clapSlider.value=S.cfg.clap_threshold;document.getElementById('clap-val').textContent=parseFloat(S.cfg.clap_threshold).toFixed(2);}
   // Privacy toggles
-  const privTgls=[['tgl-mem-history','memory_history',true],['tgl-mem-auto','memory_auto',true],['tgl-vision-allow','vision_allowed',true],['tgl-telemetry','telemetry_enabled',false]];
+  const privTgls=[['tgl-mem-history','memory_history',true],['tgl-mem-auto','memory_auto',true],['tgl-vision-allow','vision_allowed',true]];
   privTgls.forEach(([id,key,def])=>{
     const el=document.getElementById(id);if(!el)return;
     const v=S.cfg[key];const on=(v===undefined?def:v);
@@ -1737,7 +1733,6 @@ document.getElementById('sm-save-btn').addEventListener('click',()=>{
   const memory_history=document.getElementById('tgl-mem-history')?.classList.contains('on')??true;
   const memory_auto=document.getElementById('tgl-mem-auto')?.classList.contains('on')??true;
   const vision_allowed=document.getElementById('tgl-vision-allow')?.classList.contains('on')??true;
-  const telemetry_enabled=document.getElementById('tgl-telemetry')?.classList.contains('on')??false;
   // Code
   const code_check=document.getElementById('tgl-code-check')?.classList.contains('on')??true;
   const code_format=document.getElementById('tgl-code-format')?.classList.contains('on')??true;
@@ -1745,7 +1740,7 @@ document.getElementById('sm-save-btn').addEventListener('click',()=>{
   // Account / name
   const user_name=document.getElementById('s-name')?.value.trim()||S.cfg?.user_name||S.cfg?.name||'';
   if(!S.cfg)S.cfg={};
-  Object.assign(S.cfg,{salutation,tone,language,api_provider:p,location,tts_enabled:tts_enabled,suggestions_enabled:suggestions_enabled,tts_voice,wake_word_enabled,clap_enabled,clap_threshold,memory_history,memory_auto,vision_allowed,telemetry_enabled,code_check,code_format,code_retries,user_name,...extra});
+  Object.assign(S.cfg,{salutation,tone,language,api_provider:p,location,tts_enabled:tts_enabled,suggestions_enabled:suggestions_enabled,tts_voice,wake_word_enabled,clap_enabled,clap_threshold,memory_history,memory_auto,vision_allowed,code_check,code_format,code_retries,user_name,...extra});
   if(key)S.cfg.api_key=key;
   localStorage.setItem('jcfg',JSON.stringify(S.cfg));
   sendWS('save_config',S.cfg);
