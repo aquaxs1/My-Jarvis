@@ -386,7 +386,7 @@ kbd {
 }
 
 /* Blocks that follow one another inside a section keep their distance. */
-.wrap > :is(.cards, .steps, .table-wrap, .note, .flow, .faq, .prose, .split, .stats, .panel, pre) + :is(.cards, .steps, .table-wrap, .note, .flow, .faq, .prose, .split, .stats, .panel, pre) {
+.wrap > :is(.cards, .steps, .table-wrap, .note, .flow, .faq, .prose, .split, .stats, .panel, .cta, .tabs, pre) + :is(.cards, .steps, .table-wrap, .note, .flow, .faq, .prose, .split, .stats, .panel, .cta, .tabs, pre) {
   margin-top: 1.25rem;
 }
 

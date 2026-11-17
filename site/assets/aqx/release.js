@@ -6,7 +6,7 @@
  * step is optional and any failure leaves the page exactly as served.
  *
  *   <div data-release="owner/repo">
- *     <a data-release-link href=".../releases/latest/download/App.zip">Download</a>
+ *     <a data-release-link href="(the latest release, or one of its assets)">Download</a>
  *     <b data-release-name>App.zip</b>
  *     <span data-release-meta data-suffix="Windows 10 / 11">…</span>
  *     <span data-release-version>…</span>
