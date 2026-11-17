@@ -1,317 +1,291 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="dark">
-<title>My Jarvis — Voice-first AI assistant for your PC</title>
-<meta name="description" content="My Jarvis is a voice-first AI assistant with screen vision, memory, system control and smart home support. Runs locally on your machine. One command to install.">
-<meta name="theme-color" content="#04060a">
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="assets/img/logo.svg">
-
-<meta property="og:type" content="website">
-<meta property="og:title" content="My Jarvis — Voice-first AI assistant for your PC">
-<meta property="og:description" content="Screen vision, memory, system control and smart home. Runs locally, connects to the AI provider of your choice.">
-<meta property="og:image" content="https://mybluejarvis.vercel.app/assets/img/og-image.png">
-<meta property="og:url" content="https://mybluejarvis.vercel.app/">
-<link rel="canonical" href="https://mybluejarvis.vercel.app/">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">
-
-<link rel="stylesheet" href="assets/css/style.css">
-<script>document.documentElement.className += " js";</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Jarvis — Voice-first AI assistant for your PC</title>
+  <meta name="description" content="My Jarvis is a voice-first AI assistant with screen vision, memory, system control and smart home support. Runs locally on your machine. One command to install.">
+  <link rel="canonical" href="https://mybluejarvis.vercel.app/">
+  <meta name="theme-color" content="#050806">
+  <meta name="color-scheme" content="dark">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="My Jarvis">
+  <meta property="og:title" content="My Jarvis — Voice-first AI assistant for your PC">
+  <meta property="og:description" content="My Jarvis is a voice-first AI assistant with screen vision, memory, system control and smart home support. Runs locally on your machine. One command to install.">
+  <meta property="og:url" content="https://mybluejarvis.vercel.app/">
+  <meta property="og:image" content="https://mybluejarvis.vercel.app/assets/img/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+  <link rel="preload" href="assets/aqx/fonts/bodoni-moda-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/aqx/fonts/inter-tight-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/aqx/aqx.css">
+  <link rel="stylesheet" href="assets/site.css">
+  <script src="assets/aqx/boot.js"></script>
+  <script type="module" src="assets/aqx/aqx.js"></script>
+  <script src="assets/terminal.js" defer></script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "My Jarvis", "description": "My Jarvis is a voice-first AI assistant with screen vision, memory, system control and smart home support. Runs locally on your machine. One command to install.", "url": "https://mybluejarvis.vercel.app/", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Windows, macOS, Linux", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "AquAxs", "url": "https://aqua.is-a.dev/"}, "image": "https://mybluejarvis.vercel.app/assets/img/og-image.png", "softwareVersion": "2.8.4", "license": "https://opensource.org/licenses/MIT", "sameAs": ["https://github.com/aquaxs1/My-Jarvis"]}</script>
 </head>
 <body>
+  <a class="skip" href="#main">Skip to content</a>
+  <canvas class="aqx-sky" aria-hidden="true"></canvas>
+  <div class="aqx-aura" aria-hidden="true"></div>
+  <div class="aqx-progress" aria-hidden="true"></div>
 
-<!-- ========================================================== Icon sprite -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-  <symbol id="i-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0v-6a3 3 0 0 1 3-3z"/><path d="M19 10.5v1a7 7 0 0 1-14 0v-1"/><path d="M12 18.5v3"/></symbol>
-  <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
-  <symbol id="i-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 3.5l6.5 17 2.4-6.6 6.6-2.4z"/><path d="M14 14l6 6"/></symbol>
-  <symbol id="i-db" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></symbol>
-  <symbol id="i-code" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></symbol>
-  <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16.5" rx="2"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/></symbol>
-  <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4.5" width="19" height="15" rx="2"/><polyline points="3 6.5 12 13 21 6.5"/></symbol>
-  <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5.5 9.8V20a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V9.8"/><path d="M10 21v-6h4v6"/></symbol>
-  <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l8 3.4v5.7c0 4.8-3.3 9-8 10.2-4.7-1.2-8-5.4-8-10.2V5.9z"/><polyline points="9 12 11.3 14.3 15.5 10"/></symbol>
-  <symbol id="i-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2.5L4.5 13.5H11L10 21.5 19.5 10H13z"/></symbol>
-  <symbol id="i-cpu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9.5 2.5v3.5M14.5 2.5v3.5M9.5 18v3.5M14.5 18v3.5M2.5 9.5H6M2.5 14.5H6M18 9.5h3.5M18 14.5h3.5"/></symbol>
-  <symbol id="i-term" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="16" rx="2"/><polyline points="7 10 10 12.5 7 15"/><path d="M12.5 15H17"/></symbol>
-  <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.5 2.7 3.8 5.7 3.8 9S14.5 18.3 12 21c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></symbol>
-  <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.8h.01"/></symbol>
-  <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l9.3 16.5H2.7z"/><path d="M12 10v4M12 17h.01"/></symbol>
-  <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><polyline points="7 10.5 12 15.5 17 10.5"/><path d="M4 19.5h16"/></symbol>
-  <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15"/><polyline points="13 6 19 12 13 18"/></symbol>
-  <symbol id="i-gh" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.6 5.6.6 11.9c0 5 3.3 9.3 7.8 10.8.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.1.1 1.7 1.2 1.7 1.2 1 1.8 2.7 1.3 3.4 1 .1-.7.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.2-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.9 1.2 1.9 1.2 3.2 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6a11.4 11.4 0 0 0 7.8-10.8C23.4 5.6 18.3.5 12 .5z"/></symbol>
-  <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
-</svg>
-
-<!-- ========================================================== Navigation -->
-<header class="nav">
-  <div class="wrap nav__inner">
-    <a class="brand" href="./">
-      <img class="brand__mark" src="assets/img/logo.svg" alt="" width="26" height="26">
-      My Jarvis
-      <span class="brand__ver">v2.8.4</span>
-    </a>
-
-    <nav class="nav__links" id="nav-links" aria-label="Main">
-      <a href="features.html">Features</a>
-      <a href="setup.html">Setup</a>
-      <a href="download.html">Download</a>
-      <a href="index.html#help">Help</a>
-    </nav>
-
-    <div class="nav__cta">
-      <a class="btn btn--ghost btn--sm" href="https://github.com/aquaxs1/My-Jarvis" target="_blank" rel="noopener">
-        <svg><use href="#i-gh"/></svg> GitHub
-      </a>
-      <a class="btn btn--primary btn--sm" href="download.html">Download</a>
-      <button class="nav__burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav-links">
-        <svg width="20" height="20"><use href="#i-menu"/></svg>
-      </button>
+  <header class="nav" data-stuck="false" data-open="false">
+    <div class="nav-inner">
+      <a class="brand" href="./" aria-label="My Jarvis home"><img src="assets/img/logo.svg" alt="" width="32" height="32"><span>My Jarvis</span></a>
+      <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav-links"><span></span></button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="features">Features</a></li>
+        <li><a href="setup">Setup</a></li>
+        <li><a href="./#help">Help</a></li>
+        <li><a href="https://github.com/aquaxs1/My-Jarvis" rel="noopener">GitHub</a></li>
+        <li><a class="btn btn-primary btn-sm" href="download">Download</a></li>
+      </ul>
     </div>
-  </div>
-</header>
+  </header>
 
-<main>
-
-<!-- ================================================================ Hero -->
-<section class="hero">
-  <canvas id="core-canvas" aria-hidden="true"></canvas>
-  <div class="core-fallback" aria-hidden="true">
-    <div class="core-fallback__ring"></div>
-    <div class="core-fallback__ring"></div>
-    <div class="core-fallback__ring"></div>
-    <div class="core-fallback__orb"></div>
-  </div>
-
-  <div class="wrap">
-    <div class="hero__grid">
-      <span class="eyebrow"><span class="dot"></span> Open source · runs on your machine</span>
-
-      <h1>My Jarvis</h1>
-      <p class="hero__sub">Just A Rather Very Intelligent System</p>
-
-      <p class="hero__lead">
-        A voice-first AI assistant that sees your screen, remembers what matters
-        and controls your system — powered by the AI provider you choose.
-      </p>
-
-      <div class="hero__actions">
-        <a class="btn btn--primary" href="download.html"><svg><use href="#i-down"/></svg> Download</a>
-        <a class="btn btn--ghost" href="features.html"><svg><use href="#i-zap"/></svg> See features</a>
-      </div>
-
-      <div class="hero__stats">
-        <div class="stat"><b>1</b><span>command</span></div>
-        <div class="stat"><b>6</b><span>AI providers</span></div>
-        <div class="stat"><b>20</b><span>features</span></div>
-        <div class="stat"><b>MIT</b><span>license</span></div>
-      </div>
-    </div>
-  </div>
-
-  <a class="hero__scroll" href="#overview" aria-label="Scroll down"><span></span></a>
-</section>
-
-<!-- ============================================================ Overview -->
-<section class="section section--alt" id="overview">
-  <div class="wrap">
-    <div class="overview reveal">
-      <div class="terminal" aria-hidden="true">
-        <div class="terminal__bar">
-          <i></i><i></i><i></i>
-          <span>jarvis — start.sh</span>
-        </div>
-        <div class="terminal__body" id="terminal-body"></div>
-      </div>
-
-      <div class="overview__list">
-        <h2>Not a chat window</h2>
-        <div class="mini">
-          <div class="mini__icon"><svg><use href="#i-eye"/></svg></div>
-          <div><b>It sees</b><span>Reads your screen on request or continuously.</span></div>
-        </div>
-        <div class="mini">
-          <div class="mini__icon"><svg><use href="#i-db"/></svg></div>
-          <div><b>It remembers</b><span>Facts you tell it, stored encrypted on your disk.</span></div>
-        </div>
-        <div class="mini">
-          <div class="mini__icon"><svg><use href="#i-pointer"/></svg></div>
-          <div><b>It acts</b><span>Opens apps, types, clicks — and works through your to-dos.</span></div>
+  <main id="main">
+    <section class="hero">
+      <div class="stage" data-scene="assets/scene.js" data-mode="hero" aria-hidden="true"><canvas></canvas></div>
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <span class="eyebrow">Open source · runs on your machine</span>
+          <h1>My <em>Jarvis</em></h1>
+          <p class="hero-sub">Just A Rather Very Intelligent System</p>
+          <p class="lead">A voice-first AI assistant that sees your screen, remembers what matters and controls your system — powered by the AI provider you choose.</p>
+          <div class="btn-row">
+            <a class="btn btn-primary btn-lg" href="download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg>Download</a>
+            <a class="btn btn-lg" href="features"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>See features</a>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-</section>
+      <span class="hero-hint">Click to talk to it</span>
+    </section>
 
-<!-- ============================================================ Features -->
-<section class="section" id="features">
-  <div class="wrap">
-    <div class="section__head reveal">
-      <span class="eyebrow">What it can do</span>
-      <h2>Twenty modules, all optional</h2>
-      <p>Skip what you don't set up — My Jarvis starts anyway.</p>
-    </div>
-
-    <div class="grid grid--3">
-      <article class="card reveal">
-        <div class="card__icon"><svg><use href="#i-mic"/></svg></div>
-        <h3>Voice &amp; chat</h3>
-        <p>Talk or type, in six languages. Spoken replies optional.</p>
-      </article>
-      <article class="card reveal">
-        <div class="card__icon"><svg><use href="#i-eye"/></svg></div>
-        <h3>Screen vision</h3>
-        <p>Screenshot analysis, or live vision every 2–3 seconds.</p>
-      </article>
-      <article class="card reveal">
-        <div class="card__icon"><svg><use href="#i-code"/></svg></div>
-        <h3>Code that runs</h3>
-        <p>Every snippet is syntax-checked, fixed and formatted.</p>
-      </article>
-      <article class="card reveal">
-        <div class="card__icon"><svg><use href="#i-cal"/></svg></div>
-        <h3>Calendar &amp; tasks</h3>
-        <p>Google Calendar, Todoist and Notion in plain language.</p>
-      </article>
-      <article class="card reveal">
-        <div class="card__icon"><svg><use href="#i-home"/></svg></div>
-        <h3>Smart home</h3>
-        <p>Home Assistant and Philips Hue: lights, heating, media.</p>
-      </article>
-      <article class="card reveal card--amber">
-        <div class="card__icon"><svg><use href="#i-shield"/></svg></div>
-        <h3>Kill switch</h3>
-        <p><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>J</kbd> stops everything, instantly.</p>
-      </article>
-    </div>
-
-    <div class="more reveal">
-      <a class="btn btn--ghost" href="features.html">All 20 features <svg><use href="#i-arrow"/></svg></a>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================= Install -->
-
-<!-- =============================================================== Usage -->
-
-<!-- ============================================================ Security -->
-<section class="section section--alt" id="security">
-  <div class="wrap">
-    <div class="section__head reveal">
-      <span class="eyebrow">Safety</span>
-      <h2>You keep control</h2>
-    </div>
-
-    <div class="grid grid--3">
-      <article class="card reveal">
-        <div class="card__icon"><svg><use href="#i-shield"/></svg></div>
-        <h3>Kill switch</h3>
-        <p>One shortcut stops every running action.</p>
-      </article>
-      <article class="card reveal">
-        <div class="card__icon"><svg><use href="#i-alert"/></svg></div>
-        <h3>Risk checks</h3>
-        <p>Dangerous commands are blocked, risky ones ask first. Emails are never sent unconfirmed.</p>
-      </article>
-      <article class="card reveal">
-        <div class="card__icon"><svg><use href="#i-cpu"/></svg></div>
-        <h3>Your disk</h3>
-        <p>Config, memory and keys live in <code class="inline">~/.jarvis/</code>, encrypted.</p>
-      </article>
-    </div>
-
-    <div class="callout reveal">
-      <svg><use href="#i-alert"/></svg>
-      <div>Your prompts — screenshots included — go to the provider you pick; a local Ollama model keeps them on your machine. Voice input is transcribed by Google's speech recognition either way, so type if you want nothing to reach Google. <a href="terms.html#privacy">Details</a></div>
-    </div>
-  </div>
-</section>
-
-<!-- ================================================================ Help -->
-<section class="section" id="help">
-  <div class="wrap">
-    <div class="section__head reveal">
-      <span class="eyebrow">Help</span>
-      <h2>Common snags</h2>
-    </div>
-
-    <details class="faq reveal">
-      <summary>“API key missing” banner</summary>
-      <div class="faq__body"><p>Open settings with <kbd>Ctrl</kbd> + <kbd>,</kbd>, pick your provider, paste the key.</p></div>
-    </details>
-
-    <details class="faq reveal">
-      <summary>Microphone not working</summary>
-      <div class="faq__body">
-        <p>Install PyAudio — on Windows via pipwin if the direct install fails. Without it My Jarvis falls back to <code class="inline">sounddevice</code>.</p>
-        <div class="code">
-          <div class="code__head"><span class="code__label">Terminal</span><button class="copy" type="button">COPY</button></div>
-<pre><span class="p">pip install</span> pyaudio
-
-<span class="c"># Windows fallback</span>
-<span class="p">pip install</span> pipwin &amp;&amp; pipwin install pyaudio</pre>
+    <section class="sec">
+      <div class="wrap">
+        <div class="stats reveal">
+          <div class="stat"><b data-count="1">1</b><span>command</span></div>
+          <div class="stat"><b data-count="6">6</b><span>AI providers</span></div>
+          <div class="stat"><b data-count="20">20</b><span>features</span></div>
+          <div class="stat"><b>MIT</b><span>license</span></div>
         </div>
       </div>
-    </details>
+    </section>
 
-    <details class="faq reveal">
-      <summary>No spoken replies</summary>
-      <div class="faq__body">
-        <p>Check that TTS is on in settings. On Linux, install the speech engine:</p>
-        <div class="code">
-          <div class="code__head"><span class="code__label">Linux</span><button class="copy" type="button">COPY</button></div>
-<pre><span class="p">sudo apt-get install</span> espeak-ng</pre>
+    <section class="sec" id="overview">
+      <div class="wrap">
+        <div class="split">
+          <div class="showcase reveal">
+            <div class="panel" aria-hidden="true">
+              <div class="panel-bar"><i></i><i></i><i></i><span>jarvis — start.sh</span></div>
+              <div class="panel-body terminal" id="terminal-body">
+                <div class="t-m">$ python jarvis.py</div>
+                <div class="t-m">  [OK] Server running on http://127.0.0.1:8765</div>
+                <div class="t-u">Sir: Look at my screen</div>
+                <div class="t-j">JARVIS: A merge conflict in core/brain.py, line 214.</div>
+                <div class="t-u">Sir: Remember that I prefer Python</div>
+                <div class="t-j">JARVIS: Stored, encrypted, in ~/.jarvis/memory.</div>
+                <div class="t-u">Sir: Give me my briefing</div>
+                <div class="t-j">JARVIS: 18°C, 3 events, 2 open tasks, 5 unread emails.</div>
+              </div>
+            </div>
+          </div>
+          <div class="stack reveal">
+            <span class="eyebrow">Overview</span>
+            <h2>Not a <em>chat window</em></h2>
+            <ul class="points">
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12c1.5-2.4 5-6 10-6s8.5 3.6 10 6c-1.5 2.4-5 6-10 6S3.5 14.4 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span><b>It sees.</b> Reads your screen on request or continuously.</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.700 3.600 3 8 3s8-1.300 8-3V6M4 12v6c0 1.700 3.600 3 8 3s8-1.300 8-3v-6"/></svg><span><b>It remembers.</b> Facts you tell it, stored encrypted on your disk.</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 3 14 8-6 2-2 6z"/></svg><span><b>It acts.</b> Opens apps, types, clicks — and works through your to-dos.</span></li>
+            </ul>
+          </div>
         </div>
       </div>
-    </details>
+    </section>
 
-    <details class="faq reveal">
-      <summary>Port 8765 is taken</summary>
-      <div class="faq__body"><p>My Jarvis tries 8766, 8767 and so on by itself. If it still fails, close whatever holds those ports.</p></div>
-    </details>
+    <section class="sec" id="features">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">What it can do</span>
+          <h2>Twenty modules, <em>all optional</em></h2>
+          <p class="lead">Skip what you don't set up — My Jarvis starts anyway.</p>
+        </div>
+        <div class="cards" data-cols="3">
+          <article class="card reveal">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span>
+            <h3>Voice &amp; chat</h3>
+            <p>Talk or type, in six languages. Spoken replies optional.</p>
+          </article>
+          <article class="card reveal">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12c1.5-2.4 5-6 10-6s8.5 3.6 10 6c-1.5 2.4-5 6-10 6S3.5 14.4 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span>
+            <h3>Screen vision</h3>
+            <p>Screenshot analysis, or live vision every 2–3 seconds.</p>
+          </article>
+          <article class="card reveal">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 8-5 4 5 4M16 8l5 4-5 4M14 5l-4 14"/></svg></span>
+            <h3>Code that runs</h3>
+            <p>Every snippet is syntax-checked, fixed and formatted.</p>
+          </article>
+          <article class="card reveal">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span>
+            <h3>Calendar &amp; tasks</h3>
+            <p>Google Calendar, Todoist and Notion in plain language.</p>
+          </article>
+          <article class="card reveal">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.500 12 3l9 7.500V21H3z"/></svg></span>
+            <h3>Smart home</h3>
+            <p>Home Assistant and Philips Hue: lights, heating, media.</p>
+          </article>
+          <article class="card reveal">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v9M6.300 7.300a8 8 0 1 0 11.400 0"/></svg></span>
+            <h3>Kill switch</h3>
+            <p><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>J</kbd> stops everything, instantly.</p>
+          </article>
+        </div>
+        <div class="btn-row reveal">
+          <a class="btn" href="features">All 20 features<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </div>
+    </section>
 
-    <details class="faq reveal">
-      <summary>Wake word doesn't respond</summary>
-      <div class="faq__body"><p>Enable it under Settings → Activation. Without <code class="inline">pvporcupine</code> it uses Google Speech Recognition and needs internet.</p></div>
-    </details>
-  </div>
-</section>
+    <section class="sec" id="security">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Safety</span>
+          <h2>You keep <em>control</em></h2>
+        </div>
+        <div class="cards" data-cols="3">
+          <article class="card reveal">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v9M6.300 7.300a8 8 0 1 0 11.400 0"/></svg></span>
+            <h3>Kill switch</h3>
+            <p>One shortcut stops every running action.</p>
+          </article>
+          <article class="card reveal">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4.4 3 7.7 7 9 4-1.3 7-4.6 7-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <h3>Risk checks</h3>
+            <p>Dangerous commands are blocked, risky ones ask first. Emails are never sent unconfirmed.</p>
+          </article>
+          <article class="card reveal">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+            <h3>Your disk</h3>
+            <p>Config, memory and keys live in <code>~/.jarvis/</code>, encrypted.</p>
+          </article>
+        </div>
+        <div class="note reveal">
+          <p>Your prompts — screenshots included — go to the provider you pick; a local Ollama model keeps them on your machine. Voice input is transcribed by Google's speech recognition either way, so type if you want nothing to reach Google. <a class="textlink" href="terms#privacy">Details</a></p>
+        </div>
+      </div>
+    </section>
 
-<!-- ================================================================= CTA -->
-<section class="section">
-  <div class="wrap">
-    <div class="cta reveal">
-      <h2>Talk to your computer</h2>
-      <div class="cta__actions">
-        <a class="btn btn--primary" href="download.html"><svg><use href="#i-down"/></svg> Download</a>
-        <a class="btn btn--ghost" href="https://github.com/aquaxs1/My-Jarvis" target="_blank" rel="noopener"><svg><use href="#i-gh"/></svg> Source on GitHub</a>
+    <section class="sec" id="help">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <span class="eyebrow">Help</span>
+          <h2>Common <em>snags</em></h2>
+        </div>
+        <div class="faq">
+          <details class="reveal">
+            <summary>“API key missing” banner</summary>
+            <p>Open settings with <kbd>Ctrl</kbd> + <kbd>,</kbd>, pick your provider, paste the key.</p>
+          </details>
+          <details class="reveal">
+            <summary>Microphone not working</summary>
+            <p>Install PyAudio — on Windows via pipwin if the direct install fails. Without it My Jarvis falls back to <code>sounddevice</code>.</p>
+            <pre data-label="terminal"><code>pip install pyaudio
+# Windows fallback
+pip install pipwin &amp;&amp; pipwin install pyaudio</code></pre>
+          </details>
+          <details class="reveal">
+            <summary>No spoken replies</summary>
+            <p>Check that TTS is on in settings. On Linux, install the speech engine:</p>
+            <pre data-label="linux"><code>sudo apt-get install espeak-ng</code></pre>
+          </details>
+          <details class="reveal">
+            <summary>Port 8765 is taken</summary>
+            <p>My Jarvis tries 8766, 8767 and so on by itself. If it still fails, close whatever holds those ports.</p>
+          </details>
+          <details class="reveal">
+            <summary>Wake word doesn't respond</summary>
+            <p>Enable it under Settings → Activation. Without <code>pvporcupine</code> it uses Google Speech Recognition and needs internet.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="wrap">
+        <div class="cta reveal">
+          <h2>Talk to <em>your computer</em></h2>
+          <div class="btn-row">
+            <a class="btn btn-primary btn-lg" href="download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg>Download</a>
+            <a class="btn btn-lg" href="https://github.com/aquaxs1/My-Jarvis" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 19c-4.500 1.500-4.500-2.500-6-3m12 6v-3.500c0-1 .100-1.400-.500-2 2.800-.300 5.500-1.400 5.500-6a4.600 4.600 0 0 0-1.300-3.200 4.200 4.200 0 0 0-.100-3.200s-1.100-.300-3.500 1.300a12.300 12.300 0 0 0-6.200 0C6.500 2.800 5.400 3.100 5.400 3.100a4.200 4.200 0 0 0-.100 3.200A4.600 4.600 0 0 0 4 9.500c0 4.600 2.700 5.700 5.500 6-.600.600-.600 1.200-.500 2V21"/></svg>Source on GitHub</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-about">
+          <a class="brand" href="./"><img src="assets/img/logo.svg" alt="" width="32" height="32" loading="lazy"><span>My Jarvis</span></a>
+          <p>A voice-first AI assistant that sees your screen, remembers what matters and controls your system.</p>
+        </div>
+        <nav class="footer-col" aria-label="My Jarvis">
+          <h2>My Jarvis</h2>
+          <ul>
+            <li><a href="features">Features</a></li>
+            <li><a href="setup">Setup</a></li>
+            <li><a href="download">Download</a></li>
+            <li><a href="./#help">Help</a></li>
+          </ul>
+        </nav>
+        <nav class="footer-col" aria-label="Project">
+          <h2>Project</h2>
+          <ul>
+            <li><a href="https://github.com/aquaxs1/My-Jarvis" rel="noopener">GitHub</a></li>
+            <li><a href="https://github.com/aquaxs1/My-Jarvis/releases" rel="noopener">Releases</a></li>
+            <li><a href="https://github.com/aquaxs1/My-Jarvis/issues" rel="noopener">Report a bug</a></li>
+          </ul>
+        </nav>
+        <nav class="footer-col" aria-label="Legal">
+          <h2>Legal</h2>
+          <ul>
+            <li><a href="terms">Terms &amp; Privacy</a></li>
+            <li><a href="terms#privacy">Privacy</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="family">
+        <span class="family-label">More by AquAxs</span>
+        <ul>
+          <li><a href="https://aqua.is-a.dev/portfolio" data-home rel="noopener">All projects</a></li>
+          <li><a href="https://pfpair.app/" rel="noopener">Pfpair</a></li>
+          <li><a href="https://handled-market.vercel.app/" rel="noopener">Handled</a></li>
+          <li><a href="https://larpcorddc.vercel.app/" rel="noopener">Larpcord</a></li>
+          <li><a href="https://guardiantus-av.vercel.app/" rel="noopener">Guardiantus AV</a></li>
+          <li><a href="https://explorer-manager.vercel.app/" rel="noopener">Explorer Manager</a></li>
+          <li><a href="https://cipher-box-file-encrypter.vercel.app/" rel="noopener">CipherBox</a></li>
+          <li><a href="https://easy-cloner.vercel.app/" rel="noopener">Easy Server Cloner</a></li>
+          <li><a href="https://simple-skin.vercel.app/" rel="noopener">Simple Skin</a></li>
+          <li><a href="https://autobuild-gui.vercel.app/" rel="noopener">Autobuild GUI</a></li>
+          <li><a href="https://timetrackerextension.vercel.app/" rel="noopener">WebsiteTimeTrack</a></li>
+          <li><a href="https://wave-uninstaller.vercel.app/" rel="noopener">Wave Uninstaller</a></li>
+          <li><a href="https://discord-sakurabot.vercel.app/" rel="noopener">Sakura Bot</a></li>
+          <li><a href="https://revox-client.vercel.app/" rel="noopener">Revox Client</a></li>
+          <li><a href="https://chesstrainer.cc.cd/" rel="noopener">Chess Trainer</a></li>
+        </ul>
+      </div>
+      <div class="footer-legal">
+        <p>© 2026 AquAxs · MIT · My Jarvis v2.8.4</p>
       </div>
     </div>
-  </div>
-</section>
-
-</main>
-
-<footer class="footer">
-  <div class="wrap footer__inner">
-    <div>© <span id="year">2026</span> AquAxs · MIT · My Jarvis v2.8.4</div>
-    <nav class="footer__links" aria-label="Footer">
-      <a href="features.html">Features</a>
-      <a href="download.html">Download</a>
-      <a href="setup.html">Setup</a>
-      <a href="terms.html">Terms &amp; Privacy</a>
-      <a href="https://github.com/aquaxs1/My-Jarvis" target="_blank" rel="noopener">GitHub</a>
-    </nav>
-  </div>
-</footer>
-
-<script src="assets/js/core.js" defer></script>
-<script src="assets/js/main.js" defer></script>
+  </footer>
 </body>
 </html>

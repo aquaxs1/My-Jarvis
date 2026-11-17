@@ -1,0 +1,111 @@
+/* My Jarvis — the teal of its core. Everything else is assets/aqx/aqx.css. */
+
+:root {
+  --ac: #3fe0cf;
+  --ac-hi: #a9fff4;
+  --ac-ink: #00211d;
+}
+
+/* The name behind the name, under the headline. */
+.hero-sub {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* The terminal demo next to "Not a chat window". */
+.terminal {
+  min-height: 15.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.75;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.t-m {
+  color: var(--faint);
+}
+
+.t-u {
+  color: var(--fg);
+}
+
+.t-j {
+  color: var(--ac-hi);
+}
+
+.t-caret {
+  display: inline-block;
+  width: 0.55em;
+  height: 1.05em;
+  vertical-align: text-bottom;
+  background: var(--ac);
+  animation: t-blink 1s steps(1) infinite;
+}
+
+@keyframes t-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* What you would say to it, under each feature. */
+.say {
+  justify-self: start;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--ac) 35%, transparent);
+  background: color-mix(in srgb, var(--ac) 9%, transparent);
+  color: var(--ac-hi) !important;
+  font-size: 0.82rem !important;
+}
+
+/* The three colours of the status orb. */
+.orbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.orbs li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.orbs li::before {
+  content: '';
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: var(--orb);
+  box-shadow: 0 0 0.7rem var(--orb);
+}
+
+.orbs [data-orb='teal'] {
+  --orb: #3fe0cf;
+}
+
+.orbs [data-orb='amber'] {
+  --orb: #ffb347;
+}
+
+.orbs [data-orb='red'] {
+  --orb: #ff5f6d;
+}
+
+/* A second heading inside one section. */
+.sub-head {
+  margin-top: clamp(2rem, 4vw, 3rem);
+}
