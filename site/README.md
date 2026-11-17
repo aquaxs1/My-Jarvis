@@ -1,85 +1,56 @@
-# JARVIS — Website
+# My Jarvis — website
 
-Static site for JARVIS: what it does, how to install it, how to use it.
-No build step, no dependencies, no CDN — plain HTML, CSS and JavaScript.
+The site at <https://mybluejarvis.vercel.app>. Plain HTML, CSS and JavaScript: no build
+step, no framework, nothing loaded from another host.
 
-## Contents
+| File | What it is |
+| --- | --- |
+| `index.html` | Landing page |
+| `features.html` | Features |
+| `setup.html` | Setup |
+| `download.html` | Download |
+| `terms.html` | Terms of Use |
+| `404.html` | Shown for any address that does not exist |
+| `assets/site.css` | This project's accent colour and anything only this site needs |
+| `assets/scene.js` | The 3D scene in the page header |
+| `assets/aqx/` | The look and behaviour shared by all AquAxs project sites |
 
-```
-site/
-  index.html              landing page (hero, overview, install, usage, safety, help)
-  features.html           all 20 modules, integration requirements, optional packages
-  favicon.svg
-  robots.txt
-  vercel.json             cache and security headers
-  assets/
-    css/style.css
-    js/core.js            3D core: raymarching shader in plain WebGL
-    js/main.js            nav, tabs, copy buttons, reveal, terminal demo
-```
+## The shared part
 
-The hero graphic is a distance-field raymarcher running entirely in a fragment shader:
-a pulsing energy core with three rotating rings, a starfield and mouse parallax.
-It scales its own resolution down when the GPU struggles, pauses when off-screen,
-honours `prefers-reduced-motion`, and falls back to a CSS animation without WebGL.
+`assets/aqx/` is the same in every project site: the stylesheet (`aqx.css`),
+the interactions (`aqx.js`), the 3D stage (`stage.js`), three.js and the three
+typefaces. It follows the portfolio at aqua.is-a.dev: a black sky with slow
+dots, glass cards that lean towards the pointer, Bodoni Moda headlines.
+Change the accent in `assets/site.css` (`--ac`, `--ac-hi`), not in `aqx.css`.
 
-The icon sprite is inlined at the top of each page — keep the two copies in sync when
-adding icons.
+## The 3D scene
 
-## Run locally
+`assets/scene.js` exports one function that builds its objects into
+`stage.frame`. The stage (`assets/aqx/stage.js`) does the rest: camera, lights,
+resizing, pointer and touch, pausing off screen. With reduced motion the scene
+is one still frame; without WebGL a glow in the accent colour stays instead.
 
-```bash
-cd site
-python3 -m http.server 4321
-# or: npx http-server -p 4321
-```
+## Preview
 
-Then open `http://localhost:4321`.
-
-## Deploy to Vercel
-
-Pure static site — no framework, no build command.
-
-### Option 1: Git integration (recommended)
-
-1. Open [vercel.com/new](https://vercel.com/new) and import `aquaxs1/My-Jarvis`
-2. Set **Root Directory** to `site` — this is the step that matters,
-   otherwise Vercel looks for a project in the repository root
-3. Framework preset: **Other**. Leave build and install commands empty
-4. Click **Deploy**
-
-Every later push to the branch redeploys automatically.
-
-### Option 2: CLI
+Links have no `.html` (Vercel serves `/download` from `download.html`), so open
+the folder through a server that does the same:
 
 ```bash
-npm i -g vercel
-cd site
-vercel          # preview deployment
-vercel --prod   # production
+npx serve site
 ```
 
-On the first run the CLI asks for a project name and settings — leave build command
-and output directory empty.
+## Deploy
 
-## The Content-Security-Policy and the inline script
+Vercel, root directory `site`, no build command. `vercel.json` sets clean URLs
+and the security headers. The site sets no cookies and stores nothing.
 
-`vercel.json` sends a strict CSP. `script-src` allows `'self'` plus one SHA-256
-hash, which covers the single inline one-liner in every page's `<head>`:
+## The 3D scene and the terminal
 
-```html
-<script>document.documentElement.className += " js";</script>
-```
+`assets/scene.js` replaces the old hand-written raymarcher with the shared three.js stage: the
+core breathes, three rings turn, and a click runs one exchange from the demo — listening in
+teal, thinking in amber, the colours of the app's own status orb. `assets/terminal.js` types
+the session in the panel next to "Not a chat window"; the same lines are in the HTML for
+anyone without JavaScript.
 
-It has to stay inline — it runs before the first paint so the no-JS styles never
-flash — so a hash is used instead of `'unsafe-inline'`. **Change that line by even
-one character and the browser silently refuses to run it**, and the `js` class
-never lands on `<html>`. If you edit it, recompute the hash and update the
-`Content-Security-Policy` value in `vercel.json`:
-
-```sh
-printf '%s' 'document.documentElement.className += " js";' \
-  | openssl dgst -sha256 -binary | openssl base64
-```
-
-Inline `style="…"` attributes are covered by `'unsafe-inline'` in `style-src`.
+There is no inline script any more, so the CSP needs no hash: if you add one, give it its own
+file instead.

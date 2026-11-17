@@ -1,35 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#04060a">
-<title>Page not found — My Jarvis</title>
-<meta name="description" content="This page does not exist. Head back to the My Jarvis home page.">
-<meta name="robots" content="noindex">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Page not found — My Jarvis">
-<meta property="og:description" content="This page does not exist.">
-<meta property="og:image" content="https://mybluejarvis.vercel.app/assets/img/og-image.png">
-<meta property="og:url" content="https://mybluejarvis.vercel.app/404.html">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="assets/img/logo.svg">
-<link rel="apple-touch-icon" href="assets/img/logo.svg">
-<link rel="stylesheet" href="assets/css/style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Page not found — My Jarvis</title>
+  <meta name="description" content="This page does not exist.">
+  <link rel="canonical" href="https://mybluejarvis.vercel.app/404">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#050806">
+  <meta name="color-scheme" content="dark">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="My Jarvis">
+  <meta property="og:title" content="Page not found — My Jarvis">
+  <meta property="og:description" content="This page does not exist.">
+  <meta property="og:url" content="https://mybluejarvis.vercel.app/404">
+  <meta property="og:image" content="https://mybluejarvis.vercel.app/assets/img/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+  <link rel="preload" href="/assets/aqx/fonts/bodoni-moda-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/aqx/fonts/inter-tight-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/aqx/aqx.css">
+  <link rel="stylesheet" href="/assets/site.css">
+  <script src="/assets/aqx/boot.js"></script>
+  <script type="module" src="/assets/aqx/aqx.js"></script>
 </head>
 <body>
+  <a class="skip" href="#main">Skip to content</a>
+  <canvas class="aqx-sky" aria-hidden="true"></canvas>
+  <div class="aqx-aura" aria-hidden="true"></div>
+  <div class="aqx-progress" aria-hidden="true"></div>
 
-<main class="nf-wrap">
-  <div class="nf-inner">
-    <img src="assets/img/logo.svg" alt="" width="72">
-    <p class="nf-code">404</p>
-    <h1>This page does not exist</h1>
-    <p>The link is either out of date or was mistyped. Everything else is still where you left it.</p>
-    <a class="btn btn--primary" href="index.html">Back to the home page</a>
-  </div>
-</main>
+  <header class="nav" data-stuck="false" data-open="false">
+    <div class="nav-inner">
+      <a class="brand" href="/" aria-label="My Jarvis home"><img src="/assets/img/logo.svg" alt="" width="32" height="32"><span>My Jarvis</span></a>
+      <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav-links"><span></span></button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/features">Features</a></li>
+        <li><a href="/setup">Setup</a></li>
+        <li><a href="/./#help">Help</a></li>
+        <li><a href="https://github.com/aquaxs1/My-Jarvis" rel="noopener">GitHub</a></li>
+        <li><a class="btn btn-primary btn-sm" href="/download">Download</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="lost">
+      <div class="stage" data-scene="/assets/scene.js" data-mode="mini" aria-hidden="true"><canvas></canvas></div>
+      <div class="lost-inner">
+        <p class="lost-code" aria-hidden="true">404</p>
+        <h1>Nothing lives here.</h1>
+        <p class="lead">The page you asked for does not exist, or it moved.</p>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="/">Back to My Jarvis</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-about">
+          <a class="brand" href="/"><img src="/assets/img/logo.svg" alt="" width="32" height="32" loading="lazy"><span>My Jarvis</span></a>
+          <p>A voice-first AI assistant that sees your screen, remembers what matters and controls your system.</p>
+        </div>
+        <nav class="footer-col" aria-label="My Jarvis">
+          <h2>My Jarvis</h2>
+          <ul>
+            <li><a href="/features">Features</a></li>
+            <li><a href="/setup">Setup</a></li>
+            <li><a href="/download">Download</a></li>
+            <li><a href="/./#help">Help</a></li>
+          </ul>
+        </nav>
+        <nav class="footer-col" aria-label="Project">
+          <h2>Project</h2>
+          <ul>
+            <li><a href="https://github.com/aquaxs1/My-Jarvis" rel="noopener">GitHub</a></li>
+            <li><a href="https://github.com/aquaxs1/My-Jarvis/releases" rel="noopener">Releases</a></li>
+            <li><a href="https://github.com/aquaxs1/My-Jarvis/issues" rel="noopener">Report a bug</a></li>
+          </ul>
+        </nav>
+        <nav class="footer-col" aria-label="Legal">
+          <h2>Legal</h2>
+          <ul>
+            <li><a href="/terms">Terms &amp; Privacy</a></li>
+            <li><a href="/terms#privacy">Privacy</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="family">
+        <span class="family-label">More by AquAxs</span>
+        <ul>
+          <li><a href="https://aqua.is-a.dev/portfolio" data-home rel="noopener">All projects</a></li>
+          <li><a href="https://pfpair.app/" rel="noopener">Pfpair</a></li>
+          <li><a href="https://handled-market.vercel.app/" rel="noopener">Handled</a></li>
+          <li><a href="https://larpcorddc.vercel.app/" rel="noopener">Larpcord</a></li>
+          <li><a href="https://guardiantus-av.vercel.app/" rel="noopener">Guardiantus AV</a></li>
+          <li><a href="https://explorer-manager.vercel.app/" rel="noopener">Explorer Manager</a></li>
+          <li><a href="https://cipher-box-file-encrypter.vercel.app/" rel="noopener">CipherBox</a></li>
+          <li><a href="https://easy-cloner.vercel.app/" rel="noopener">Easy Server Cloner</a></li>
+          <li><a href="https://simple-skin.vercel.app/" rel="noopener">Simple Skin</a></li>
+          <li><a href="https://autobuild-gui.vercel.app/" rel="noopener">Autobuild GUI</a></li>
+          <li><a href="https://timetrackerextension.vercel.app/" rel="noopener">WebsiteTimeTrack</a></li>
+          <li><a href="https://wave-uninstaller.vercel.app/" rel="noopener">Wave Uninstaller</a></li>
+          <li><a href="https://discord-sakurabot.vercel.app/" rel="noopener">Sakura Bot</a></li>
+          <li><a href="https://revox-client.vercel.app/" rel="noopener">Revox Client</a></li>
+          <li><a href="https://chesstrainer.cc.cd/" rel="noopener">Chess Trainer</a></li>
+        </ul>
+      </div>
+      <div class="footer-legal">
+        <p>© 2026 AquAxs · MIT · My Jarvis v2.8.4</p>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>
